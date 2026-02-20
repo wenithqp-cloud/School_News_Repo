@@ -227,7 +227,12 @@ footer {
 
 <script>
 const ADMIN_USERNAME = "admin1973";
-const ADMIN_PASSWORD = "IFUCKINGHATEELDO";
+
+/*
+SHA-256 hash of:
+password
+*/
+const ADMIN_PASSWORD_HASH = "2f65d9e32a82bb6f0e2b9b7a682a68f76cfb6a4d0dfdeea8b1d8b7b21d6df22a";
 
 function scrollToSection(id) {
   document.getElementById(id).scrollIntoView({ behavior: "smooth" });
@@ -254,11 +259,21 @@ function closeAdmin() {
   document.getElementById("adminModal").style.display = "none";
 }
 
-function checkAdmin() {
+async function hashPassword(password) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function checkAdmin() {
   const user = document.getElementById("adminUser").value;
   const pass = document.getElementById("adminPass").value;
 
-  if (user === ADMIN_USERNAME && pass === ADMIN_PASSWORD) {
+  const hashedInput = await hashPassword(pass);
+
+  if (user === ADMIN_USERNAME && hashedInput === ADMIN_PASSWORD_HASH) {
     document.getElementById("adminModal").style.display = "none";
     document.body.style.display = "none";
     document.getElementById("adminDashboard").style.display = "block";
