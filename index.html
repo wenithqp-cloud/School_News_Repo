@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School News Broadcasting Club</title>
+
+<style>
+/* ===== GLOBAL STYLES ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: #0f172a;
+  color: white;
+  scroll-behavior: smooth;
+}
+
+section {
+  padding: 80px 10%;
+}
+
+h1, h2 {
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 12px 20px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #1e40af;
+}
+
+/* ===== NAVBAR ===== */
+nav {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  background: rgba(15, 23, 42, 0.95);
+  padding: 15px 10%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-left: 20px;
+  font-weight: bold;
+}
+
+nav a:hover {
+  color: #60a5fa;
+}
+
+/* ===== HERO ===== */
+.hero {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(to right, #1e3a8a, #2563eb);
+}
+
+.hero h1 {
+  font-size: 3rem;
+}
+
+.hero p {
+  margin: 20px 0;
+  font-size: 1.2rem;
+}
+
+/* ===== ABOUT ===== */
+.about {
+  background: #1e293b;
+}
+
+/* ===== BROADCASTS ===== */
+.broadcasts {
+  background: #0f172a;
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.video-card {
+  background: #1e293b;
+  padding: 15px;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.video-card:hover {
+  transform: translateY(-5px);
+}
+
+/* ===== TEAM ===== */
+.team {
+  background: #1e293b;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.member {
+  background: #0f172a;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+/* ===== JOIN ===== */
+.join {
+  background: #0f172a;
+  text-align: center;
+}
+
+.join input {
+  padding: 10px;
+  margin: 10px;
+  width: 250px;
+  border-radius: 6px;
+  border: none;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background: #020617;
+  text-align: center;
+  padding: 20px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width: 768px){
+  .hero h1 {
+    font-size: 2rem;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav>
+  <div><strong>🎥 School News</strong></div>
+  <div>
+    <a href="#about">About</a>
+    <a href="#broadcasts">Broadcasts</a>
+    <a href="#team">Team</a>
+    <a href="#join">Join</a>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div>
+    <h1>Welcome to the News Broadcasting Club</h1>
+    <p>Delivering school stories. Sharing student voices. Creating future journalists.</p>
+    <button onclick="scrollToSection('broadcasts')">Watch Latest Broadcast</button>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section id="about" class="about">
+  <h2>About Us</h2>
+  <p>
+    The News Broadcasting Club is a student-run organization dedicated to reporting
+    school events, announcements, sports highlights, and student achievements.
+    Members learn video production, editing, journalism, and public speaking.
+  </p>
+</section>
+
+<!-- ===== BROADCASTS ===== -->
+<section id="broadcasts" class="broadcasts">
+  <h2>Latest Broadcasts</h2>
+  <div class="video-grid">
+    <div class="video-card">
+      <h3>Episode 1</h3>
+      <p>Weekly announcements and sports highlights.</p>
+    </div>
+    <div class="video-card">
+      <h3>Episode 2</h3>
+      <p>Interview with the student council president.</p>
+    </div>
+    <div class="video-card">
+      <h3>Episode 3</h3>
+      <p>School event recap and upcoming activities.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TEAM ===== -->
+<section id="team" class="team">
+  <h2>Meet the Team</h2>
+  <div class="team-grid">
+    <div class="member">
+      <h3>Alex</h3>
+      <p>Anchor</p>
+    </div>
+    <div class="member">
+      <h3>Jordan</h3>
+      <p>Editor</p>
+    </div>
+    <div class="member">
+      <h3>Taylor</h3>
+      <p>Camera Operator</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== JOIN ===== -->
+<section id="join" class="join">
+  <h2>Join the Club</h2>
+  <p>Interested in journalism, filming, or editing? Sign up below!</p>
+  <form onsubmit="submitForm(event)">
+    <input type="text" placeholder="Your Name" required>
+    <input type="email" placeholder="Your Email" required>
+    <br>
+    <button type="submit">Submit</button>
+  </form>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <p>© 2026 School News Broadcasting Club</p>
+</footer>
+
+<script>
+function scrollToSection(id) {
+  document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+}
+
+function submitForm(event) {
+  event.preventDefault();
+  alert("Thank you for signing up! We’ll contact you soon.");
+}
+</script>
+
+</body>
+</html>
