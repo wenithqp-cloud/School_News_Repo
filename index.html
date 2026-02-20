@@ -3,34 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eldorado High School, School News Broadcasting Club</title>
+<title>Eldorado High School - News Broadcasting Club</title>
 <style>
+/* ================== GLOBAL ================== */
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
 body { background: #0f172a; color: white; scroll-behavior: smooth; }
 section { padding: 80px 10%; }
 h1, h2 { margin-bottom: 20px; }
 button { padding: 12px 20px; border: none; background: #2563eb; color: white; cursor: pointer; border-radius: 6px; transition: 0.3s; }
 button:hover { background: #1e40af; }
-nav { position: fixed; width: 100%; top: 0; background: rgba(15, 23, 42, 0.95); padding: 15px 10%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
+
+/* ========== NAVBAR ========== */
+nav { position: fixed; width: 100%; top: 0; background: rgba(15,23,42,0.95); padding: 15px 10%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
 nav a { color: white; text-decoration: none; margin-left: 20px; font-weight: bold; cursor: pointer; }
 nav a:hover { color: #60a5fa; }
+
+/* ========== HERO ========== */
 .hero { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; background: linear-gradient(to right, #1e3a8a, #2563eb); }
-.hero h1 { font-size: 3rem; } .hero p { margin: 20px 0; font-size: 1.2rem; }
-.about { background: #1e293b; } .broadcasts { background: #0f172a; } .team { background: #1e293b; } .join { background: #0f172a; text-align: center; }
+.hero h1 { font-size: 3rem; }
+.hero p { margin: 20px 0; font-size: 1.2rem; }
+
+/* ========== SECTIONS ========== */
+.about { background: #1e293b; }
+.broadcasts { background: #0f172a; }
+.team { background: #1e293b; }
+.join { background: #0f172a; text-align: center; }
 .video-grid, .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
 .video-card, .member { background: #1e293b; padding: 15px; border-radius: 10px; }
 .member { background: #0f172a; }
 .join input { padding: 10px; margin: 10px; width: 250px; border-radius: 6px; border: none; }
+
+/* ========== FOOTER ========== */
 footer { background: #020617; text-align: center; padding: 20px; }
-/* ADMIN MODAL */
+
+/* ========== ADMIN ========== */
 #adminModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 3000; }
 .modal-box { background: #1f2937; padding: 30px; border-radius: 10px; text-align: center; }
-.admin-dashboard { display: none; padding: 120px 10%; min-height: 100vh; background: #111827; }
+.admin-dashboard { display: none; padding: 80px 10%; min-height: 100vh; background: #111827; }
 .admin-card { background: #1f2937; padding: 15px; margin-bottom: 10px; border-radius: 8px; }
+hr { border:1px solid #374151; margin: 30px 0; }
 </style>
 </head>
 <body>
 
+<!-- NAVBAR -->
 <nav>
   <div><strong>🎥 School News</strong></div>
   <div>
@@ -42,6 +58,7 @@ footer { background: #020617; text-align: center; padding: 20px; }
   </div>
 </nav>
 
+<!-- HERO -->
 <section class="hero">
   <div>
     <h1>Welcome to the News Broadcasting Club</h1>
@@ -50,16 +67,19 @@ footer { background: #020617; text-align: center; padding: 20px; }
   </div>
 </section>
 
+<!-- ABOUT -->
 <section id="about" class="about">
   <h2>About Us</h2>
-  <p>The News Broadcasting Club is a student-run organization dedicated to reporting school events, announcements, sports highlights, and student achievements.</p>
+  <p>The News Broadcasting Club is a student-run organization reporting school events, announcements, sports highlights, and student achievements.</p>
 </section>
 
+<!-- BROADCASTS -->
 <section id="broadcasts" class="broadcasts">
   <h2>Latest Broadcasts</h2>
   <div class="video-grid"></div>
 </section>
 
+<!-- TEAM -->
 <section id="team" class="team">
   <h2>Meet the Team</h2>
   <div class="team-grid">
@@ -69,6 +89,7 @@ footer { background: #020617; text-align: center; padding: 20px; }
   </div>
 </section>
 
+<!-- JOIN -->
 <section id="join" class="join">
   <h2>Join the Club</h2>
   <p>Interested in journalism, filming, or editing? Sign up below!</p>
@@ -80,9 +101,7 @@ footer { background: #020617; text-align: center; padding: 20px; }
   </form>
 </section>
 
-<footer>
-  <p>© 2026 School News Broadcasting Club</p>
-</footer>
+<footer>© 2026 School News Broadcasting Club</footer>
 
 <!-- ADMIN LOGIN -->
 <div id="adminModal">
@@ -95,69 +114,73 @@ footer { background: #020617; text-align: center; padding: 20px; }
   </div>
 </div>
 
-<!-- REPLACED ADMIN DASHBOARD -->
+<!-- ADMIN DASHBOARD -->
 <div class="admin-dashboard" id="adminDashboard">
   <h1>🎥 Admin Control Panel</h1>
   <p>Welcome, Administrator.</p>
 
-  <hr style="margin:30px 0; border:1px solid #374151;">
+  <hr>
 
+  <!-- JOIN REQUESTS -->
   <h2>📋 Student Join Requests</h2>
-  <p>Manage students who signed up to join the club.</p>
   <div id="submissions"></div>
 
-  <hr style="margin:40px 0; border:1px solid #374151;">
+  <hr>
 
-  <h2>🎬 Manage Broadcast Videos</h2>
-  <p>Add, edit, or delete news episodes.</p>
+  <!-- VIDEO MANAGEMENT -->
+  <h2>🎬 Broadcast Videos</h2>
   <button onclick="addVideo()" style="margin-bottom:20px;">➕ Add New Broadcast</button>
   <div id="videoManager"></div>
 
-  <hr style="margin:40px 0; border:1px solid #374151;">
+  <hr>
 
+  <!-- SECURITY -->
   <h2>🔐 Security</h2>
-  <p>Currently logged in as: <strong>admin1973</strong></p>
+  <p>Logged in as: <strong>admin1973</strong></p>
+  <button onclick="changeAdminPassword()">Change Admin Password</button><br><br>
   <button onclick="logout()" style="background:#dc2626;">Logout</button>
 </div>
 
 <script>
-const ADMIN_USERNAME = "admin1973";
-const ADMIN_PASSWORD_HASH = "d1de4b8de4322a7fc3e3383a4e40d2087b5b2c1e1cfc7c688ed2233316aaf97f"; // SHA-256 hash of EldoradoClub2026
+// ====== ADMIN LOGIN INFO ======
+let ADMIN_USERNAME = "admin1973";
+let ADMIN_PASSWORD_HASH = "d1de4b8de4322a7fc3e3383a4e40d2087b5b2c1e1cfc7c688ed2233316aaf97f"; // EldoradoClub2026
 
 async function hashPassword(password) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  const data = new TextEncoder().encode(password);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join("");
 }
 
+// ====== SCROLL ======
 function scrollToSection(id) {
-  document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+  document.getElementById(id).scrollIntoView({behavior:"smooth"});
 }
 
-function submitForm(event) {
-  event.preventDefault();
+// ====== SIGNUP FORM ======
+function submitForm(e) {
+  e.preventDefault();
   const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
-  let submissions = JSON.parse(localStorage.getItem("submissions")) || [];
-  submissions.push({ name, email });
+  const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
+  submissions.push({name,email});
   localStorage.setItem("submissions", JSON.stringify(submissions));
-  alert("Thank you for signing up!");
-  event.target.reset();
+  alert("Thanks for signing up!");
+  e.target.reset();
 }
 
-function openAdmin() { document.getElementById("adminModal").style.display = "flex"; }
-function closeAdmin() { document.getElementById("adminModal").style.display = "none"; }
+// ====== ADMIN MODAL ======
+function openAdmin(){ document.getElementById("adminModal").style.display="flex"; }
+function closeAdmin(){ document.getElementById("adminModal").style.display="none"; }
 
-async function checkAdmin() {
+async function checkAdmin(){
   const user = document.getElementById("adminUser").value;
   const pass = document.getElementById("adminPass").value;
   const hashedInput = await hashPassword(pass);
-  if(user === ADMIN_USERNAME && hashedInput === ADMIN_PASSWORD_HASH) {
-    document.getElementById("adminModal").style.display = "none";
-    document.body.style.display = "none";
-    document.getElementById("adminDashboard").style.display = "block";
+  if(user===ADMIN_USERNAME && hashedInput===ADMIN_PASSWORD_HASH){
+    document.getElementById("adminModal").style.display="none";
+    document.body.style.display="none";
+    document.getElementById("adminDashboard").style.display="block";
     loadSubmissions();
     loadVideos();
   } else {
@@ -165,89 +188,105 @@ async function checkAdmin() {
   }
 }
 
-function loadSubmissions() {
-  let submissions = JSON.parse(localStorage.getItem("submissions")) || [];
+// ====== JOIN REQUESTS ======
+function loadSubmissions(){
+  const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
   const container = document.getElementById("submissions");
   container.innerHTML = "";
-  if(submissions.length===0) { container.innerHTML="<p>No signups yet.</p>"; return; }
-  submissions.forEach((entry,index)=>{
+  if(submissions.length===0){ container.innerHTML="<p>No join requests yet.</p>"; return; }
+  submissions.forEach((s,i)=>{
     const div = document.createElement("div");
-    div.classList.add("admin-card");
-    div.innerHTML = `
-      <strong>Name:</strong> ${entry.name}<br>
-      <strong>Email:</strong> ${entry.email}<br>
-      <button onclick="deleteEntry(${index})">Delete</button>
+    div.className="admin-card";
+    div.innerHTML=`
+      <strong>Name:</strong> ${s.name}<br>
+      <strong>Email:</strong> ${s.email}<br>
+      <button onclick="deleteEntry(${i})">Delete</button>
     `;
     container.appendChild(div);
   });
 }
 
-function deleteEntry(index) {
-  let submissions = JSON.parse(localStorage.getItem("submissions")) || [];
+function deleteEntry(index){
+  const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
   submissions.splice(index,1);
-  localStorage.setItem("submissions", JSON.stringify(submissions));
+  localStorage.setItem("submissions",JSON.stringify(submissions));
   loadSubmissions();
 }
 
-function loadVideos() {
-  let videos = JSON.parse(localStorage.getItem("videos")) || [];
+// ====== VIDEO MANAGEMENT ======
+function loadVideos(){
+  const videos = JSON.parse(localStorage.getItem("videos")) || [];
   const adminContainer = document.getElementById("videoManager");
   const publicContainer = document.querySelector(".video-grid");
-  adminContainer.innerHTML = "";
-  publicContainer.innerHTML = "";
-  videos.forEach((video,index)=>{
-    // Public site
+  adminContainer.innerHTML="";
+  publicContainer.innerHTML="";
+  videos.forEach((v,i)=>{
+    // Public display
     const card = document.createElement("div");
-    card.classList.add("video-card");
-    card.innerHTML = `
-      <h3>${video.title}</h3>
-      <iframe width="100%" height="200" src="${video.link}" frameborder="0" allowfullscreen></iframe>
-      <p>${video.transcript}</p>
-    `;
+    card.className="video-card";
+    card.innerHTML=`<h3>${v.title}</h3>
+      <iframe width="100%" height="200" src="${v.link}" frameborder="0" allowfullscreen></iframe>
+      <p>${v.transcript}</p>`;
     publicContainer.appendChild(card);
-    // Admin panel
+
+    // Admin card
     const adminCard = document.createElement("div");
-    adminCard.classList.add("admin-card");
-    adminCard.innerHTML = `
-      <strong>${video.title}</strong><br>
-      <button onclick="editVideo(${index})">Edit</button>
-      <button onclick="deleteVideo(${index})">Delete</button>
+    adminCard.className="admin-card";
+    adminCard.innerHTML=`
+      <strong>${v.title}</strong><br>
+      <button onclick="editVideo(${i})">Edit</button>
+      <button onclick="deleteVideo(${i})">Delete</button>
     `;
     adminContainer.appendChild(adminCard);
   });
 }
 
-function addVideo() {
-  const title = prompt("Video Title:");
-  const link = prompt("YouTube Embed Link:");
-  const transcript = prompt("Transcript:");
+function addVideo(){
+  const title = prompt("Enter video title:");
+  const link = prompt("Enter video embed link:");
+  const transcript = prompt("Enter video transcript:");
   if(!title || !link) return;
-  let videos = JSON.parse(localStorage.getItem("videos")) || [];
-  videos.push({ title, link, transcript });
-  localStorage.setItem("videos", JSON.stringify(videos));
+  const videos = JSON.parse(localStorage.getItem("videos")) || [];
+  videos.push({title,link,transcript});
+  localStorage.setItem("videos",JSON.stringify(videos));
   loadVideos();
 }
 
-function editVideo(index) {
-  let videos = JSON.parse(localStorage.getItem("videos")) || [];
+function editVideo(index){
+  const videos = JSON.parse(localStorage.getItem("videos")) || [];
   const video = videos[index];
-  const newTitle = prompt("Edit Title:", video.title);
-  const newLink = prompt("Edit Embed Link:", video.link);
-  const newTranscript = prompt("Edit Transcript:", video.transcript);
-  videos[index] = { title:newTitle, link:newLink, transcript:newTranscript };
-  localStorage.setItem("videos", JSON.stringify(videos));
+  const newTitle = prompt("Edit title:", video.title);
+  const newLink = prompt("Edit link:", video.link);
+  const newTranscript = prompt("Edit transcript:", video.transcript);
+  videos[index] = {title:newTitle, link:newLink, transcript:newTranscript};
+  localStorage.setItem("videos",JSON.stringify(videos));
   loadVideos();
 }
 
-function deleteVideo(index) {
-  let videos = JSON.parse(localStorage.getItem("videos")) || [];
+function deleteVideo(index){
+  const videos = JSON.parse(localStorage.getItem("videos")) || [];
   videos.splice(index,1);
-  localStorage.setItem("videos", JSON.stringify(videos));
+  localStorage.setItem("videos",JSON.stringify(videos));
   loadVideos();
 }
 
-function logout() { location.reload(); }
+// ====== CHANGE PASSWORD ======
+async function changeAdminPassword(){
+  const current = prompt("Enter current password:");
+  if(await hashPassword(current)!==ADMIN_PASSWORD_HASH){
+    alert("Wrong current password!");
+    return;
+  }
+  const newPass = prompt("Enter new password:");
+  if(!newPass) return;
+  ADMIN_PASSWORD_HASH = await hashPassword(newPass);
+  alert("Password successfully changed!");
+}
 
+// ====== LOGOUT ======
+function logout(){ location.reload(); }
+
+// Load videos on page load
 window.onload = loadVideos;
 </script>
 </body>
