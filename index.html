@@ -36,12 +36,18 @@ nav a:hover { color: #60a5fa; }
 /* ========== FOOTER ========== */
 footer { background: #020617; text-align: center; padding: 20px; }
 
-/* ========== ADMIN ========== */
+/* ========== ADMIN MODAL ========== */
 #adminModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 3000; }
 .modal-box { background: #1f2937; padding: 30px; border-radius: 10px; text-align: center; }
-.admin-dashboard { display: none; padding: 80px 10%; min-height: 100vh; background: #111827; }
+
+/* ========== ADMIN DASHBOARD ========== */
+.admin-dashboard { display: none; min-height: 100vh; background: #111827; padding: 50px 10%; color: white; }
+.admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+.admin-tab { padding: 10px 20px; background: #1f2937; cursor: pointer; border-radius: 6px; }
+.admin-tab.active { background: #2563eb; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
 .admin-card { background: #1f2937; padding: 15px; margin-bottom: 10px; border-radius: 8px; }
-hr { border:1px solid #374151; margin: 30px 0; }
 </style>
 </head>
 <body>
@@ -103,7 +109,7 @@ hr { border:1px solid #374151; margin: 30px 0; }
 
 <footer>© 2026 School News Broadcasting Club</footer>
 
-<!-- ADMIN LOGIN -->
+<!-- ADMIN LOGIN MODAL -->
 <div id="adminModal">
   <div class="modal-box">
     <h2>Admin Login</h2>
@@ -116,60 +122,59 @@ hr { border:1px solid #374151; margin: 30px 0; }
 
 <!-- ADMIN DASHBOARD -->
 <div class="admin-dashboard" id="adminDashboard">
-  <h1>🎥 Admin Control Panel</h1>
-  <p>Welcome, Administrator.</p>
+  <h1>🎥 Admin Panel</h1>
+  <div class="admin-tabs">
+    <div class="admin-tab active" onclick="switchTab('joinTab')">Join Requests</div>
+    <div class="admin-tab" onclick="switchTab('videoTab')">Broadcast Videos</div>
+    <div class="admin-tab" onclick="switchTab('securityTab')">Security</div>
+  </div>
 
-  <hr>
+  <div id="joinTab" class="tab-content active">
+    <h2>📋 Student Join Requests</h2>
+    <div id="submissions"></div>
+  </div>
 
-  <!-- JOIN REQUESTS -->
-  <h2>📋 Student Join Requests</h2>
-  <div id="submissions"></div>
+  <div id="videoTab" class="tab-content">
+    <h2>🎬 Manage Broadcast Videos</h2>
+    <button onclick="addVideo()" style="margin-bottom:15px;">➕ Add Video</button>
+    <div id="videoManager"></div>
+  </div>
 
-  <hr>
-
-  <!-- VIDEO MANAGEMENT -->
-  <h2>🎬 Broadcast Videos</h2>
-  <button onclick="addVideo()" style="margin-bottom:20px;">➕ Add New Broadcast</button>
-  <div id="videoManager"></div>
-
-  <hr>
-
-  <!-- SECURITY -->
-  <h2>🔐 Security</h2>
-  <p>Logged in as: <strong>admin1973</strong></p>
-  <button onclick="changeAdminPassword()">Change Admin Password</button><br><br>
-  <button onclick="logout()" style="background:#dc2626;">Logout</button>
+  <div id="securityTab" class="tab-content">
+    <h2>🔐 Security</h2>
+    <p>Logged in as: <strong>admin1973</strong></p>
+    <button onclick="changeAdminPassword()">Change Password</button><br><br>
+    <button onclick="logout()" style="background:#dc2626;">Logout</button>
+  </div>
 </div>
 
 <script>
-// ====== ADMIN LOGIN INFO ======
+// ======= ADMIN INFO =======
 let ADMIN_USERNAME = "admin1973";
 let ADMIN_PASSWORD_HASH = "d1de4b8de4322a7fc3e3383a4e40d2087b5b2c1e1cfc7c688ed2233316aaf97f"; // EldoradoClub2026
 
-async function hashPassword(password) {
+async function hashPassword(password){
   const data = new TextEncoder().encode(password);
   const hash = await crypto.subtle.digest("SHA-256", data);
   return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join("");
 }
 
-// ====== SCROLL ======
-function scrollToSection(id) {
-  document.getElementById(id).scrollIntoView({behavior:"smooth"});
-}
+// ======= SCROLL =======
+function scrollToSection(id){ document.getElementById(id).scrollIntoView({behavior:"smooth"}); }
 
-// ====== SIGNUP FORM ======
-function submitForm(e) {
+// ======= SIGNUP FORM =======
+function submitForm(e){
   e.preventDefault();
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
+  const name=document.getElementById("name").value;
+  const email=document.getElementById("email").value;
+  const submissions=JSON.parse(localStorage.getItem("submissions"))||[];
   submissions.push({name,email});
-  localStorage.setItem("submissions", JSON.stringify(submissions));
+  localStorage.setItem("submissions",JSON.stringify(submissions));
   alert("Thanks for signing up!");
   e.target.reset();
 }
 
-// ====== ADMIN MODAL ======
+// ======= ADMIN MODAL =======
 function openAdmin(){ document.getElementById("adminModal").style.display="flex"; }
 function closeAdmin(){ document.getElementById("adminModal").style.display="none"; }
 
@@ -183,111 +188,100 @@ async function checkAdmin(){
     document.getElementById("adminDashboard").style.display="block";
     loadSubmissions();
     loadVideos();
-  } else {
-    alert("Incorrect username or password.");
-  }
+  } else alert("Incorrect username or password.");
 }
 
-// ====== JOIN REQUESTS ======
+// ======= TAB FUNCTION =======
+function switchTab(tabId){
+  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
+  document.getElementById(tabId).classList.add("active");
+  document.querySelectorAll(".admin-tab").forEach(t=>t.classList.remove("active"));
+  document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add("active");
+}
+
+// ======= JOIN REQUESTS =======
 function loadSubmissions(){
-  const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
-  const container = document.getElementById("submissions");
-  container.innerHTML = "";
+  const submissions=JSON.parse(localStorage.getItem("submissions"))||[];
+  const container=document.getElementById("submissions");
+  container.innerHTML="";
   if(submissions.length===0){ container.innerHTML="<p>No join requests yet.</p>"; return; }
   submissions.forEach((s,i)=>{
-    const div = document.createElement("div");
+    const div=document.createElement("div");
     div.className="admin-card";
-    div.innerHTML=`
-      <strong>Name:</strong> ${s.name}<br>
-      <strong>Email:</strong> ${s.email}<br>
-      <button onclick="deleteEntry(${i})">Delete</button>
-    `;
+    div.innerHTML=`<strong>Name:</strong> ${s.name}<br><strong>Email:</strong> ${s.email}<br>
+      <button onclick="deleteEntry(${i})">Delete</button>`;
     container.appendChild(div);
   });
 }
-
 function deleteEntry(index){
-  const submissions = JSON.parse(localStorage.getItem("submissions")) || [];
+  const submissions=JSON.parse(localStorage.getItem("submissions"))||[];
   submissions.splice(index,1);
   localStorage.setItem("submissions",JSON.stringify(submissions));
   loadSubmissions();
 }
 
-// ====== VIDEO MANAGEMENT ======
+// ======= VIDEO MANAGEMENT =======
 function loadVideos(){
-  const videos = JSON.parse(localStorage.getItem("videos")) || [];
-  const adminContainer = document.getElementById("videoManager");
-  const publicContainer = document.querySelector(".video-grid");
-  adminContainer.innerHTML="";
+  const videos=JSON.parse(localStorage.getItem("videos"))||[];
+  const videoContainer=document.getElementById("videoManager");
+  const publicContainer=document.querySelector(".video-grid");
+  videoContainer.innerHTML="";
   publicContainer.innerHTML="";
   videos.forEach((v,i)=>{
-    // Public display
-    const card = document.createElement("div");
+    // Public
+    const card=document.createElement("div");
     card.className="video-card";
-    card.innerHTML=`<h3>${v.title}</h3>
-      <iframe width="100%" height="200" src="${v.link}" frameborder="0" allowfullscreen></iframe>
-      <p>${v.transcript}</p>`;
+    card.innerHTML=`<h3>${v.title}</h3><iframe width="100%" height="200" src="${v.link}" frameborder="0" allowfullscreen></iframe><p>${v.transcript}</p>`;
     publicContainer.appendChild(card);
 
-    // Admin card
-    const adminCard = document.createElement("div");
+    // Admin
+    const adminCard=document.createElement("div");
     adminCard.className="admin-card";
-    adminCard.innerHTML=`
-      <strong>${v.title}</strong><br>
-      <button onclick="editVideo(${i})">Edit</button>
-      <button onclick="deleteVideo(${i})">Delete</button>
-    `;
-    adminContainer.appendChild(adminCard);
+    adminCard.innerHTML=`<strong>${v.title}</strong><br><button onclick="editVideo(${i})">Edit</button> <button onclick="deleteVideo(${i})">Delete</button>`;
+    videoContainer.appendChild(adminCard);
   });
 }
-
 function addVideo(){
-  const title = prompt("Enter video title:");
-  const link = prompt("Enter video embed link:");
-  const transcript = prompt("Enter video transcript:");
-  if(!title || !link) return;
-  const videos = JSON.parse(localStorage.getItem("videos")) || [];
+  const title=prompt("Video title:");
+  const link=prompt("Embed link:");
+  const transcript=prompt("Transcript:");
+  if(!title||!link) return;
+  const videos=JSON.parse(localStorage.getItem("videos"))||[];
   videos.push({title,link,transcript});
   localStorage.setItem("videos",JSON.stringify(videos));
   loadVideos();
 }
-
-function editVideo(index){
-  const videos = JSON.parse(localStorage.getItem("videos")) || [];
-  const video = videos[index];
-  const newTitle = prompt("Edit title:", video.title);
-  const newLink = prompt("Edit link:", video.link);
-  const newTranscript = prompt("Edit transcript:", video.transcript);
-  videos[index] = {title:newTitle, link:newLink, transcript:newTranscript};
+function editVideo(i){
+  const videos=JSON.parse(localStorage.getItem("videos"))||[];
+  const v=videos[i];
+  const newTitle=prompt("Edit title:",v.title);
+  const newLink=prompt("Edit link:",v.link);
+  const newTranscript=prompt("Edit transcript:",v.transcript);
+  videos[i]={title:newTitle,link:newLink,transcript:newTranscript};
+  localStorage.setItem("videos",JSON.stringify(videos));
+  loadVideos();
+}
+function deleteVideo(i){
+  const videos=JSON.parse(localStorage.getItem("videos"))||[];
+  videos.splice(i,1);
   localStorage.setItem("videos",JSON.stringify(videos));
   loadVideos();
 }
 
-function deleteVideo(index){
-  const videos = JSON.parse(localStorage.getItem("videos")) || [];
-  videos.splice(index,1);
-  localStorage.setItem("videos",JSON.stringify(videos));
-  loadVideos();
-}
-
-// ====== CHANGE PASSWORD ======
+// ======= CHANGE PASSWORD =======
 async function changeAdminPassword(){
-  const current = prompt("Enter current password:");
-  if(await hashPassword(current)!==ADMIN_PASSWORD_HASH){
-    alert("Wrong current password!");
-    return;
-  }
-  const newPass = prompt("Enter new password:");
+  const current=prompt("Enter current password:");
+  if(await hashPassword(current)!==ADMIN_PASSWORD_HASH){ alert("Incorrect password!"); return; }
+  const newPass=prompt("Enter new password:");
   if(!newPass) return;
-  ADMIN_PASSWORD_HASH = await hashPassword(newPass);
-  alert("Password successfully changed!");
+  ADMIN_PASSWORD_HASH=await hashPassword(newPass);
+  alert("Password updated successfully!");
 }
 
-// ====== LOGOUT ======
+// ======= LOGOUT =======
 function logout(){ location.reload(); }
 
-// Load videos on page load
-window.onload = loadVideos;
+window.onload=loadVideos;
 </script>
 </body>
 </html>
