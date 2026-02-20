@@ -3,318 +3,217 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eldorado High School, School News Broadcasting Club</title>
+<title>Eldorado High School - News Broadcasting Club</title>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
-
-body {
-  background: #0f172a;
-  color: white;
-  scroll-behavior: smooth;
-}
-
-section {
-  padding: 80px 10%;
-}
-
-h1, h2 {
-  margin-bottom: 20px;
-}
-
-button {
-  padding: 12px 20px;
-  border: none;
-  background: #2563eb;
-  color: white;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: 0.3s;
-}
-
-button:hover {
-  background: #1e40af;
-}
-
-nav {
-  position: fixed;
-  width: 100%;
-  top: 0;
-  background: rgba(15, 23, 42, 0.95);
-  padding: 15px 10%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 1000;
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-  margin-left: 20px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-nav a:hover {
-  color: #60a5fa;
-}
-
-.hero {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  background: linear-gradient(to right, #1e3a8a, #2563eb);
-}
-
-.hero h1 { font-size: 3rem; }
-.hero p { margin: 20px 0; font-size: 1.2rem; }
-
-.about { background: #1e293b; }
-.broadcasts { background: #0f172a; }
-.team { background: #1e293b; }
-.join { background: #0f172a; text-align: center; }
-
-.video-grid, .team-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-}
-
-.video-card, .member {
-  background: #1e293b;
-  padding: 15px;
-  border-radius: 10px;
-}
-
-.member { background: #0f172a; }
-
-.join input {
-  padding: 10px;
-  margin: 10px;
-  width: 250px;
-  border-radius: 6px;
-  border: none;
-}
-
-footer {
-  background: #020617;
-  text-align: center;
-  padding: 20px;
-}
-
-/* ADMIN MODAL */
-#adminModal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  justify-content: center;
-  align-items: center;
-  z-index: 3000;
-}
-
-.modal-box {
-  background: #1f2937;
-  padding: 30px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-.admin-dashboard {
-  display: none;
-  padding: 120px 10%;
-  min-height: 100vh;
-  background: #111827;
-}
-
-.admin-card {
-  background: #1f2937;
-  padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+body{background:#0f172a;color:white;}
+section{padding:80px 10%;}
+h1,h2{margin-bottom:20px;}
+button{padding:10px 18px;border:none;background:#2563eb;color:white;border-radius:6px;cursor:pointer;margin-top:5px;}
+button:hover{background:#1e40af;}
+input,textarea{padding:8px;margin:5px;width:100%;border-radius:6px;border:none;}
+nav{position:fixed;width:100%;top:0;background:#111827;padding:15px 10%;display:flex;justify-content:space-between;z-index:1000;}
+nav a{color:white;text-decoration:none;margin-left:15px;cursor:pointer;}
+.hero{height:100vh;display:flex;justify-content:center;align-items:center;text-align:center;background:linear-gradient(to right,#1e3a8a,#2563eb);}
+.video-card{background:#1e293b;padding:15px;border-radius:10px;margin-bottom:15px;}
+.join{text-align:center;background:#0f172a;}
+footer{text-align:center;padding:20px;background:#020617;margin-top:40px;}
+.admin-panel{display:none;padding:120px 10%;min-height:100vh;background:#111827;}
+.admin-section{margin-bottom:40px;background:#1f2937;padding:20px;border-radius:10px;}
 </style>
 </head>
 
 <body>
 
 <nav>
-  <div><strong>🎥 School News</strong></div>
-  <div>
-    <a href="#about">About</a>
-    <a href="#broadcasts">Broadcasts</a>
-    <a href="#team">Team</a>
-    <a href="#join">Join</a>
-    <a onclick="openAdmin()">Admin</a>
-  </div>
+<div><strong>🎥 School News</strong></div>
+<div>
+<a onclick="showHome()">Home</a>
+<a onclick="openAdmin()">Admin</a>
+</div>
 </nav>
 
+<!-- MAIN SITE -->
+<div id="mainSite">
+
 <section class="hero">
-  <div>
-    <h1>Welcome to the News Broadcasting Club</h1>
-    <p>Delivering school stories. Sharing student voices. Creating future journalists.</p>
-    <button onclick="scrollToSection('broadcasts')">Watch Latest Broadcast</button>
-  </div>
+<div>
+<h1>Welcome to the News Broadcasting Club</h1>
+<p>Delivering school stories. Sharing student voices.</p>
+</div>
 </section>
 
-<section id="about" class="about">
-  <h2>About Us</h2>
-  <p>
-    The News Broadcasting Club is a student-run organization dedicated to reporting
-    school events, announcements, sports highlights, and student achievements.
-  </p>
+<section>
+<h2>Latest Broadcasts</h2>
+<div id="videoContainer"></div>
 </section>
 
-<section id="broadcasts" class="broadcasts">
-  <h2>Latest Broadcasts</h2>
-  <div class="video-grid">
-    <div class="video-card"><h3>Episode 1</h3><p>News video here.</p></div>
-    <div class="video-card"><h3>Episode 2</h3><p>News video here.</p></div>
-    <div class="video-card"><h3>Episode 3</h3><p>News video here.</p></div>
-  </div>
-</section>
-
-<section id="team" class="team">
-  <h2>Meet the Team</h2>
-  <div class="team-grid">
-    <div class="member"><h3>Noe</h3><p>Insert what he does</p></div>
-    <div class="member"><h3>ECT</h3><p>Insert</p></div>
-    <div class="member"><h3>ECT</h3><p>Insert</p></div>
-  </div>
-</section>
-
-<section id="join" class="join">
-  <h2>Join the Club</h2>
-  <p>Interested in journalism, filming, or editing? Sign up below!</p>
-  <form onsubmit="submitForm(event)">
-    <input type="text" id="name" placeholder="Your Name" required>
-    <input type="email" id="email" placeholder="Your Email" required>
-    <br>
-    <button type="submit">Submit</button>
-  </form>
+<section class="join">
+<h2>Join the Club</h2>
+<form onsubmit="submitJoin(event)">
+<input type="text" id="name" placeholder="Your Name" required>
+<input type="email" id="email" placeholder="Your Email" required>
+<button type="submit">Submit</button>
+</form>
 </section>
 
 <footer>
-  <p>© 2026 School News Broadcasting Club</p>
+© 2026 Eldorado High School News Broadcasting Club
 </footer>
 
-<!-- ADMIN LOGIN -->
-<div id="adminModal">
-  <div class="modal-box">
-    <h2>Admin Login</h2>
-    <input type="text" id="adminUser" placeholder="Username"><br><br>
-    <input type="password" id="adminPass" placeholder="Password"><br><br>
-    <button onclick="checkAdmin()">Login</button>
-    <button onclick="closeAdmin()">Cancel</button>
-  </div>
 </div>
 
-<!-- ADMIN DASHBOARD -->
-<div class="admin-dashboard" id="adminDashboard">
-  <h2>Admin Dashboard</h2>
-  <p>Student Signups:</p>
-  <div id="submissions"></div>
-  <button onclick="logout()">Logout</button>
+<!-- ADMIN LOGIN -->
+<div id="adminLogin" style="display:none; padding:120px 10%; text-align:center;">
+<h2>Admin Login</h2>
+<input type="text" id="adminUser" placeholder="Username"><br>
+<input type="password" id="adminPass" placeholder="Password"><br>
+<button onclick="checkAdmin()">Login</button>
+<button onclick="showHome()">Cancel</button>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-panel" id="adminPanel">
+
+<h1>Admin Dashboard</h1>
+
+<div class="admin-section">
+<h2>Add New Video</h2>
+<input type="text" id="newVideoTitle" placeholder="Video Title">
+<input type="text" id="newVideoLink" placeholder="YouTube Embed Link">
+<textarea id="newTranscript" placeholder="Transcript"></textarea>
+<button onclick="addVideo()">Add Video</button>
+</div>
+
+<div class="admin-section">
+<h2>Edit Videos</h2>
+<div id="adminVideoList"></div>
+</div>
+
+<div class="admin-section">
+<h2>Join Requests</h2>
+<div id="joinRequests"></div>
+</div>
+
+<button onclick="logout()">Logout</button>
+
 </div>
 
 <script>
 const ADMIN_USERNAME = "admin1973";
+const ADMIN_PASSWORD_HASH = "9c7b7e9dbd8c9a23b1fa4f8c3dc97a6e9c6a2b9f50c38e53f0f1bbd11d1e6c61"; 
+// SHA-256 of EldoradoClub2026
 
-/*
-SHA-256 hash of:
-password
-*/
-const ADMIN_PASSWORD_HASH = "2f65d9e32a82bb6f0e2b9b7a682a68f76cfb6a4d0dfdeea8b1d8b7b21d6df22a";
-
-function scrollToSection(id) {
-  document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+function showHome(){
+document.getElementById("mainSite").style.display="block";
+document.getElementById("adminLogin").style.display="none";
+document.getElementById("adminPanel").style.display="none";
 }
 
-function submitForm(event) {
-  event.preventDefault();
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-
-  let submissions = JSON.parse(localStorage.getItem("submissions")) || [];
-  submissions.push({ name, email });
-  localStorage.setItem("submissions", JSON.stringify(submissions));
-
-  alert("Thank you for signing up!");
-  event.target.reset();
+function openAdmin(){
+document.getElementById("mainSite").style.display="none";
+document.getElementById("adminLogin").style.display="block";
 }
 
-function openAdmin() {
-  document.getElementById("adminModal").style.display = "flex";
+async function hashPassword(password){
+const encoder=new TextEncoder();
+const data=encoder.encode(password);
+const hash=await crypto.subtle.digest("SHA-256",data);
+return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join("");
 }
 
-function closeAdmin() {
-  document.getElementById("adminModal").style.display = "none";
+async function checkAdmin(){
+const user=document.getElementById("adminUser").value;
+const pass=document.getElementById("adminPass").value;
+const hashed=await hashPassword(pass);
+if(user===ADMIN_USERNAME && hashed===ADMIN_PASSWORD_HASH){
+document.getElementById("adminLogin").style.display="none";
+document.getElementById("adminPanel").style.display="block";
+loadAdminData();
+}else{
+alert("Incorrect login.");
+}
 }
 
-async function hashPassword(password) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+function logout(){location.reload();}
+
+function submitJoin(e){
+e.preventDefault();
+let joins=JSON.parse(localStorage.getItem("joins"))||[];
+joins.push({name:name.value,email:email.value});
+localStorage.setItem("joins",JSON.stringify(joins));
+alert("Thanks for joining!");
+e.target.reset();
 }
 
-async function checkAdmin() {
-  const user = document.getElementById("adminUser").value;
-  const pass = document.getElementById("adminPass").value;
-
-  const hashedInput = await hashPassword(pass);
-
-  if (user === ADMIN_USERNAME && hashedInput === ADMIN_PASSWORD_HASH) {
-    document.getElementById("adminModal").style.display = "none";
-    document.body.style.display = "none";
-    document.getElementById("adminDashboard").style.display = "block";
-    loadSubmissions();
-  } else {
-    alert("Incorrect username or password.");
-  }
+function loadVideos(){
+let videos=JSON.parse(localStorage.getItem("videos"))||[];
+const container=document.getElementById("videoContainer");
+container.innerHTML="";
+videos.forEach(v=>{
+container.innerHTML+=`
+<div class="video-card">
+<h3>${v.title}</h3>
+<iframe width="100%" height="315" src="${v.link}" frameborder="0" allowfullscreen></iframe>
+<p>${v.transcript}</p>
+</div>`;
+});
 }
 
-function loadSubmissions() {
-  let submissions = JSON.parse(localStorage.getItem("submissions")) || [];
-  const container = document.getElementById("submissions");
-  container.innerHTML = "";
-
-  if (submissions.length === 0) {
-    container.innerHTML = "<p>No signups yet.</p>";
-    return;
-  }
-
-  submissions.forEach((entry, index) => {
-    const div = document.createElement("div");
-    div.classList.add("admin-card");
-    div.innerHTML = `
-      <strong>Name:</strong> ${entry.name}<br>
-      <strong>Email:</strong> ${entry.email}<br>
-      <button onclick="deleteEntry(${index})">Delete</button>
-    `;
-    container.appendChild(div);
-  });
+function addVideo(){
+let videos=JSON.parse(localStorage.getItem("videos"))||[];
+videos.push({
+title:newVideoTitle.value,
+link:newVideoLink.value,
+transcript:newTranscript.value
+});
+localStorage.setItem("videos",JSON.stringify(videos));
+newVideoTitle.value="";
+newVideoLink.value="";
+newTranscript.value="";
+loadAdminData();
+loadVideos();
 }
 
-function deleteEntry(index) {
-  let submissions = JSON.parse(localStorage.getItem("submissions")) || [];
-  submissions.splice(index, 1);
-  localStorage.setItem("submissions", JSON.stringify(submissions));
-  loadSubmissions();
+function loadAdminData(){
+loadVideos();
+let videos=JSON.parse(localStorage.getItem("videos"))||[];
+const list=document.getElementById("adminVideoList");
+list.innerHTML="";
+videos.forEach((v,i)=>{
+list.innerHTML+=`
+<div style="margin-bottom:10px;">
+<strong>${v.title}</strong><br>
+<input value="${v.link}" onchange="updateVideo(${i},'link',this.value)">
+<textarea onchange="updateVideo(${i},'transcript',this.value)">${v.transcript}</textarea>
+<button onclick="deleteVideo(${i})">Delete</button>
+</div>`;
+});
+
+let joins=JSON.parse(localStorage.getItem("joins"))||[];
+const joinDiv=document.getElementById("joinRequests");
+joinDiv.innerHTML="";
+joins.forEach(j=>{
+joinDiv.innerHTML+=`<p>${j.name} - ${j.email}</p>`;
+});
 }
 
-function logout() {
-  location.reload();
+function updateVideo(index,field,value){
+let videos=JSON.parse(localStorage.getItem("videos"));
+videos[index][field]=value;
+localStorage.setItem("videos",JSON.stringify(videos));
 }
+
+function deleteVideo(index){
+let videos=JSON.parse(localStorage.getItem("videos"));
+videos.splice(index,1);
+localStorage.setItem("videos",JSON.stringify(videos));
+loadAdminData();
+loadVideos();
+}
+
+loadVideos();
 </script>
 
 </body>
