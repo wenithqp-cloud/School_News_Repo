@@ -151,7 +151,15 @@ footer { background: #020617; text-align: center; padding: 20px; }
 <script>
 // ======= ADMIN INFO =======
 let ADMIN_USERNAME = "admin1973";
-let ADMIN_PASSWORD_HASH = "d1de4b8de4322a7fc3e3383a4e40d2087b5b2c1e1cfc7c688ed2233316aaf97f"; // EldoradoClub2026
+let ADMIN_PASSWORD_HASH = localStorage.getItem("adminPassword") || null;
+
+// First-time init of hashed password
+async function initAdminPassword(){
+  if(!ADMIN_PASSWORD_HASH){
+    ADMIN_PASSWORD_HASH = await hashPassword("EldoradoClub2026");
+    localStorage.setItem("adminPassword", ADMIN_PASSWORD_HASH);
+  }
+}
 
 async function hashPassword(password){
   const data = new TextEncoder().encode(password);
@@ -179,9 +187,10 @@ function openAdmin(){ document.getElementById("adminModal").style.display="flex"
 function closeAdmin(){ document.getElementById("adminModal").style.display="none"; }
 
 async function checkAdmin(){
-  const user = document.getElementById("adminUser").value;
-  const pass = document.getElementById("adminPass").value;
-  const hashedInput = await hashPassword(pass);
+  await initAdminPassword();
+  const user=document.getElementById("adminUser").value;
+  const pass=document.getElementById("adminPass").value;
+  const hashedInput=await hashPassword(pass);
   if(user===ADMIN_USERNAME && hashedInput===ADMIN_PASSWORD_HASH){
     document.getElementById("adminModal").style.display="none";
     document.body.style.display="none";
@@ -275,6 +284,7 @@ async function changeAdminPassword(){
   const newPass=prompt("Enter new password:");
   if(!newPass) return;
   ADMIN_PASSWORD_HASH=await hashPassword(newPass);
+  localStorage.setItem("adminPassword", ADMIN_PASSWORD_HASH);
   alert("Password updated successfully!");
 }
 
