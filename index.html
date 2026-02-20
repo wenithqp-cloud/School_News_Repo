@@ -6,7 +6,6 @@
 <title>Eldorado High School, School News Broadcasting Club</title>
 
 <style>
-/* ===== GLOBAL STYLES ===== */
 * {
   margin: 0;
   padding: 0;
@@ -42,7 +41,6 @@ button:hover {
   background: #1e40af;
 }
 
-/* ===== NAVBAR ===== */
 nav {
   position: fixed;
   width: 100%;
@@ -60,13 +58,13 @@ nav a {
   text-decoration: none;
   margin-left: 20px;
   font-weight: bold;
+  cursor: pointer;
 }
 
 nav a:hover {
   color: #60a5fa;
 }
 
-/* ===== HERO ===== */
 .hero {
   height: 100vh;
   display: flex;
@@ -76,65 +74,27 @@ nav a:hover {
   background: linear-gradient(to right, #1e3a8a, #2563eb);
 }
 
-.hero h1 {
-  font-size: 3rem;
-}
+.hero h1 { font-size: 3rem; }
+.hero p { margin: 20px 0; font-size: 1.2rem; }
 
-.hero p {
-  margin: 20px 0;
-  font-size: 1.2rem;
-}
+.about { background: #1e293b; }
+.broadcasts { background: #0f172a; }
+.team { background: #1e293b; }
+.join { background: #0f172a; text-align: center; }
 
-/* ===== ABOUT ===== */
-.about {
-  background: #1e293b;
-}
-
-/* ===== BROADCASTS ===== */
-.broadcasts {
-  background: #0f172a;
-}
-
-.video-grid {
+.video-grid, .team-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
 }
 
-.video-card {
+.video-card, .member {
   background: #1e293b;
   padding: 15px;
   border-radius: 10px;
-  transition: 0.3s;
 }
 
-.video-card:hover {
-  transform: translateY(-5px);
-}
-
-/* ===== TEAM ===== */
-.team {
-  background: #1e293b;
-}
-
-.team-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-}
-
-.member {
-  background: #0f172a;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-/* ===== JOIN ===== */
-.join {
-  background: #0f172a;
-  text-align: center;
-}
+.member { background: #0f172a; }
 
 .join input {
   padding: 10px;
@@ -144,117 +104,201 @@ nav a:hover {
   border: none;
 }
 
-/* ===== FOOTER ===== */
 footer {
   background: #020617;
   text-align: center;
   padding: 20px;
 }
 
-/* ===== RESPONSIVE ===== */
-@media(max-width: 768px){
-  .hero h1 {
-    font-size: 2rem;
-  }
+/* ADMIN MODAL */
+#adminModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+}
+
+.modal-box {
+  background: #1f2937;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.admin-dashboard {
+  display: none;
+  padding: 120px 10%;
+  min-height: 100vh;
+  background: #111827;
+}
+
+.admin-card {
+  background: #1f2937;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ===== NAVIGATION ===== -->
 <nav>
-  <div><strong>🎥 Eldorado High School News</strong></div>
+  <div><strong>🎥 School News</strong></div>
   <div>
     <a href="#about">About</a>
     <a href="#broadcasts">Broadcasts</a>
     <a href="#team">Team</a>
     <a href="#join">Join</a>
+    <a onclick="openAdmin()">Admin</a>
   </div>
 </nav>
 
-<!-- ===== HERO ===== -->
 <section class="hero">
   <div>
-    <h1>Welcome to the ELDO News Broadcasting Club</h1>
+    <h1>Welcome to the News Broadcasting Club</h1>
     <p>Delivering school stories. Sharing student voices. Creating future journalists.</p>
     <button onclick="scrollToSection('broadcasts')">Watch Latest Broadcast</button>
   </div>
 </section>
 
-<!-- ===== ABOUT ===== -->
 <section id="about" class="about">
   <h2>About Us</h2>
   <p>
-    The ELDO News Broadcasting Club is a student-run organization dedicated to reporting
+    The News Broadcasting Club is a student-run organization dedicated to reporting
     school events, announcements, sports highlights, and student achievements.
-    Members learn video production, editing, journalism, and public speaking.
   </p>
 </section>
 
-<!-- ===== BROADCASTS ===== -->
 <section id="broadcasts" class="broadcasts">
   <h2>Latest Broadcasts</h2>
   <div class="video-grid">
-    <div class="video-card">
-      <h3>Episode 1</h3>
-      <p>News video here.</p>
-    </div>
-    <div class="video-card">
-      <h3>Episode 2</h3>
-      <p>News video here..</p>
-    </div>
-    <div class="video-card">
-      <h3>Episode 3</h3>
-      <p>News video here..</p>
-    </div>
+    <div class="video-card"><h3>Episode 1</h3><p>News video here.</p></div>
+    <div class="video-card"><h3>Episode 2</h3><p>News video here.</p></div>
+    <div class="video-card"><h3>Episode 3</h3><p>News video here.</p></div>
   </div>
 </section>
 
-<!-- ===== TEAM ===== -->
 <section id="team" class="team">
   <h2>Meet the Team</h2>
   <div class="team-grid">
-    <div class="member">
-      <h3>Noe</h3>
-      <p>Insert what he does</p>
-    </div>
-    <div class="member">
-      <h3>Ect</h3>
-      <p>Insert</p>
-    </div>
-    <div class="member">
-      <h3>ECT</h3>
-      <p>Insert</p>
-    </div>
+    <div class="member"><h3>Noe</h3><p>Insert what he does</p></div>
+    <div class="member"><h3>ECT</h3><p>Insert</p></div>
+    <div class="member"><h3>ECT</h3><p>Insert</p></div>
   </div>
 </section>
 
-<!-- ===== JOIN ===== -->
 <section id="join" class="join">
   <h2>Join the Club</h2>
   <p>Interested in journalism, filming, or editing? Sign up below!</p>
   <form onsubmit="submitForm(event)">
-    <input type="text" placeholder="Your Name" required>
-    <input type="email" placeholder="Your Email" required>
+    <input type="text" id="name" placeholder="Your Name" required>
+    <input type="email" id="email" placeholder="Your Email" required>
     <br>
     <button type="submit">Submit</button>
   </form>
 </section>
 
-<!-- ===== FOOTER ===== -->
 <footer>
   <p>© 2026 School News Broadcasting Club</p>
 </footer>
 
+<!-- ADMIN LOGIN -->
+<div id="adminModal">
+  <div class="modal-box">
+    <h2>Admin Login</h2>
+    <input type="text" id="adminUser" placeholder="Username"><br><br>
+    <input type="password" id="adminPass" placeholder="Password"><br><br>
+    <button onclick="checkAdmin()">Login</button>
+    <button onclick="closeAdmin()">Cancel</button>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div class="admin-dashboard" id="adminDashboard">
+  <h2>Admin Dashboard</h2>
+  <p>Student Signups:</p>
+  <div id="submissions"></div>
+  <button onclick="logout()">Logout</button>
+</div>
+
 <script>
+const ADMIN_USERNAME = "admin1973";
+const ADMIN_PASSWORD = "IFUCKINGHATEELDO";
+
 function scrollToSection(id) {
   document.getElementById(id).scrollIntoView({ behavior: "smooth" });
 }
 
 function submitForm(event) {
   event.preventDefault();
-  alert("Thank you for signing up! We’ll contact you soon.");
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+
+  let submissions = JSON.parse(localStorage.getItem("submissions")) || [];
+  submissions.push({ name, email });
+  localStorage.setItem("submissions", JSON.stringify(submissions));
+
+  alert("Thank you for signing up!");
+  event.target.reset();
+}
+
+function openAdmin() {
+  document.getElementById("adminModal").style.display = "flex";
+}
+
+function closeAdmin() {
+  document.getElementById("adminModal").style.display = "none";
+}
+
+function checkAdmin() {
+  const user = document.getElementById("adminUser").value;
+  const pass = document.getElementById("adminPass").value;
+
+  if (user === ADMIN_USERNAME && pass === ADMIN_PASSWORD) {
+    document.getElementById("adminModal").style.display = "none";
+    document.body.style.display = "none";
+    document.getElementById("adminDashboard").style.display = "block";
+    loadSubmissions();
+  } else {
+    alert("Incorrect username or password.");
+  }
+}
+
+function loadSubmissions() {
+  let submissions = JSON.parse(localStorage.getItem("submissions")) || [];
+  const container = document.getElementById("submissions");
+  container.innerHTML = "";
+
+  if (submissions.length === 0) {
+    container.innerHTML = "<p>No signups yet.</p>";
+    return;
+  }
+
+  submissions.forEach((entry, index) => {
+    const div = document.createElement("div");
+    div.classList.add("admin-card");
+    div.innerHTML = `
+      <strong>Name:</strong> ${entry.name}<br>
+      <strong>Email:</strong> ${entry.email}<br>
+      <button onclick="deleteEntry(${index})">Delete</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function deleteEntry(index) {
+  let submissions = JSON.parse(localStorage.getItem("submissions")) || [];
+  submissions.splice(index, 1);
+  localStorage.setItem("submissions", JSON.stringify(submissions));
+  loadSubmissions();
+}
+
+function logout() {
+  location.reload();
 }
 </script>
 
