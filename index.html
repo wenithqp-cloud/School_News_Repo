@@ -192,9 +192,9 @@ async function checkAdmin(){
   const pass=document.getElementById("adminPass").value;
   const hashedInput=await hashPassword(pass);
   if(user===ADMIN_USERNAME && hashedInput===ADMIN_PASSWORD_HASH){
-    document.getElementById("adminModal").style.display="none";
-    document.body.style.display="none";
-    document.getElementById("adminDashboard").style.display="block";
+   document.getElementById("adminModal").style.display = "none";
+document.getElementById("adminDashboard").style.display = "block";
+document.body.style.display = "block"; // ensure body is visible
     loadSubmissions();
     loadVideos();
   } else alert("Incorrect username or password.");
