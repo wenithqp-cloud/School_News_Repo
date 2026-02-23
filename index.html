@@ -147,10 +147,8 @@ footer {background:#7a0019;color:white;text-align:center;padding:15px;}
 
 <footer>© 2026 School News Broadcasting Club</footer>
 
-<!-- TOOLTIP ELEMENT -->
 <div id="tooltip" class="tooltip"></div>
 
-<!-- ADMIN MODAL -->
 <div id="adminModal">
   <div class="modal-box">
     <h2>Admin Login</h2>
@@ -161,7 +159,6 @@ footer {background:#7a0019;color:white;text-align:center;padding:15px;}
   </div>
 </div>
 
-<!-- ADMIN DASHBOARD -->
 <div class="admin-dashboard" id="adminDashboard">
   <h1>🎥 Admin Panel</h1>
   <div class="admin-tabs">
@@ -266,7 +263,8 @@ function deleteEntry(i){const s=JSON.parse(localStorage.getItem("submissions"))|
 function getYouTubeEmbed(u){const r=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/; const m=u.match(r); return m&&m[1]?`https://www.youtube.com/embed/${m[1]}`:u;}
 function loadVideos(){
   let v=JSON.parse(localStorage.getItem("videos"))||[];
-  v=v.reverse();
+  const originalVideos = [...v]; // keep original index
+  v=v.slice().reverse();
   const vs=document.getElementById("videoScroll");
   const mv=document.getElementById("mainVideo");
   const t=document.getElementById("videoTranscript");
@@ -280,15 +278,43 @@ function loadVideos(){
     vs.appendChild(b);
 
     if(isAdminLoggedIn && document.getElementById("videoTab").classList.contains("active")){
+      const originalIndex = originalVideos.length - 1 - i;
       const card=document.createElement("div"); card.className="admin-card";
-      card.innerHTML=`<strong>${x.title}</strong><br><strong>Link:</strong> ${x.link}<br><strong>Transcript:</strong> ${x.transcript||''}<br><button onclick="editVideo(${i})">Edit</button><button onclick="deleteVideo(${i})">Delete</button>`;
+      card.innerHTML=`<strong>${x.title}</strong><br><strong>Link:</strong> ${x.link}<br><strong>Transcript:</strong> ${x.transcript||''}<br>
+      <button onclick="editVideo(${originalIndex})">Edit</button>
+      <button onclick="deleteVideo(${originalIndex})">Delete</button>`;
       manager.appendChild(card);
     }
   });
 }
-function addVideo(){if(!isAdminLoggedIn) return; const t=prompt("Video title:"), l=prompt("YouTube link:"), tr=prompt("Transcript:"); if(!t||!l) return; const v=JSON.parse(localStorage.getItem("videos"))||[]; v.push({title:t,link:l,transcript:tr}); localStorage.setItem("videos",JSON.stringify(v)); loadVideos();}
-function editVideo(i){if(!isAdminLoggedIn) return; const v=JSON.parse(localStorage.getItem("videos"))||[]; const vid=v[i]; const t=prompt("Video title:",vid.title); const l=prompt("YouTube link:",vid.link); const tr=prompt("Transcript:",vid.transcript||""); if(!t||!l) return; v[i]={title:t,link:l,transcript:tr}; localStorage.setItem("videos",JSON.stringify(v)); loadVideos();}
-function deleteVideo(i){if(!isAdminLoggedIn) return; const v=JSON.parse(localStorage.getItem("videos"))||[]; v.splice(i,1); localStorage.setItem("videos",JSON.stringify(v)); loadVideos();}
+function addVideo(){
+  if(!isAdminLoggedIn) return;
+  const t=prompt("Video title:"), l=prompt("YouTube link:"), tr=prompt("Transcript:");
+  if(!t||!l) return;
+  const v=JSON.parse(localStorage.getItem("videos"))||[];
+  v.push({title:t,link:l,transcript:tr});
+  localStorage.setItem("videos",JSON.stringify(v));
+  loadVideos();
+}
+function editVideo(i){
+  if(!isAdminLoggedIn) return;
+  const v=JSON.parse(localStorage.getItem("videos"))||[];
+  const vid=v[i];
+  const t=prompt("Video title:",vid.title);
+  const l=prompt("YouTube link:",vid.link);
+  const tr=prompt("Transcript:",vid.transcript||"");
+  if(!t||!l) return;
+  v[i]={title:t,link:l,transcript:tr};
+  localStorage.setItem("videos",JSON.stringify(v));
+  loadVideos();
+}
+function deleteVideo(i){
+  if(!isAdminLoggedIn) return;
+  const v=JSON.parse(localStorage.getItem("videos"))||[];
+  v.splice(i,1);
+  localStorage.setItem("videos",JSON.stringify(v));
+  loadVideos();
+}
 
 // ================= TEAM MEMBERS =================
 function loadTeamMembers(){
