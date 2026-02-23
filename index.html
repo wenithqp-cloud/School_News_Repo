@@ -13,8 +13,7 @@ body {background-color:#f8f5f1;color:#333;line-height:1.6;position:relative;}
 /* ================= BACKGROUND ================= */
 body::before {
   content:"";
-  position:fixed;
-  top:50%;left:50%;
+  position:fixed; top:50%; left:50%;
   width:700px;height:700px;
   background:url("footer_logo-584425766.png") no-repeat center;
   background-size:contain;
@@ -74,9 +73,11 @@ html {scroll-snap-type: y mandatory;}
   font-size: 0.75rem;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s ease, transform 0.2s ease;
   z-index: 9999;
+  transform: translateY(5px);
 }
+.tooltip.show {opacity:1; transform: translateY(0);}
 
 /* ================= JOIN ================= */
 .join {background:#eaeaea;flex-direction:column;}
@@ -147,7 +148,7 @@ footer {background:#7a0019;color:white;text-align:center;padding:15px;}
 
 <footer>© 2026 School News Broadcasting Club</footer>
 
-<!-- TOOLTIP ELEMENT -->
+<!-- TOOLTIP -->
 <div id="tooltip" class="tooltip"></div>
 
 <!-- ADMIN MODAL -->
@@ -177,22 +178,44 @@ footer {background:#7a0019;color:white;text-align:center;padding:15px;}
 </div>
 
 <script>
-// ================= ROTATION =================
-window.addEventListener("scroll",()=>{document.body.style.setProperty("--rotation",window.scrollY*0.12+"deg");});
-
-// ================= SCROLL =================
+// =============== SCROLL =================
 function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
 
-// ================= ADMIN / FORM =================
-// [keep all admin functions as in previous code]
+// =============== TOOLTIP =================
+const tooltip = document.getElementById("tooltip");
 
-// ================= TEAM MEMBERS =================
+// =============== VIDEOS =================
+function getYouTubeEmbed(url){const r=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/; const m=url.match(r); return m&&m[1]?`https://www.youtube.com/embed/${m[1]}`:url;}
+function loadVideos(){
+  let videos = JSON.parse(localStorage.getItem("videos"))||[];
+  videos = videos.reverse();
+  const vs=document.getElementById("videoScroll");
+  const mv=document.getElementById("mainVideo");
+  const t=document.getElementById("videoTranscript");
+  const manager=document.getElementById("videoManager");
+  vs.innerHTML=""; manager.innerHTML="";
+  if(videos.length===0){mv.src=""; t.textContent=""; return;}
+  mv.src=getYouTubeEmbed(videos[0].link); t.textContent=videos[0].transcript||"";
+  videos.forEach((v,i)=>{
+    // scroll buttons
+    const btn=document.createElement("button"); btn.textContent=v.title;
+    btn.onclick=()=>{mv.src=getYouTubeEmbed(v.link); t.textContent=v.transcript||"";};
+    vs.appendChild(btn);
+
+    // admin cards
+    if(document.getElementById("videoTab").classList.contains("active")){
+      const card=document.createElement("div"); card.className="admin-card";
+      card.innerHTML=`<strong>${v.title}</strong><br>Link: ${v.link}<br>Transcript:${v.transcript||''}<br><button onclick="editVideo(${i})">Edit</button> <button onclick="deleteVideo(${i})">Delete</button>`;
+      manager.appendChild(card);
+    }
+  });
+}
+
+// =============== TEAM =================
 function loadTeamMembers(){
   const tM=JSON.parse(localStorage.getItem("teamMembers"))||[];
   const grid=document.getElementById("teamGrid"); grid.innerHTML="";
   const manager=document.getElementById("teamManager"); manager.innerHTML="";
-  const tooltip=document.getElementById("tooltip");
-
   tM.forEach((m,i)=>{
     const div=document.createElement("div"); div.className="member";
     const img=document.createElement("img"); img.src=m.img||"maroon.jpg"; div.appendChild(img);
@@ -200,29 +223,28 @@ function loadTeamMembers(){
     const p=document.createElement("p"); p.textContent=m.role; div.appendChild(p);
     grid.appendChild(div);
 
-    // Tooltip hover for everyone
+    // tooltip
     div.addEventListener("mouseenter", e=>{
-      tooltip.textContent = `${m.email||'No email'}, ${m.phone||'No phone'}`;
-      tooltip.style.opacity=1;
+      tooltip.textContent=`${m.email||'No email'}, ${m.phone||'No phone'}`;
+      tooltip.classList.add("show");
     });
     div.addEventListener("mousemove", e=>{
-      tooltip.style.left=(e.pageX + 15) + "px";
-      tooltip.style.top=(e.pageY + 15) + "px";
+      tooltip.style.left=(e.pageX+15)+"px"; tooltip.style.top=(e.pageY+15)+"px";
     });
     div.addEventListener("mouseleave", e=>{
-      tooltip.style.opacity=0;
+      tooltip.classList.remove("show");
     });
 
-    // Admin cards
+    // admin cards
     if(document.getElementById("teamTab").classList.contains("active")){
       const card=document.createElement("div"); card.className="admin-card";
-      card.innerHTML=`<strong>${m.name}</strong><br><strong>${m.role}</strong><br>Email: ${m.email||''} <button onclick="editEmail(${i})">Edit</button><br>Phone: ${m.phone||''} <button onclick="editPhone(${i})">Edit</button><br><button onclick="editTeamMember(${i})">Edit Name/Role/Image</button> <button onclick="deleteTeamMember(${i})">Delete</button>`;
+      card.innerHTML=`<strong>${m.name}</strong><br>Role:${m.role}<br>Email:${m.email||''} <button onclick="editEmail(${i})">Edit</button><br>Phone:${m.phone||''} <button onclick="editPhone(${i})">Edit</button><br><button onclick="editTeamMember(${i})">Edit Name/Role/Image</button> <button onclick="deleteTeamMember(${i})">Delete</button>`;
       manager.appendChild(card);
     }
   });
 }
 
-// ================= INIT =================
+// =============== INIT =================
 window.onload=()=>{
   loadVideos();
   loadTeamMembers();
