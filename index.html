@@ -4,282 +4,204 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Eldorado High School - News Broadcasting Club</title>
-
 <style>
 /* ================= GLOBAL ================= */
-* {
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:"Helvetica Neue",Arial,sans-serif;
-}
-
-html {
-  scroll-behavior:smooth;
-}
-
-body {
-  background-color:#f8f5f1;
-  color:#333;
-  line-height:1.6;
-  overflow-x:hidden;
-  padding-top:100px; /* prevents header overlap */
-}
+* {margin:0;padding:0;box-sizing:border-box;font-family:"Helvetica Neue",Arial,sans-serif;}
+html, body {height:100%;scroll-behavior:smooth;overflow-x:hidden;}
+body {background-color:#f8f5f1;color:#333;line-height:1.6;position:relative;}
 
 /* ================= BACKGROUND ================= */
 body::before {
   content:"";
   position:fixed;
-  top:50%;
-  left:50%;
-  width:700px;
-  height:700px;
+  top:50%;left:50%;
+  width:700px;height:700px;
   background:url("footer_logo-584425766.png") no-repeat center;
   background-size:contain;
   opacity:0.12;
-  transform:translate(-50%, -50%);
+  transform:translate(-50%, -50%) rotate(var(--rotation,0deg));
   z-index:-1;
   pointer-events:none;
-  animation:spin 20s linear infinite;
+  animation:spin 10s linear infinite;
 }
-
-@keyframes spin {
-  from { transform:translate(-50%, -50%) rotate(0deg); }
-  to { transform:translate(-50%, -50%) rotate(360deg); }
-}
+@keyframes spin {from{transform:translate(-50%, -50%) rotate(0deg);} to{transform:translate(-50%, -50%) rotate(360deg);}}
 
 /* ================= HEADER ================= */
-.school-header {
-  position:fixed;
-  top:0;
-  width:100%;
-  background:#7a0019;
-  color:white;
-  padding:15px 5%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom:5px solid #ffd700;
-  z-index:1000;
-}
-
-.header-left {
-  display:flex;
-  align-items:center;
-  gap:15px;
-}
-
-.header-left img {
-  height:60px;
-}
-
-.header-text h1 {
-  font-size:1.3rem;
-}
-
-.header-text span {
-  font-size:0.85rem;
-  color:#ffd700;
-  letter-spacing:1px;
-}
-
-.school-header nav {
-  display:flex;
-  align-items:center;
-}
-
-.school-header nav a {
-  color:white;
-  text-decoration:none;
-  margin-left:20px;
-  font-weight:600;
-  transition:0.3s;
-  cursor:pointer;
-}
-
-.school-header nav a:hover {
-  color:#ffd700;
-}
-
-/* ================= HAMBURGER ================= */
-.hamburger {
-  display:none;
-  flex-direction: column;
-  cursor:pointer;
-  gap:5px;
-  z-index:1100;
-}
-
-.hamburger div {
-  width:25px;
-  height:3px;
-  background:white;
-  transition: all 0.3s ease;
-}
-
-.hamburger.open div:nth-child(1) {
-  transform:rotate(45deg) translate(5px,5px);
-}
-.hamburger.open div:nth-child(2) {
-  opacity:0;
-}
-.hamburger.open div:nth-child(3) {
-  transform:rotate(-45deg) translate(5px,-5px);
-}
+.school-header {position:fixed; top:0;width:100%;background:#7a0019;color:white;padding:15px 5%;display:flex;justify-content:space-between;align-items:center;border-bottom:5px solid #ffd700; z-index:1000;}
+.header-left {display:flex;align-items:center;gap:15px;}
+.header-left img {height:60px;}
+.header-text h1 {margin:0;font-size:1.3rem;}
+.header-text span {font-size:0.85rem;color:#ffd700;letter-spacing:1px;}
+.school-header nav a {color:white;text-decoration:none;margin-left:15px;font-weight:600;transition:0.3s;cursor:pointer;}
+.school-header nav a:hover {color:#ffd700;}
 
 /* ================= SECTIONS ================= */
-section {
-  width:100%;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  padding:5%;
-  scroll-margin-top:120px; /* prevents header covering section */
-}
+section {width:100%;min-height:100vh;display:flex;justify-content:center;align-items:center;flex-direction:column;padding:5%;scroll-snap-align:start;}
+html {scroll-snap-type: y mandatory;}
 
 /* ================= HERO ================= */
-.hero {
-  background:#7a0019;
-  color:white;
-  text-align:center;
+.hero {background:#7a0019;color:white;}
+.hero h1 {font-size:3rem;margin-bottom:15px;transition:transform 0.6s ease;}
+.hero p {font-size:1.4rem;margin-bottom:20px;transition:transform 0.6s ease;}
+.hero button {background:#ffd700;color:#7a0019;border:none;padding:12px 25px;border-radius:4px;cursor:pointer;transition:transform 0.3s;}
+.hero button:hover {background:white;transform:scale(1.05);}
+
+/* ================= BROADCASTS ================= */
+.broadcasts {background:#fff;border:4px solid #7a0019;border-top:8px solid #ffd700;border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,0.08);padding-bottom:40px;overflow-y:auto;}
+.video-main {width:80%;max-width:900px;margin:10px auto;}
+.video-player {width:100%;height:50vh;border-radius:6px;border:3px solid #7a0019;}
+#videoTranscript {margin-top:15px;font-size:1rem;color:#333;}
+.video-scroll {display:flex;justify-content:center;overflow-x:auto;gap:10px;padding:10px 0;}
+.video-scroll button {background:#7a0019;color:white;border:none;padding:10px 18px;border-radius:4px;cursor:pointer;transition:transform 0.2s;}
+.video-scroll button:hover {background:#ffd700;color:#7a0019;transform:scale(1.05);}
+
+/* ================= TEAM ================= */
+.team {background:#fafafa;width:100%;padding-bottom:40px;}
+.team-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:40px;width:80%;transition:all 0.5s ease;}
+.member {background:#fff;padding:15px;border-left:4px solid #7a0019;border-radius:6px;position:relative;cursor:pointer;display:flex;flex-direction:column;align-items:center;transition:transform 0.3s, box-shadow 0.3s;}
+.member:hover {transform:scale(1.05);box-shadow:0 8px 20px rgba(0,0,0,0.2);}
+.member img {width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:10px;transition:transform 0.3s ease;}
+.member h3 {margin:5px 0 0 0; position:relative;}
+.member p {margin:0; font-size:0.9rem; color:#555;}
+
+/* ================= TOOLTIP ================= */
+.tooltip {
+  position: fixed;
+  background: #7a0019;
+  color: #ffd700;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 9999;
 }
 
-.hero h1 {
-  font-size:3rem;
-  margin-bottom:15px;
-}
+/* ================= JOIN ================= */
+.join {background:#eaeaea;flex-direction:column;}
+.join {background:#eaeaea;flex-direction:column;padding:40px 5%;width:100%;}
+.join input {padding:10px;margin:5px;width:250px;border-radius:4px;border:1px solid #ccc;}
+.join button {background:#7a0019;color:white;border:none;padding:10px 20px;border-radius:4px;cursor:pointer;}
+.join button:hover {background:#ffd700;color:#7a0019;transform:scale(1.05);}
 
-.hero p {
-  font-size:1.4rem;
-  margin-bottom:20px;
-}
+/* ================= ABOUT US ================= */
+#aboutUs {background:#fff;color:#333;padding:40px 5%;border-top:4px solid #7a0019;width:100%;text-align:center;}
 
-.hero button {
-  background:#ffd700;
-  color:#7a0019;
-  border:none;
-  padding:12px 25px;
-  border-radius:4px;
-  cursor:pointer;
-  transition:0.3s;
-}
+/* ================= FOOTER ================= */
+footer {background:#7a0019;color:white;text-align:center;padding:15px;}
 
-.hero button:hover {
-  background:white;
-  transform:scale(1.05);
-}
-
-/* ================= MOBILE ================= */
-@media (max-width: 768px) {
-
-  body {
-    padding-top:120px;
-  }
-
-  .school-header {
-    flex-direction:column;
-    align-items:flex-start;
-    padding:10px 5%;
-  }
-
-  .header-left {
-    flex-direction:column;
-    align-items:flex-start;
-    gap:5px;
-  }
-
-  .header-left img {
-    height:50px;
-  }
-
-  .header-text h1 {
-    font-size:1.1rem;
-  }
-
-  .header-text span {
-    font-size:0.75rem;
-  }
-
-  .school-header nav {
-    display:none;
-    flex-direction:column;
-    width:100%;
-    margin-top:10px;
-  }
-
-  .school-header nav a {
-    margin:10px 0;
-  }
-
-  .school-header nav.active {
-    display:flex;
-  }
-
-  .hamburger {
-    display:flex;
-    position:absolute;
-    right:5%;
-    top:25px;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<header class="school-header">
-  <div class="header-left">
-    <img src="footer_logo-584425766.png" alt="Logo">
-    <div class="header-text">
-      <h1>Eldorado High School</h1>
-      <span>News Broadcasting Club</span>
-    </div>
-  </div>
-
-  <div class="hamburger" onclick="toggleMenu(this)">
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
-
-  <nav id="navLinks">
-    <a onclick="scrollToSection('hero')">Home</a>
+@@ -111,6 +114,7 @@
     <a onclick="scrollToSection('broadcasts')">Broadcasts</a>
     <a onclick="scrollToSection('team')">Team</a>
     <a onclick="scrollToSection('join')">Join</a>
     <a onclick="scrollToSection('aboutUs')">About Us</a>
+    <a onclick="openAdmin()">Admin</a>
   </nav>
 </header>
-
-<section id="hero" class="hero">
-  <h1>Welcome to the Eldorado News Broadcasting Club</h1>
-  <p>Delivering school stories. Sharing student voices. Creating future journalists.</p>
-  <button onclick="scrollToSection('broadcasts')">Watch Latest Broadcast</button>
+@@ -145,10 +149,16 @@
+  </form>
 </section>
-z
-<!-- Add your other sections here -->
 
-<script>
-function scrollToSection(id){
-  const section = document.getElementById(id);
-  if(section){
-    section.scrollIntoView({behavior:'smooth'});
-    closeMenu();
-  }
-}
+<section id="aboutUs">
+  <h2>About Us</h2>
+  <p>We are the Eldorado High School News Broadcasting Club. Our mission is to cover school events, showcase student achievements, and help members develop skills in journalism, video production, and teamwork. Everyone is welcome to join, whether you are interested in reporting, filming, or editing.</p>
+</section>
 
-function toggleMenu(el){
-  el.classList.toggle('open');
-  document.getElementById('navLinks').classList.toggle('active');
-}
+<footer>© 2026 School News Broadcasting Club</footer>
 
-function closeMenu(){
-  document.querySelector('.hamburger').classList.remove('open');
-  document.getElementById('navLinks').classList.remove('active');
+<div id="tooltip" class="tooltip"></div>
+
+<!-- ADMIN MODAL -->
+<div id="adminModal">
+  <div class="modal-box">
+    <h2>Admin Login</h2>
+@@ -159,6 +169,7 @@
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div class="admin-dashboard" id="adminDashboard">
+  <h1>🎥 Admin Panel</h1>
+  <div class="admin-tabs">
+@@ -263,7 +274,7 @@
+function getYouTubeEmbed(u){const r=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/; const m=u.match(r); return m&&m[1]?`https://www.youtube.com/embed/${m[1]}`:u;}
+function loadVideos(){
+  let v=JSON.parse(localStorage.getItem("videos"))||[];
+  const originalVideos = [...v]; // keep original index
+  const originalVideos = [...v];
+  v=v.slice().reverse();
+  const vs=document.getElementById("videoScroll");
+  const mv=document.getElementById("mainVideo");
+@@ -287,67 +298,20 @@
+    }
+  });
 }
+function addVideo(){
+  if(!isAdminLoggedIn) return;
+  const t=prompt("Video title:"), l=prompt("YouTube link:"), tr=prompt("Transcript:");
+  if(!t||!l) return;
+  const v=JSON.parse(localStorage.getItem("videos"))||[];
+  v.push({title:t,link:l,transcript:tr});
+  localStorage.setItem("videos",JSON.stringify(v));
+  loadVideos();
+}
+function editVideo(i){
+  if(!isAdminLoggedIn) return;
+  const v=JSON.parse(localStorage.getItem("videos"))||[];
+  const vid=v[i];
+  const t=prompt("Video title:",vid.title);
+  const l=prompt("YouTube link:",vid.link);
+  const tr=prompt("Transcript:",vid.transcript||"");
+  if(!t||!l) return;
+  v[i]={title:t,link:l,transcript:tr};
+  localStorage.setItem("videos",JSON.stringify(v));
+  loadVideos();
+}
+function deleteVideo(i){
+  if(!isAdminLoggedIn) return;
+  const v=JSON.parse(localStorage.getItem("videos"))||[];
+  v.splice(i,1);
+  localStorage.setItem("videos",JSON.stringify(v));
+  loadVideos();
+}
+function addVideo(){if(!isAdminLoggedIn) return; const t=prompt("Video title:"), l=prompt("YouTube link:"), tr=prompt("Transcript:"); if(!t||!l) return; const v=JSON.parse(localStorage.getItem("videos"))||[]; v.push({title:t,link:l,transcript:tr}); localStorage.setItem("videos",JSON.stringify(v)); loadVideos();}
+function editVideo(i){if(!isAdminLoggedIn) return; const v=JSON.parse(localStorage.getItem("videos"))||[]; const vid=v[i]; const t=prompt("Video title:",vid.title); const l=prompt("YouTube link:",vid.link); const tr=prompt("Transcript:",vid.transcript||""); if(!t||!l) return; v[i]={title:t,link:l,transcript:tr}; localStorage.setItem("videos",JSON.stringify(v)); loadVideos();}
+function deleteVideo(i){if(!isAdminLoggedIn) return; const v=JSON.parse(localStorage.getItem("videos"))||[]; v.splice(i,1); localStorage.setItem("videos",JSON.stringify(v)); loadVideos();}
+
+// ================= TEAM MEMBERS =================
+function loadTeamMembers(){
+  const tM=JSON.parse(localStorage.getItem("teamMembers"))||[];
+  const grid=document.getElementById("teamGrid"); grid.innerHTML="";
+  const manager=document.getElementById("teamManager"); manager.innerHTML="";
+  const tooltip=document.getElementById("tooltip");
+  tM.forEach((m,i)=>{
+    const div=document.createElement("div"); div.className="member";
+    const img=document.createElement("img"); img.src=m.img||"maroon.jpg"; div.appendChild(img);
+    const h=document.createElement("h3"); h.textContent=m.name; div.appendChild(h);
+    const p=document.createElement("p"); p.textContent=m.role; div.appendChild(p);
+    grid.appendChild(div);
+
+    div.addEventListener("mouseenter",e=>{tooltip.textContent=`${m.email||'No email'}, ${m.phone||'No phone'}`; tooltip.style.opacity=1;});
+    div.addEventListener("mousemove",e=>{tooltip.style.left=(e.pageX+15)+"px"; tooltip.style.top=(e.pageY+15)+"px";});
+    div.addEventListener("mouseleave",e=>{tooltip.style.opacity=0;});
+
+    if(isAdminLoggedIn && document.getElementById("teamTab").classList.contains("active")){
+      const card=document.createElement("div"); card.className="admin-card";
+      card.innerHTML=`<strong>${m.name}</strong><br><strong>${m.role}</strong><br>Email: ${m.email||''} <button onclick="editEmail(${i})">Edit</button><br>Phone: ${m.phone||''} <button onclick="editPhone(${i})">Edit</button><br><button onclick="editTeamMember(${i})">Edit Name/Role/Image</button> <button onclick="deleteTeamMember(${i})">Delete</button>`;
+      manager.appendChild(card);
+    }
+  });
+}
+function loadTeamMembers(){const tM=JSON.parse(localStorage.getItem("teamMembers"))||[]; const grid=document.getElementById("teamGrid"); grid.innerHTML=""; const manager=document.getElementById("teamManager"); manager.innerHTML=""; const tooltip=document.getElementById("tooltip"); tM.forEach((m,i)=>{const div=document.createElement("div"); div.className="member"; const img=document.createElement("img"); img.src=m.img||"maroon.jpg"; div.appendChild(img); const h=document.createElement("h3"); h.textContent=m.name; div.appendChild(h); const p=document.createElement("p"); p.textContent=m.role; div.appendChild(p); grid.appendChild(div); div.addEventListener("mouseenter",e=>{tooltip.textContent=`${m.email||'No email'}, ${m.phone||'No phone'}`; tooltip.style.opacity=1;}); div.addEventListener("mousemove",e=>{tooltip.style.left=(e.pageX+15)+"px"; tooltip.style.top=(e.pageY+15)+"px";}); div.addEventListener("mouseleave",e=>{tooltip.style.opacity=0;}); if(isAdminLoggedIn && document.getElementById("teamTab").classList.contains("active")){const card=document.createElement("div"); card.className="admin-card"; card.innerHTML=`<strong>${m.name}</strong><br><strong>${m.role}</strong><br>Email: ${m.email||''} <button onclick="editEmail(${i})">Edit</button><br>Phone: ${m.phone||''} <button onclick="editPhone(${i})">Edit</button><br><button onclick="editTeamMember(${i})">Edit Name/Role/Image</button> <button onclick="deleteTeamMember(${i})">Delete</button>`; manager.appendChild(card);}});}
+function addTeamMember(){if(!isAdminLoggedIn) return; const n=prompt("Name:"), r=prompt("Role:"), i=prompt("Image URL:"); if(!n||!r) return; const t=JSON.parse(localStorage.getItem("teamMembers"))||[]; t.push({name:n,role:r,img:i}); localStorage.setItem("teamMembers",JSON.stringify(t)); loadTeamMembers();}
+function editTeamMember(i){if(!isAdminLoggedIn) return; const t=JSON.parse(localStorage.getItem("teamMembers"))||[]; const m=t[i]; const n=prompt("Name:",m.name); const r=prompt("Role:",m.role); const img=prompt("Image URL:",m.img); if(!n||!r) return; t[i]={name:n,role:r,img:img}; localStorage.setItem("teamMembers",JSON.stringify(t)); loadTeamMembers();}
+function deleteTeamMember(i){if(!isAdminLoggedIn) return; const t=JSON.parse(localStorage.getItem("teamMembers"))||[]; t.splice(i,1); localStorage.setItem("teamMembers",JSON.stringify(t)); loadTeamMembers();}
+function editEmail(i){if(!isAdminLoggedIn) return; const t=JSON.parse(localStorage.getItem("teamMembers"))||[]; const e=prompt("Email:",t[i].email||""); if(e!==null){t[i].email=e; localStorage.setItem("teamMembers",JSON.stringify(t)); loadTeamMembers();}}
+function editPhone(i){if(!isAdminLoggedIn) return; const t=JSON.parse(localStorage.getItem("teamMembers"))||[]; const p=prompt("Phone:",t[i].phone||""); if(p!==null){t[i].phone=p; localStorage.setItem("teamMembers",JSON.stringify(t)); loadTeamMembers();}}
+
+// ================= INIT =================
+window.onload=()=>{loadVideos(); loadTeamMembers();}
 </script>
-
 </body>
 </html>
