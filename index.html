@@ -4,60 +4,222 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Eldorado High School - News Broadcasting Club</title>
-<style>
-/* ================== GLOBAL ================== */
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-body { background: #4B0000; color: #FFD700; scroll-behavior: smooth; }
-section { padding: 80px 10%; }
-h1, h2 { margin-bottom: 20px; color: #FFD700; }
-button { padding: 12px 20px; border: none; background: #800000; color: #FFD700; cursor: pointer; border-radius: 6px; transition: 0.3s; }
-button:hover { background: #A00000; }
+<style>/* ================== GLOBAL ================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: #5a0f14; /* softer maroon */
+  color: #f5d26a; /* softer gold */
+  scroll-behavior: smooth;
+  line-height: 1.6;
+}
+
+section {
+  padding: 90px 10%;
+  border-top: 4px solid #d4af37;
+  border-bottom: 4px solid #d4af37;
+}
+
+h1, h2 {
+  margin-bottom: 20px;
+  color: #ffd700;
+}
+
+p {
+  max-width: 900px;
+}
+
+/* ========== BUTTONS ========== */
+button {
+  padding: 12px 20px;
+  border: 2px solid #d4af37;
+  background: #7a1c22;
+  color: #ffd700;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.3s ease;
+}
+
+button:hover {
+  background: #d4af37;
+  color: #5a0f14;
+}
 
 /* ========== NAVBAR ========== */
-nav { position: fixed; width: 100%; top: 0; background: rgba(75,0,0,0.95); padding: 15px 10%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-nav a { color: #FFD700; text-decoration: none; margin-left: 20px; font-weight: bold; cursor: pointer; }
-nav a:hover { color: #FFFACD; }
+nav {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  background: #4a0c10;
+  padding: 15px 10%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+  border-bottom: 3px solid #d4af37;
+}
+
+nav a {
+  color: #ffd700;
+  text-decoration: none;
+  margin-left: 20px;
+  font-weight: bold;
+}
+
+nav a:hover {
+  color: #fffacd;
+}
 
 /* ========== HERO ========== */
-.hero { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; background: linear-gradient(to right, #800000, #A00000); }
-.hero h1 { font-size: 3rem; }
-.hero p { margin: 20px 0; font-size: 1.2rem; }
+.hero {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(to right, #5a0f14, #7a1c22);
+}
 
-/* ========== SECTIONS ========== */
-.about { background: #660000; }
-.broadcasts { background: #4B0000; }
-.team { background: #660000; }
-.join { background: #4B0000; text-align: center; }
-.team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-.member { background: #660000; padding: 15px; border-radius: 10px; }
+.hero h1 {
+  font-size: 3rem;
+}
+
+/* ========== SECTION BACKGROUNDS ========== */
+.about,
+.team {
+  background: #6b151b;
+}
+
+.broadcasts,
+.join {
+  background: #5a0f14;
+}
+
+/* ========== TEAM CARDS ========== */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+}
+
+.member {
+  background: #4a0c10;
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px solid #d4af37;
+}
 
 /* ========== VIDEO SECTION ========== */
-.video-main { width: 100%; max-height: 70vh; }
-.video-player { width: 100%; height: 70vh; border: none; border-radius: 10px; }
-.video-scroll { display: flex; overflow-x: auto; margin-top: 15px; gap: 10px; padding-bottom: 10px; }
-.video-scroll button { flex: 0 0 auto; background: #800000; color: #FFD700; padding: 10px 15px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
-.video-scroll button:hover { background: #A00000; }
+.video-main {
+  width: 100%;
+  max-height: 70vh;
+}
 
-/* ========== JOIN INPUTS ========== */
-.join input { padding: 10px; margin: 10px; width: 250px; border-radius: 6px; border: none; }
+.video-player {
+  width: 100%;
+  height: 70vh;
+  border: 4px solid #d4af37;
+  border-radius: 12px;
+}
+
+.video-scroll {
+  display: flex;
+  overflow-x: auto;
+  margin-top: 20px;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+
+.video-scroll button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* ========== JOIN FORM ========== */
+.join input {
+  padding: 10px;
+  margin: 10px;
+  width: 260px;
+  border-radius: 6px;
+  border: 2px solid #d4af37;
+  background: #4a0c10;
+  color: #ffd700;
+}
 
 /* ========== FOOTER ========== */
-footer { background: #330000; text-align: center; padding: 20px; color: #FFD700; }
+footer {
+  background: #330000;
+  text-align: center;
+  padding: 25px;
+  border-top: 4px solid #d4af37;
+}
 
 /* ========== ADMIN MODAL ========== */
-#adminModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 3000; }
-.modal-box { background: #660000; padding: 30px; border-radius: 10px; text-align: center; color: #FFD700; }
+#adminModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+}
+
+.modal-box {
+  background: #5a0f14;
+  padding: 35px;
+  border-radius: 12px;
+  border: 3px solid #d4af37;
+  text-align: center;
+}
 
 /* ========== ADMIN DASHBOARD ========== */
-.admin-dashboard { display: none; min-height: 100vh; background: #330000; padding: 50px 10%; color: #FFD700; }
-.admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-.admin-tab { padding: 10px 20px; background: #660000; cursor: pointer; border-radius: 6px; color: #FFD700; }
-.admin-tab.active { background: #800000; }
-.tab-content { display: none; }
-.tab-content.active { display: block; }
-.admin-card { background: #660000; padding: 15px; margin-bottom: 10px; border-radius: 8px; }
-.admin-card button { background: #800000; color: #FFD700; margin-top: 5px; }
-.admin-card button:hover { background: #A00000; }
+.admin-dashboard {
+  display: none;
+  min-height: 100vh;
+  background: #4a0c10;
+  padding: 60px 10%;
+  border-top: 4px solid #d4af37;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.admin-tab {
+  padding: 10px 20px;
+  background: #6b151b;
+  border: 2px solid #d4af37;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.admin-tab.active {
+  background: #7a1c22;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.admin-card {
+  background: #5a0f14;
+  padding: 15px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 2px solid #d4af37;
+}
 </style>
 </head>
 <body>
