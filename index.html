@@ -14,47 +14,75 @@
 }
 
 body {
-  background: #f4f4f4; /* clean light background like school site */
+  background-color: #f8f5f1;
   color: #333;
   line-height: 1.6;
   scroll-behavior: smooth;
 }
 
-section {
-  padding: 80px 12%;
-}
-
-h1, h2 {
-  margin-bottom: 20px;
-  color: #7a0019; /* Eldorado maroon */
-}
-
-p {
-  max-width: 900px;
-}
-
-/* ================= NAVBAR ================= */
-nav {
+/* ================= BACKGROUND WATERMARK ================= */
+body::before {
+  content: "";
   position: fixed;
-  width: 100%;
+  top: 50%;
+  left: 50%;
+  width: 700px;
+  height: 700px;
+  background: url("header_logo.png") no-repeat center;
+  background-size: contain;
+  opacity: 0.05;
+  transform: translate(-50%, -50%) rotate(var(--rotation, 0deg));
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ================= HEADER ================= */
+.school-header {
+  position: fixed;
   top: 0;
-  background: #7a0019; /* official maroon look */
-  padding: 18px 12%;
+  width: 100%;
+  background: #7a0019;
+  color: white;
+  padding: 15px 10%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 5px solid #ffd700;
   z-index: 1000;
 }
 
-nav a {
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-left img {
+  height: 60px;
+}
+
+.header-text h1 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.header-text span {
+  font-size: 0.85rem;
+  color: #ffd700;
+  letter-spacing: 1px;
+}
+
+/* ================= NAV ================= */
+.school-header nav a {
   color: white;
   text-decoration: none;
   margin-left: 25px;
   font-weight: 600;
   transition: 0.3s;
+  cursor: pointer;
 }
 
-nav a:hover {
+.school-header nav a:hover {
   color: #ffd700;
 }
 
@@ -68,6 +96,7 @@ nav a:hover {
   background: #7a0019;
   color: white;
   padding-top: 60px;
+  margin-top: 110px; /* offset for fixed header */
 }
 
 .hero h1 {
@@ -95,15 +124,15 @@ nav a:hover {
 }
 
 /* ================= CONTENT SECTIONS ================= */
-.about,
-.team,
-.join,
-.broadcasts {
+section {
+  margin-top: 20px;
+  padding: 60px 12%;
   background: white;
-  margin: 40px 0;
-  border-left: 6px solid #ffd700;
-  border-right: 6px solid #ffd700;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  border: 4px solid #7a0019;
+  border-top: 8px solid #ffd700;
+  border-radius: 8px;
+  margin-bottom: 50px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
 
 /* ================= TEAM ================= */
@@ -130,6 +159,12 @@ nav a:hover {
   height: 65vh;
   border-radius: 6px;
   border: 3px solid #7a0019;
+}
+
+#videoTranscript {
+  margin-top: 15px;
+  font-size: 1rem;
+  color: #333;
 }
 
 .video-scroll {
@@ -244,17 +279,24 @@ footer {
 </head>
 <body>
 
-<!-- NAVBAR -->
-<nav>
-  <div><strong>🎥 School News</strong></div>
-  <div>
+<!-- ================= ELDORADO HEADER ================= -->
+<header class="school-header">
+  <div class="header-left">
+    <img src="header_logo.png" alt="Eldorado High School Logo">
+    <div class="header-text">
+      <h1>Eldorado High School</h1>
+      <span>News Broadcasting Club</span>
+    </div>
+  </div>
+
+  <nav>
     <a href="#about">About</a>
     <a href="#broadcasts">Broadcasts</a>
     <a href="#team">Team</a>
     <a href="#join">Join</a>
     <a onclick="openAdmin()">Admin</a>
-  </div>
-</nav>
+  </nav>
+</header>
 
 <!-- HERO -->
 <section class="hero">
@@ -276,6 +318,7 @@ footer {
   <h2>Latest Broadcasts</h2>
   <div class="video-main">
     <iframe id="mainVideo" class="video-player" src="" allowfullscreen></iframe>
+    <p id="videoTranscript"></p>
   </div>
   <div class="video-scroll" id="videoScroll"></div>
 </section>
@@ -344,12 +387,18 @@ footer {
 </div>
 
 <script>
+// ================= SCROLL ROTATION =================
+window.addEventListener("scroll", function () {
+  const scrollPosition = window.scrollY;
+  const rotation = scrollPosition * 0.05;
+  document.body.style.setProperty("--rotation", rotation + "deg");
+});
+
 // ======= ADMIN + VIDEO LOGIC =======
-// (Same as previous version with embedded YouTube + horizontal scroll)
 let ADMIN_USERNAME = "admin1973";
 let ADMIN_PASSWORD_HASH = localStorage.getItem("adminPassword") || null;
 
-async function initAdminPassword(){ if(!ADMIN_PASSWORD_HASH){ ADMIN_PASSWORD_HASH=await hashPassword("EldoradoClub2026"); localStorage.setItem("adminPassword", ADMIN_PASSWORD_HASH); } }
+async function initAdminPassword(){ if(!ADMIN_PASSWORD_HASH){ ADMIN_PASSWORD_HASH=await hashPassword("EldoradoClub2026"); localStorage.setItem("adminPassword",ADMIN_PASSWORD_HASH); } }
 async function hashPassword(password){ const data=new TextEncoder().encode(password); const hash=await crypto.subtle.digest("SHA-256", data); return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join(""); }
 
 function scrollToSection(id){ document.getElementById(id).scrollIntoView({behavior:"smooth"}); }
@@ -376,18 +425,45 @@ function deleteEntry(index){ const submissions=JSON.parse(localStorage.getItem("
 
 function getYouTubeEmbed(url){ const regex=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/; const match=url.match(regex); if(match && match[1]) return `https://www.youtube.com/embed/${match[1]}`; return url; }
 
+// ================= UPDATED VIDEO FUNCTION =================
 function loadVideos(){
-  const videos=JSON.parse(localStorage.getItem("videos"))||[];
-  const videoScroll=document.getElementById("videoScroll");
-  const mainVideo=document.getElementById("mainVideo");
-  videoScroll.innerHTML="";
-  if(videos.length===0){ mainVideo.src=""; return; }
-  mainVideo.src=getYouTubeEmbed(videos[0].link);
-  videos.forEach((v,i)=>{ const btn=document.createElement("button"); btn.textContent=v.title; btn.onclick=()=>{ mainVideo.src=getYouTubeEmbed(v.link); }; videoScroll.appendChild(btn); });
+  let videos = JSON.parse(localStorage.getItem("videos")) || [];
+  videos = videos.reverse(); // newest first
 
-  const videoContainer=document.getElementById("videoManager");
-  videoContainer.innerHTML="";
-  videos.forEach((v,i)=>{ const adminCard=document.createElement("div"); adminCard.className="admin-card"; adminCard.innerHTML=`<strong>${v.title}</strong><br><button onclick="editVideo(${i})">Edit</button><button onclick="deleteVideo(${i})">Delete</button>`; videoContainer.appendChild(adminCard); });
+  const videoScroll = document.getElementById("videoScroll");
+  const mainVideo = document.getElementById("mainVideo");
+  const transcriptEl = document.getElementById("videoTranscript");
+  videoScroll.innerHTML = "";
+  
+  if(videos.length === 0){
+    mainVideo.src = "";
+    transcriptEl.textContent = "";
+    return;
+  }
+
+  // show first (newest) video
+  mainVideo.src = getYouTubeEmbed(videos[0].link);
+  transcriptEl.textContent = videos[0].transcript || "";
+
+  videos.forEach((v,i)=>{
+    const btn = document.createElement("button");
+    btn.textContent = v.title;
+    btn.onclick = () => {
+      mainVideo.src = getYouTubeEmbed(v.link);
+      transcriptEl.textContent = v.transcript || "";
+    };
+    videoScroll.appendChild(btn);
+  });
+
+  // admin video manager
+  const videoContainer = document.getElementById("videoManager");
+  videoContainer.innerHTML = "";
+  videos.forEach((v,i)=>{
+    const adminCard = document.createElement("div");
+    adminCard.className = "admin-card";
+    adminCard.innerHTML = `<strong>${v.title}</strong><br><button onclick="editVideo(${videos.length-1-i})">Edit</button><button onclick="deleteVideo(${videos.length-1-i})">Delete</button>`;
+    videoContainer.appendChild(adminCard);
+  });
 }
 
 function addVideo(){ const title=prompt("Video title:"); const link=prompt("YouTube link:"); const transcript=prompt("Transcript:"); if(!title||!link) return; const videos=JSON.parse(localStorage.getItem("videos"))||[]; videos.push({title,link,transcript}); localStorage.setItem("videos",JSON.stringify(videos)); loadVideos(); }
