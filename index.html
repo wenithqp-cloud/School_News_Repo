@@ -51,12 +51,24 @@ section.visible{opacity:1;transform:translateY(0);}
 .hero button:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.15);}
 
 /* ================= BROADCASTS ================= */
-.broadcasts{background:var(--card);border-radius:18px;box-shadow:0 15px 35px rgba(0,0,0,.05);padding:40px 20px;width:90%;max-width:1000px;margin:40px 0;text-align:center;}
+.broadcasts{
+  background:var(--card);
+  border-radius:18px;
+  box-shadow:0 15px 35px rgba(0,0,0,.05);
+  padding:40px 20px;
+  width:90%;
+  max-width:1000px;
+  margin:40px auto;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
 .broadcasts h2{margin-bottom:30px;font-size:1.8rem;font-weight:600;}
-.video-main{width:100%;}
+.video-main{width:100%; max-width:720px; margin:0 auto;}
 .video-player{width:100%;height:50vh;border-radius:14px;border:none;box-shadow:0 10px 25px rgba(0,0,0,.08);}
 #videoTranscript{margin-top:15px; padding:15px; background:#f9f9f9; border-radius:12px; text-align:left; max-height:200px; overflow-y:auto; color:var(--text);}
-.video-scroll{margin-top:20px;display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;}
+.video-scroll{margin-top:20px;display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;justify-content:center;}
 .video-scroll button{background:var(--primary);color:white;border:none;padding:10px 18px;border-radius:8px;font-size:.9rem;cursor:pointer;transition:.3s;}
 .video-scroll button:hover{background:var(--accent);color:var(--primary);}
 
@@ -171,7 +183,7 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;font
 </div>
 
 <script>
-/* ============== SCROLL & ANIMATION ============== */
+// ===== SCROLL & ANIMATION =====
 function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
 const sections=document.querySelectorAll("section");
 const navLinks=document.querySelectorAll(".school-header nav a");
@@ -184,7 +196,7 @@ window.addEventListener("scroll",()=>{
   navLinks.forEach(link=>{link.classList.remove("active"); if(link.getAttribute("onclick").includes(current)){link.classList.add("active");}});
 });
 
-/* ============== FORM SUBMISSION ============== */
+// ===== FORM =====
 function submitForm(e){
   e.preventDefault();
   const name=document.getElementById("name").value;
@@ -196,7 +208,7 @@ function submitForm(e){
   e.target.reset();
 }
 
-/* ============== ADMIN LOGIN ============== */
+// ===== ADMIN LOGIN =====
 let ADMIN_USERNAME="admin1973", ADMIN_PASSWORD_HASH=null;
 async function hashPassword(p){
   const d=new TextEncoder().encode(p);
@@ -217,7 +229,7 @@ async function checkAdmin(){
 function openAdmin(){document.getElementById("adminModal").style.display="flex";}
 function closeAdmin(){document.getElementById("adminModal").style.display="none";}
 
-/* ============== TAB SWITCH ============== */
+// ===== TAB SWITCH =====
 function switchTab(tab){
   document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
   document.getElementById(tab).classList.add("active");
@@ -228,7 +240,7 @@ function switchTab(tab){
   if(tab==='teamTab') loadTeamMembers();
 }
 
-/* ============== SUBMISSIONS ============== */
+// ===== SUBMISSIONS =====
 function loadSubmissions(){
   const s=JSON.parse(localStorage.getItem("submissions")||"[]");
   const container=document.getElementById("submissions");
@@ -245,7 +257,7 @@ function deleteEntry(i){
   localStorage.setItem("submissions",JSON.stringify(s)); loadSubmissions();
 }
 
-/* ============== VIDEOS WITH TRANSCRIPTS ============== */
+// ===== VIDEOS WITH TRANSCRIPTS =====
 function getYouTubeEmbed(u){
   const r=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/;
   const m=u.match(r);
@@ -287,7 +299,7 @@ function deleteVideo(i){
   const v=JSON.parse(localStorage.getItem("videos")||"[]"); v.splice(i,1); localStorage.setItem("videos",JSON.stringify(v)); loadVideos();
 }
 
-/* ============== TEAM MEMBERS ============== */
+// ===== TEAM MEMBERS =====
 function loadTeamMembers(){
   const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");
   const grid=document.getElementById("teamGrid"); grid.innerHTML="";
@@ -325,7 +337,7 @@ function editPhone(i){
   const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]"); const p=prompt("Phone:",tM[i].phone); if(p!==null){tM[i].phone=p; localStorage.setItem("teamMembers",JSON.stringify(tM)); loadTeamMembers();}
 }
 
-/* ============== INITIAL LOAD ============== */
+// ===== INITIAL LOAD =====
 window.onload=()=>{
   sections.forEach(s=>s.classList.add("visible"));
   loadVideos();
