@@ -15,15 +15,15 @@
 
 html, body {
   height: 100%;
-  overflow-y: scroll;
   scroll-behavior: smooth;
-  scroll-snap-type: y mandatory;
+  overflow-x: hidden;
 }
 
 body {
   background-color: #f8f5f1;
   color: #333;
   line-height: 1.6;
+  position: relative;
 }
 
 /* ================= BACKGROUND ================= */
@@ -36,11 +36,11 @@ body::before {
   height: 700px;
   background: url("footer_logo-584425766.png") no-repeat center;
   background-size: contain;
-  opacity: 0.1;
+  opacity: 0.12;
   transform: translate(-50%, -50%) rotate(var(--rotation, 0deg));
   z-index: -1;
   pointer-events: none;
-  animation: spin 20s linear infinite;
+  animation: spin 15s linear infinite;
 }
 
 @keyframes spin {
@@ -84,7 +84,6 @@ body::before {
   letter-spacing: 1px;
 }
 
-/* ================= NAV ================= */
 .school-header nav a {
   color: white;
   text-decoration: none;
@@ -94,9 +93,7 @@ body::before {
   cursor: pointer;
 }
 
-.school-header nav a:hover {
-  color: #ffd700;
-}
+.school-header nav a:hover { color: #ffd700; }
 
 /* ================= SECTIONS ================= */
 section {
@@ -106,54 +103,58 @@ section {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  scroll-snap-align: start;
   padding: 5%;
 }
 
+/* ================= HERO ================= */
 .hero { background: #7a0019; color: white; }
-.hero h1 { font-size: 3rem; margin-bottom: 15px; }
-.hero p { font-size: 1.4rem; margin-bottom: 20px; }
+.hero h1 { font-size: 3rem; margin-bottom: 15px; transition: transform 0.6s ease; }
+.hero p { font-size: 1.4rem; margin-bottom: 20px; transition: transform 0.6s ease; }
 .hero button {
   background: #ffd700; color: #7a0019;
   border: none; padding: 12px 25px;
   border-radius: 4px; cursor: pointer;
+  transition: transform 0.3s;
 }
-.hero button:hover { background: white; }
+.hero button:hover { background: white; transform: scale(1.05); }
 
 /* ================= BROADCASTS ================= */
 .broadcasts {
-  background: #fff; border: 4px solid #7a0019; border-top: 8px solid #ffd700;
-  border-radius: 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-  overflow-y: auto; padding-bottom: 40px;
+  background: #fff;
+  border: 4px solid #7a0019;
+  border-top: 8px solid #ffd700;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  padding-bottom: 40px;
+  overflow-y: auto;
 }
 .video-main { width: 80%; max-width: 900px; margin: 10px auto; }
 .video-player { width: 100%; height: 50vh; border-radius: 6px; border: 3px solid #7a0019; }
 #videoTranscript { margin-top: 15px; font-size: 1rem; color: #333; }
 .video-scroll { display: flex; justify-content: center; overflow-x: auto; gap: 10px; padding: 10px 0; }
-.video-scroll button { background: #7a0019; color: white; border: none; padding: 10px 18px; border-radius: 4px; white-space: nowrap; cursor: pointer; }
-.video-scroll button:hover { background: #ffd700; color: #7a0019; }
+.video-scroll button { background: #7a0019; color: white; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; transition: transform 0.2s; }
+.video-scroll button:hover { background: #ffd700; color: #7a0019; transform: scale(1.05); }
 
 /* ================= TEAM ================= */
 .team { background: #fafafa; width: 100%; }
-.team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 25px; width: 80%; }
+.team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 40px; width: 80%; transition: all 0.5s ease; }
 .member {
   background: #fff; padding: 15px; border-left: 4px solid #7a0019;
   border-radius: 6px; position: relative; cursor: pointer;
-  transition: transform 0.3s;
+  display: flex; flex-direction: column; align-items: center;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
-.member:hover { transform: scale(1.05); }
+.member:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
 .member img {
   width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
-  position: absolute; top: -130px; left: 50%; transform: translateX(-50%);
-  display: none;
+  margin-bottom: 10px; transition: transform 0.3s ease;
 }
-.member:hover img { display: block; }
 
 /* ================= JOIN ================= */
 .join { background: #eaeaea; flex-direction: column; }
 .join input { padding: 10px; margin: 5px; width: 250px; border-radius: 4px; border: 1px solid #ccc; }
 .join button { background: #7a0019; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
-.join button:hover { background: #ffd700; color: #7a0019; }
+.join button:hover { background: #ffd700; color: #7a0019; transform: scale(1.05); }
 
 /* ================= FOOTER ================= */
 footer { background: #7a0019; color: white; text-align: center; padding: 15px; }
@@ -246,25 +247,15 @@ footer { background: #7a0019; color: white; text-align: center; padding: 15px; }
 
 <script>
 // ================= ROTATION =================
-window.addEventListener("scroll",()=>{document.body.style.setProperty("--rotation",window.scrollY*0.1+"deg");});
+window.addEventListener("scroll",()=>{document.body.style.setProperty("--rotation",window.scrollY*0.12+"deg");});
 
-// ================= SCROLL TO SECTION =================
+// ================= SCROLL =================
 function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
 
 // ================= ADMIN =================
 let ADMIN_USERNAME="admin1973", ADMIN_PASSWORD_HASH=null;
 async function hashPassword(p){const d=new TextEncoder().encode(p); const h=await crypto.subtle.digest("SHA-256",d); return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,"0")).join("");}
-async function checkAdmin(){
-  if(!ADMIN_PASSWORD_HASH) ADMIN_PASSWORD_HASH=await hashPassword("admin1973");
-  const user=document.getElementById("adminUser").value;
-  const pass=document.getElementById("adminPass").value;
-  const hashedInput=await hashPassword(pass);
-  if(user===ADMIN_USERNAME && hashedInput===ADMIN_PASSWORD_HASH){
-    document.getElementById("adminModal").style.display="none";
-    document.getElementById("adminDashboard").style.display="block";
-    loadSubmissions(); loadVideos(); loadTeamMembers();
-  }else alert("Incorrect username or password.");
-}
+async function checkAdmin(){if(!ADMIN_PASSWORD_HASH) ADMIN_PASSWORD_HASH=await hashPassword("admin1973"); const user=document.getElementById("adminUser").value; const pass=document.getElementById("adminPass").value; const hashedInput=await hashPassword(pass); if(user===ADMIN_USERNAME && hashedInput===ADMIN_PASSWORD_HASH){document.getElementById("adminModal").style.display="none"; document.getElementById("adminDashboard").style.display="block"; loadSubmissions(); loadVideos(); loadTeamMembers();} else alert("Incorrect username or password.");}
 function openAdmin(){document.getElementById("adminModal").style.display="flex";}
 function closeAdmin(){document.getElementById("adminModal").style.display="none";}
 function logout(){location.reload();}
@@ -286,11 +277,11 @@ function loadTeamMembers(){
   const grid=document.getElementById("teamGrid"); grid.innerHTML="";
   const manager=document.getElementById("teamManager"); manager.innerHTML="";
   tM.forEach((m,i)=>{
-    // site display
     const div=document.createElement("div"); div.className="member";
     const img=document.createElement("img"); img.src=m.img||"maroon.jpg"; div.appendChild(img);
-    div.innerHTML+=`<h3>${m.name}</h3><p>${m.role}</p>`; grid.appendChild(div);
-    // admin display
+    const h=document.createElement("h3"); h.textContent=m.name; div.appendChild(h);
+    const p=document.createElement("p"); p.textContent=m.role; div.appendChild(p);
+    grid.appendChild(div);
     const card=document.createElement("div"); card.className="admin-card";
     card.innerHTML=`<strong>${m.name}</strong><br><strong>${m.role}</strong><br><button onclick="editTeamMember(${i})">Edit</button> <button onclick="deleteTeamMember(${i})">Delete</button>`;
     manager.appendChild(card);
@@ -303,8 +294,8 @@ function deleteTeamMember(i){const tM=JSON.parse(localStorage.getItem("teamMembe
 // ================= TAB SWITCH =================
 function switchTab(tab){document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active")); document.getElementById(tab).classList.add("active"); document.querySelectorAll(".admin-tab").forEach(t=>t.classList.remove("active")); document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add("active");}
 
-// ================= ADMIN PASSWORD =================
-async function changeAdminPassword(){const c=prompt("Current password:"); if(await hashPassword(c)!==ADMIN_PASSWORD_HASH){alert("Incorrect"); return;} const n=prompt("New password:"); if(!n) return; ADMIN_PASSWORD_HASH=await hashPassword(n); alert("Password updated.");}
+// ================= PASSWORD =================
+async function changeAdminPassword(){const c=prompt("Enter current password:"); if(await hashPassword(c)!==ADMIN_PASSWORD_HASH){alert("Incorrect");return;} const n=prompt("Enter new password:"); if(!n) return; ADMIN_PASSWORD_HASH=await hashPassword(n); localStorage.setItem("adminPassword",ADMIN_PASSWORD_HASH); alert("Password updated!");}
 </script>
 </body>
 </html>
