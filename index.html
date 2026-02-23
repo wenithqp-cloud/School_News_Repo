@@ -26,11 +26,11 @@ body::before {
   position: fixed;
   top: 50%;
   left: 50%;
-  width: 700px;
-  height: 700px;
+  width: 800px;
+  height: 800px;
   background: url("header_logo.png") no-repeat center;
   background-size: contain;
-  opacity: 0.05;
+  opacity: 0.12; /* stronger visibility */
   transform: translate(-50%, -50%) rotate(var(--rotation, 0deg));
   z-index: -1;
   pointer-events: none;
@@ -41,7 +41,7 @@ body::before {
   position: fixed;
   top: 0;
   width: 100%;
-  background: #7a0019;
+  background: linear-gradient(90deg, #7a0019, #990022);
   color: white;
   padding: 15px 10%;
   display: flex;
@@ -49,6 +49,7 @@ body::before {
   align-items: center;
   border-bottom: 5px solid #ffd700;
   z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
 }
 
 .header-left {
@@ -58,7 +59,13 @@ body::before {
 }
 
 .header-left img {
-  height: 60px;
+  height: 90px;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6));
+}
+
+.header-left img:hover {
+  transform: scale(1.05);
 }
 
 .header-text h1 {
@@ -472,7 +479,7 @@ function deleteVideo(i){ const videos=JSON.parse(localStorage.getItem("videos"))
 async function changeAdminPassword(){ const current=prompt("Enter current password:"); if(await hashPassword(current)!==ADMIN_PASSWORD_HASH){ alert("Incorrect password!"); return; } const newPass=prompt("Enter new password:"); if(!newPass) return; ADMIN_PASSWORD_HASH=await hashPassword(newPass); localStorage.setItem("adminPassword",ADMIN_PASSWORD_HASH); alert("Password updated successfully!"); }
 function logout(){ location.reload(); }
 
-window.onload=loadVideos;
+window.onload=
 </script>
 </body>
 </html>
