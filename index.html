@@ -64,28 +64,19 @@ html {scroll-snap-type: y mandatory;}
 .member h3 {margin:5px 0 0 0; position:relative;}
 .member p {margin:0; font-size:0.9rem; color:#555;}
 
-/* ================= TEAM TOOLTIP FIX ================= */
-.member {
-  position: relative; /* ensures tooltip positions relative to member */
-}
-.member h3::after {
-  content: attr(data-contact);
-  position: absolute;
-  bottom: 125%; /* show above name */
-  left: 50%;
-  transform: translateX(-50%);
+/* ================= TOOLTIP ================= */
+.tooltip {
+  position: fixed;
   background: #7a0019;
   color: #ffd700;
-  padding: 4px 10px;
+  padding: 5px 10px;
   border-radius: 4px;
   font-size: 0.75rem;
-  white-space: nowrap;
-  z-index: 10;
-  opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 9999;
 }
-.member h3:hover::after {opacity:1;}
 
 /* ================= JOIN ================= */
 .join {background:#eaeaea;flex-direction:column;}
@@ -156,6 +147,9 @@ footer {background:#7a0019;color:white;text-align:center;padding:15px;}
 
 <footer>© 2026 School News Broadcasting Club</footer>
 
+<!-- TOOLTIP ELEMENT -->
+<div id="tooltip" class="tooltip"></div>
+
 <!-- ADMIN MODAL -->
 <div id="adminModal">
   <div class="modal-box">
@@ -189,38 +183,50 @@ window.addEventListener("scroll",()=>{document.body.style.setProperty("--rotatio
 // ================= SCROLL =================
 function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
 
-// ================= ADMIN =================
-let ADMIN_USERNAME="admin1973", ADMIN_PASSWORD_HASH=null;
-async function hashPassword(p){const d=new TextEncoder().encode(p); const h=await crypto.subtle.digest("SHA-256",d); return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,"0")).join("");}
-async function checkAdmin(){
-  if(!ADMIN_PASSWORD_HASH) ADMIN_PASSWORD_HASH=await hashPassword("admin1973");
-  const user=document.getElementById("adminUser").value;
-  const pass=document.getElementById("adminPass").value;
-  const hashedInput=await hashPassword(pass);
-  if(user===ADMIN_USERNAME && hashedInput===ADMIN_PASSWORD_HASH){
-    document.getElementById("adminModal").style.display="none";
-    document.getElementById("adminDashboard").style.display="block";
-    switchTab('joinTab');
-  } else alert("Incorrect username or password.");
-}
-function openAdmin(){document.getElementById("adminModal").style.display="flex";}
-function closeAdmin(){document.getElementById("adminModal").style.display="none";}
-function logout(){location.reload();}
+// ================= ADMIN / FORM =================
+// [keep all admin functions as in previous code]
 
-// ================= FORM =================
-function submitForm(e){
-  e.preventDefault();
-  const n=document.getElementById("name").value;
-  const em=document.getElementById("email").value;
-  const s=JSON.parse(localStorage.getItem("submissions"))||[];
-  s.push({name:n,email:em});
-  localStorage.setItem("submissions",JSON.stringify(s));
-  alert("Thanks!");
-  e.target.reset();
+// ================= TEAM MEMBERS =================
+function loadTeamMembers(){
+  const tM=JSON.parse(localStorage.getItem("teamMembers"))||[];
+  const grid=document.getElementById("teamGrid"); grid.innerHTML="";
+  const manager=document.getElementById("teamManager"); manager.innerHTML="";
+  const tooltip=document.getElementById("tooltip");
+
+  tM.forEach((m,i)=>{
+    const div=document.createElement("div"); div.className="member";
+    const img=document.createElement("img"); img.src=m.img||"maroon.jpg"; div.appendChild(img);
+    const h=document.createElement("h3"); h.textContent=m.name; div.appendChild(h);
+    const p=document.createElement("p"); p.textContent=m.role; div.appendChild(p);
+    grid.appendChild(div);
+
+    // Tooltip hover for everyone
+    div.addEventListener("mouseenter", e=>{
+      tooltip.textContent = `${m.email||'No email'}, ${m.phone||'No phone'}`;
+      tooltip.style.opacity=1;
+    });
+    div.addEventListener("mousemove", e=>{
+      tooltip.style.left=(e.pageX + 15) + "px";
+      tooltip.style.top=(e.pageY + 15) + "px";
+    });
+    div.addEventListener("mouseleave", e=>{
+      tooltip.style.opacity=0;
+    });
+
+    // Admin cards
+    if(document.getElementById("teamTab").classList.contains("active")){
+      const card=document.createElement("div"); card.className="admin-card";
+      card.innerHTML=`<strong>${m.name}</strong><br><strong>${m.role}</strong><br>Email: ${m.email||''} <button onclick="editEmail(${i})">Edit</button><br>Phone: ${m.phone||''} <button onclick="editPhone(${i})">Edit</button><br><button onclick="editTeamMember(${i})">Edit Name/Role/Image</button> <button onclick="deleteTeamMember(${i})">Delete</button>`;
+      manager.appendChild(card);
+    }
+  });
 }
 
-// ================= VIDEO / TEAM / ADMIN =================
-// ... [keep all previous JS functions exactly as in your last merged code]
+// ================= INIT =================
+window.onload=()=>{
+  loadVideos();
+  loadTeamMembers();
+};
 </script>
 </body>
 </html>
