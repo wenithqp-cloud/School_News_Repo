@@ -62,11 +62,14 @@ html {scroll-snap-type: y mandatory;}
 .video-scroll button:hover {background:#ffd700;color:#7a0019;transform:scale(1.05);}
 
 /* ================= TEAM ================= */
-.team {background:#fafafa;width:100%;}
+.team {background:#fafafa;width:100%;padding-bottom:40px;}
 .team-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:40px;width:80%;transition:all 0.5s ease;}
 .member {background:#fff;padding:15px;border-left:4px solid #7a0019;border-radius:6px;position:relative;cursor:pointer;display:flex;flex-direction:column;align-items:center;transition:transform 0.3s, box-shadow 0.3s;}
 .member:hover {transform:scale(1.05);box-shadow:0 8px 20px rgba(0,0,0,0.2);}
 .member img {width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:10px;transition:transform 0.3s ease;}
+.member h3 {margin:5px 0 0 0;}
+.member p {margin:0; font-size:0.9rem; color:#555;}
+.member:hover img {transform:scale(1.1);}
 
 /* ================= JOIN ================= */
 .join {background:#eaeaea;flex-direction:column;}
@@ -184,7 +187,10 @@ function deleteEntry(i){const s=JSON.parse(localStorage.getItem("submissions"))|
 function getYouTubeEmbed(u){const r=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/; const m=u.match(r); return m&&m[1]?`https://www.youtube.com/embed/${m[1]}`:u;}
 function loadVideos(){let v=JSON.parse(localStorage.getItem("videos"))||[]; v=v.reverse(); const vs=document.getElementById("videoScroll"); const mv=document.getElementById("mainVideo"); const t=document.getElementById("videoTranscript"); vs.innerHTML=""; if(v.length===0){mv.src=""; t.textContent=""; return;} mv.src=getYouTubeEmbed(v[0].link); t.textContent=v[0].transcript||""; v.forEach(x=>{const b=document.createElement("button"); b.textContent=x.title; b.onclick=()=>{mv.src=getYouTubeEmbed(x.link); t.textContent=x.transcript||""}; vs.appendChild(b);});}
 function addVideo(){const t=prompt("Video title:"), l=prompt("YouTube link:"), tr=prompt("Transcript:"); if(!t||!l) return; const v=JSON.parse(localStorage.getItem("videos"))||[]; v.push({title:t,link:l,transcript:tr}); localStorage.setItem("videos",JSON.stringify(v)); loadVideos();}
-window.onload=loadVideos;
+window.onload=()=>{
+  loadVideos();
+  loadTeamMembers(); // Make team visible to all users
+};
 
 // ================= TEAM MEMBERS =================
 function loadTeamMembers(){
@@ -192,14 +198,18 @@ function loadTeamMembers(){
   const grid=document.getElementById("teamGrid"); grid.innerHTML="";
   const manager=document.getElementById("teamManager"); manager.innerHTML="";
   tM.forEach((m,i)=>{
+    // PUBLIC GRID
     const div=document.createElement("div"); div.className="member";
     const img=document.createElement("img"); img.src=m.img||"maroon.jpg"; div.appendChild(img);
     const h=document.createElement("h3"); h.textContent=m.name; div.appendChild(h);
     const p=document.createElement("p"); p.textContent=m.role; div.appendChild(p);
     grid.appendChild(div);
-    const card=document.createElement("div"); card.className="admin-card";
-    card.innerHTML=`<strong>${m.name}</strong><br><strong>${m.role}</strong><br><button onclick="editTeamMember(${i})">Edit</button> <button onclick="deleteTeamMember(${i})">Delete</button>`;
-    manager.appendChild(card);
+    // ADMIN MANAGER
+    if(document.getElementById("adminDashboard").style.display==="block"){
+      const card=document.createElement("div"); card.className="admin-card";
+      card.innerHTML=`<strong>${m.name}</strong><br><strong>${m.role}</strong><br><button onclick="editTeamMember(${i})">Edit</button> <button onclick="deleteTeamMember(${i})">Delete</button>`;
+      manager.appendChild(card);
+    }
   });
 }
 function addTeamMember(){const n=prompt("Name:"); const r=prompt("Role:"); const i=prompt("Image filename (leave empty for maroon.jpg):"); if(!n||!r) return; const tM=JSON.parse(localStorage.getItem("teamMembers"))||[]; tM.push({name:n,role:r,img:i||"maroon.jpg"}); localStorage.setItem("teamMembers",JSON.stringify(tM)); loadTeamMembers();}
