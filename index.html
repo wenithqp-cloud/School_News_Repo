@@ -4,259 +4,337 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Eldorado High School - News Broadcasting Club</title>
-
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:"Helvetica Neue",Arial,sans-serif;
-}
+/* ================= GLOBAL ================= */
+* {margin:0;padding:0;box-sizing:border-box;font-family:"Helvetica Neue",Arial,sans-serif;}
+html, body {height:100%;scroll-behavior:smooth;overflow-x:hidden;}
+body {background-color:#f8f5f1;color:#333;line-height:1.6;position:relative;}
 
-html{scroll-behavior:smooth;}
-
-body{
-  background:#f8f5f1;
-  color:#333;
-  line-height:1.6;
-  overflow-x:hidden;
-  padding-top:110px;
-}
-
-/* BACKGROUND */
-body::before{
+/* ================= BACKGROUND ================= */
+body::before {
   content:"";
   position:fixed;
-  top:50%;
-  left:50%;
-  width:700px;
-  height:700px;
+  top:50%;left:50%;
+  width:700px;height:700px;
   background:url("footer_logo-584425766.png") no-repeat center;
   background-size:contain;
   opacity:0.12;
-  transform:translate(-50%, -50%);
+  transform:translate(-50%, -50%) rotate(var(--rotation,0deg));
   z-index:-1;
   pointer-events:none;
-  animation:spin 20s linear infinite;
+  animation:spin 10s linear infinite;
 }
-@keyframes spin{
-  from{transform:translate(-50%, -50%) rotate(0deg);}
-  to{transform:translate(-50%, -50%) rotate(360deg);}
-}
+@keyframes spin {from{transform:translate(-50%, -50%) rotate(0deg);} to{transform:translate(-50%, -50%) rotate(360deg);}}
 
-/* HEADER */
-.school-header{
-  position:fixed;
-  top:0;
-  width:100%;
-  background:rgba(122,0,25,0.95);
-  backdrop-filter:blur(8px);
-  color:white;
-  padding:15px 5%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom:5px solid #ffd700;
-  z-index:1000;
-  transition:all 0.3s ease;
-}
+/* ================= HEADER ================= */
+.school-header {position:fixed; top:0;width:100%;background:#7a0019;color:white;padding:15px 5%;display:flex;justify-content:space-between;align-items:center;border-bottom:5px solid #ffd700; z-index:1000;}
+.header-left {display:flex;align-items:center;gap:15px;}
+.header-left img {height:60px;}
+.header-text h1 {margin:0;font-size:1.3rem;}
+.header-text span {font-size:0.85rem;color:#ffd700;letter-spacing:1px;}
+.school-header nav a {color:white;text-decoration:none;margin-left:15px;font-weight:600;transition:0.3s;cursor:pointer;}
+.school-header nav a:hover {color:#ffd700;}
 
-.header-left{
-  display:flex;
-  align-items:center;
-  gap:15px;
-}
+/* ================= SECTIONS ================= */
+section {width:100%;min-height:100vh;display:flex;justify-content:center;align-items:center;flex-direction:column;padding:5%;scroll-snap-align:start;}
+html {scroll-snap-type: y mandatory;}
 
-.header-left img{
-  height:60px;
-}
+/* ================= HERO ================= */
+.hero {background:#7a0019;color:white;}
+.hero h1 {font-size:3rem;margin-bottom:15px;transition:transform 0.6s ease;}
+.hero p {font-size:1.4rem;margin-bottom:20px;transition:transform 0.6s ease;}
+.hero button {background:#ffd700;color:#7a0019;border:none;padding:12px 25px;border-radius:4px;cursor:pointer;transition:transform 0.3s;}
+.hero button:hover {background:white;transform:scale(1.05);}
 
-.header-text h1{font-size:1.3rem;}
+/* ================= BROADCASTS ================= */
+.broadcasts {background:#fff;border:4px solid #7a0019;border-top:8px solid #ffd700;border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,0.08);padding-bottom:40px;overflow-y:auto;}
+.video-main {width:80%;max-width:900px;margin:10px auto;}
+.video-player {width:100%;height:50vh;border-radius:6px;border:3px solid #7a0019;}
+#videoTranscript {margin-top:15px;font-size:1rem;color:#333;}
+.video-scroll {display:flex;justify-content:center;overflow-x:auto;gap:10px;padding:10px 0;}
+.video-scroll button {background:#7a0019;color:white;border:none;padding:10px 18px;border-radius:4px;cursor:pointer;transition:transform 0.2s;}
+.video-scroll button:hover {background:#ffd700;color:#7a0019;transform:scale(1.05);}
 
-.header-text span{
-  font-size:0.85rem;
-  color:#ffd700;
-  letter-spacing:1px;
-}
+/* ================= TEAM ================= */
+.team {background:#fafafa;width:100%;padding-bottom:40px;}
+.team-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:40px;width:80%;transition:all 0.5s ease;}
+.member {background:#fff;padding:15px;border-left:4px solid #7a0019;border-radius:6px;position:relative;cursor:pointer;display:flex;flex-direction:column;align-items:center;transition:transform 0.3s, box-shadow 0.3s;}
+.member:hover {transform:scale(1.05);box-shadow:0 8px 20px rgba(0,0,0,0.2);}
+.member img {width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:10px;transition:transform 0.3s ease;}
+.member h3 {margin:5px 0 0 0; position:relative;}
+.member p {margin:0; font-size:0.9rem; color:#555;}
 
-.school-header nav a{
-  color:white;
-  text-decoration:none;
-  margin-left:15px;
-  font-weight:600;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.school-header nav a:hover{
-  color:#ffd700;
+/* ================= TEAM TOOLTIP ================= */
+.member h3:hover::after {
+  content: attr(data-contact);
+  position: absolute;
+  bottom:-30px; left:50%; transform:translateX(-50%);
+  background: #7a0019; color: #ffd700;
+  padding:4px 10px; border-radius:4px;
+  font-size:0.75rem; white-space:nowrap; z-index:10;
 }
 
-.school-header nav a.active{
-  color:#ffd700;
-  border-bottom:2px solid #ffd700;
-}
+/* ================= JOIN ================= */
+.join {background:#eaeaea;flex-direction:column;}
+.join input {padding:10px;margin:5px;width:250px;border-radius:4px;border:1px solid #ccc;}
+.join button {background:#7a0019;color:white;border:none;padding:10px 20px;border-radius:4px;cursor:pointer;}
+.join button:hover {background:#ffd700;color:#7a0019;transform:scale(1.05);}
 
-/* SECTIONS */
-section{
-  width:100%;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  padding:5%;
-  scroll-margin-top:120px;
+/* ================= FOOTER ================= */
+footer {background:#7a0019;color:white;text-align:center;padding:15px;}
 
-  opacity:0;
-  transform:translateY(40px);
-  transition:all 0.8s ease;
-}
-
-section.visible{
-  opacity:1;
-  transform:translateY(0);
-}
-
-/* HERO */
-.hero{
-  background:#7a0019;
-  color:white;
-  text-align:center;
-}
-
-.hero h1{
-  font-size:3rem;
-  margin-bottom:15px;
-}
-
-.hero p{
-  font-size:1.4rem;
-  margin-bottom:20px;
-}
-
-.hero button{
-  background:#ffd700;
-  color:#7a0019;
-  border:none;
-  padding:12px 25px;
-  border-radius:4px;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.hero button:hover{
-  background:white;
-  transform:scale(1.05);
-}
-
-/* Other styles unchanged... */
+/* ================= ADMIN ================= */
+#adminModal {display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);justify-content:center;align-items:center;z-index:3000;}
+.modal-box {background:white;padding:30px;border-radius:6px;border-top:6px solid #7a0019;text-align:center;}
+.admin-dashboard {display:none;background:#f4f4f4;width:100%;min-height:100vh;overflow-y:auto;padding:60px 5%;}
+.admin-tabs {display:flex;gap:10px;margin-bottom:20px;}
+.admin-tab {padding:10px 18px;background:#7a0019;color:white;border-radius:4px;cursor:pointer;}
+.admin-tab.active {background:#ffd700;color:#7a0019;}
+.admin-card {background:white;padding:15px;margin-bottom:10px;border-left:4px solid #7a0019;box-shadow:0 2px 6px rgba(0,0,0,0.08);}
+.tab-content {display:none;}
+.tab-content.active {display:block;}
 </style>
 </head>
-
 <body>
 
 <header class="school-header">
   <div class="header-left">
-    <img src="footer_logo-584425766.png" alt="Eldorado High School Logo">
-    <div class="header-text">
-      <h1>Eldorado High School</h1>
-      <span>News Broadcasting Club</span>
-    </div>
+    <img src="footer_logo-584425766.png" alt="Logo">
+    <div class="header-text"><h1>Eldorado High School</h1><span>News Broadcasting Club</span></div>
   </div>
   <nav>
     <a onclick="scrollToSection('hero')">Home</a>
     <a onclick="scrollToSection('broadcasts')">Broadcasts</a>
     <a onclick="scrollToSection('team')">Team</a>
     <a onclick="scrollToSection('join')">Join</a>
-    <a onclick="scrollToSection('aboutUs')">About Us</a>
+    <a onclick="openAdmin()">Admin</a>
   </nav>
 </header>
 
+<section id="hero" class="hero">
+  <h1>Welcome to the News Broadcasting Club</h1>
+  <p>Delivering school stories. Sharing student voices. Creating future journalists.</p>
+  <button onclick="scrollToSection('broadcasts')">Watch Latest Broadcast</button>
+</section>
+
+<section id="broadcasts" class="broadcasts">
+  <h2>Latest Broadcasts</h2>
+  <div class="video-main">
+    <iframe id="mainVideo" class="video-player" src="" allowfullscreen></iframe>
+    <p id="videoTranscript"></p>
+  </div>
+  <div class="video-scroll" id="videoScroll"></div>
+</section>
+
+<section id="team" class="team">
+  <h2>Meet the Team</h2>
+  <div class="team-grid" id="teamGrid"></div>
+</section>
+
+<section id="join" class="join">
+  <h2>Join the Club</h2>
+  <p>Interested in journalism, filming, or editing? Sign up below!</p>
+  <form onsubmit="submitForm(event)">
+    <input type="text" id="name" placeholder="Your Name" required>
+    <input type="email" id="email" placeholder="Your Email" required><br>
+    <button type="submit">Submit</button>
+  </form>
+</section>
+
+<footer>© 2026 School News Broadcasting Club</footer>
+
+<!-- ADMIN MODAL -->
+<div id="adminModal">
+  <div class="modal-box">
+    <h2>Admin Login</h2>
+    <input type="text" id="adminUser" placeholder="Username"><br><br>
+    <input type="password" id="adminPass" placeholder="Password"><br><br>
+    <button onclick="checkAdmin()">Login</button>
+    <button onclick="closeAdmin()">Cancel</button>
+  </div>
+</div>
+
+<div class="admin-dashboard" id="adminDashboard">
+  <h1>🎥 Admin Panel</h1>
+  <div class="admin-tabs">
+    <div class="admin-tab active" onclick="switchTab('joinTab')">Join Requests</div>
+    <div class="admin-tab" onclick="switchTab('videoTab')">Broadcast Videos</div>
+    <div class="admin-tab" onclick="switchTab('teamTab')">Team Members</div>
+    <div class="admin-tab" onclick="switchTab('securityTab')">Security</div>
+  </div>
+
+  <div id="joinTab" class="tab-content active"><h2>📋 Student Join Requests</h2><div id="submissions"></div></div>
+  <div id="videoTab" class="tab-content"><h2>🎬 Manage Broadcast Videos</h2><button onclick="addVideo()">➕ Add Video</button><div id="videoManager"></div></div>
+  <div id="teamTab" class="tab-content"><h2>👥 Manage Team Members</h2><button onclick="addTeamMember()">➕ Add Member</button><div id="teamManager"></div></div>
+  <div id="securityTab" class="tab-content"><h2>🔐 Security</h2><p>Logged in as: <strong>admin1973</strong></p><button onclick="changeAdminPassword()">Change Password</button><br><br><button onclick="logout()" style="background:#A00000;">Logout</button></div>
+</div>
+
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+// ================= ROTATION =================
+window.addEventListener("scroll",()=>{document.body.style.setProperty("--rotation",window.scrollY*0.12+"deg");});
 
-  function scrollToSection(id){
-    const section = document.getElementById(id);
-    if(section){
-      section.scrollIntoView({behavior:'smooth'});
-    }
-  }
-  window.scrollToSection = scrollToSection;
+// ================= SCROLL =================
+function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
 
-  const sections = document.querySelectorAll("section");
-  const navLinks = document.querySelectorAll(".school-header nav a");
+// ================= ADMIN =================
+let ADMIN_USERNAME="admin1973", ADMIN_PASSWORD_HASH=null;
+async function hashPassword(p){const d=new TextEncoder().encode(p); const h=await crypto.subtle.digest("SHA-256",d); return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,"0")).join("");}
+async function checkAdmin(){
+  if(!ADMIN_PASSWORD_HASH) ADMIN_PASSWORD_HASH=await hashPassword("admin1973");
+  const user=document.getElementById("adminUser").value;
+  const pass=document.getElementById("adminPass").value;
+  const hashedInput=await hashPassword(pass);
+  if(user===ADMIN_USERNAME && hashedInput===ADMIN_PASSWORD_HASH){
+    document.getElementById("adminModal").style.display="none";
+    document.getElementById("adminDashboard").style.display="block";
+    switchTab('joinTab'); // load first tab
+    switchTab('joinTab');
+  } else alert("Incorrect username or password.");
+}
+function openAdmin(){document.getElementById("adminModal").style.display="flex";}
+function closeAdmin(){document.getElementById("adminModal").style.display="none";}
+function logout(){location.reload();}
 
-  window.addEventListener("scroll", () => {
-    let current = "";
+// ================= FORM =================
+function submitForm(e){
+  e.preventDefault();
+  const n=document.getElementById("name").value;
+  const em=document.getElementById("email").value;
+  const s=JSON.parse(localStorage.getItem("submissions"))||[];
+  s.push({name:n,email:em});
+  localStorage.setItem("submissions",JSON.stringify(s));
+  alert("Thanks!");
+  e.target.reset();
+}
 
-    sections.forEach(section => {
-      const sectionTop = section.offsetTop - 150;
-      if(window.scrollY >= sectionTop){
-        current = section.getAttribute("id");
-        section.classList.add("visible");
-      }
-    });
-
-    navLinks.forEach(link => {
-      link.classList.remove("active");
-      if(link.getAttribute("onclick")?.includes(current)){
-        link.classList.add("active");
-      }
-    });
+// ================= TEAM / VIDEOS =================
+function getYouTubeEmbed(u){const r=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/; const m=u.match(r); return m&&m[1]?`https://www.youtube.com/embed/${m[1]}`:u;}
+function loadSubmissions(){const s=JSON.parse(localStorage.getItem("submissions"))||[]; const c=document.getElementById("submissions"); c.innerHTML=""; if(s.length===0){c.innerHTML="<p>No join requests yet.</p>"; return;} s.forEach((v,i)=>{const d=document.createElement("div"); d.className="admin-card"; d.innerHTML=`<strong>Name:</strong> ${v.name}<br><strong>Email:</strong> ${v.email}<br><button onclick="deleteEntry(${i})">Delete</button>`; c.appendChild(d);});}
+function deleteEntry(i){const s=JSON.parse(localStorage.getItem("submissions"))||[]; s.splice(i,1); localStorage.setItem("submissions",JSON.stringify(s)); loadSubmissions();}
+function loadVideos(){let v=JSON.parse(localStorage.getItem("videos"))||[]; v=v.reverse(); const vs=document.getElementById("videoScroll"); const mv=document.getElementById("mainVideo"); const t=document.getElementById("videoTranscript"); vs.innerHTML=""; if(v.length===0){mv.src=""; t.textContent=""; return;} mv.src=getYouTubeEmbed(v[0].link); t.textContent=v[0].transcript||""; v.forEach(x=>{const b=document.createElement("button"); b.textContent=x.title; b.onclick=()=>{mv.src=getYouTubeEmbed(x.link); t.textContent=x.transcript||""}; vs.appendChild(b);});}
+function addVideo(){const t=prompt("Video title:"), l=prompt("YouTube link:"), tr=prompt("Transcript:"); if(!t||!l) return; const v=JSON.parse(localStorage.getItem("videos"))||[]; v.push({title:t,link:l,transcript:tr}); localStorage.setItem("videos",JSON.stringify(v)); loadVideos();}
+function loadTeamMembers(){const tM=JSON.parse(localStorage.getItem("teamMembers"))||[]; const grid=document.getElementById("teamGrid"); const manager=document.getElementById("teamManager"); grid.innerHTML=""; manager.innerHTML=""; tM.forEach((m,i)=>{const div=document.createElement("div"); div.className="member"; const img=document.createElement("img"); img.src=m.img||"maroon.jpg"; div.appendChild(img); const h=document.createElement("h3"); h.textContent=m.name; h.setAttribute("data-contact",`${m.email||'No email'}, ${m.phone||'No phone'}`); div.appendChild(h); const p=document.createElement("p"); p.textContent=m.role; div.appendChild(p); grid.appendChild(div); if(document.getElementById("teamTab").classList.contains("active")){const card=document.createElement("div"); card.className="admin-card"; card.innerHTML=`<strong>${m.name}</strong><br><strong>${m.role}</strong><br>Email: ${m.email||''} <button onclick="editEmail(${i})">Edit</button><br>Phone: ${m.phone||''} <button onclick="editPhone(${i})">Edit</button><br><button onclick="editTeamMember(${i})">Edit Name/Role/Image</button> <button onclick="deleteTeamMember(${i})">Delete</button>`; manager.appendChild(card);}});}
+// ================= TEAM =================
+function loadSubmissions(){
+  const s=JSON.parse(localStorage.getItem("submissions"))||[];
+  const c=document.getElementById("submissions");
+  c.innerHTML="";
+  if(s.length===0){c.innerHTML="<p>No join requests yet.</p>"; return;}
+  s.forEach((v,i)=>{
+    const d=document.createElement("div"); d.className="admin-card";
+    d.innerHTML=`<strong>Name:</strong> ${v.name}<br><strong>Email:</strong> ${v.email}<br><button onclick="deleteEntry(${i})">Delete</button>`;
+    c.appendChild(d);
   });
+}
+function deleteEntry(i){
+  const s=JSON.parse(localStorage.getItem("submissions"))||[]; s.splice(i,1);
+  localStorage.setItem("submissions",JSON.stringify(s)); loadSubmissions();
+}
 
-  /* VIDEO SYSTEM */
-  function getYouTubeEmbed(u){
-    const r=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/;
-    const m=u.match(r);
-    return m&&m[1]?`https://www.youtube.com/embed/${m[1]}`:u;
-  }
+// ================= VIDEO =================
+function getYouTubeEmbed(u){
+  const r=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/; const m=u.match(r); return m&&m[1]?`https://www.youtube.com/embed/${m[1]}`:u;
+}
+function loadVideos(){
+  let v=JSON.parse(localStorage.getItem("videos"))||[];
+  v=v.reverse();
+  const vs=document.getElementById("videoScroll");
+  const mv=document.getElementById("mainVideo");
+  const t=document.getElementById("videoTranscript");
+  const manager=document.getElementById("videoManager");
+  vs.innerHTML=""; manager.innerHTML="";
+  if(v.length===0){mv.src=""; t.textContent=""; return;}
+  mv.src=getYouTubeEmbed(v[0].link); t.textContent=v[0].transcript||"";
+  v.forEach((x,i)=>{
+    // Scroll buttons
+    const b=document.createElement("button");
+    b.textContent=x.title;
+    b.onclick=()=>{mv.src=getYouTubeEmbed(x.link); t.textContent=x.transcript||"";};
+    vs.appendChild(b);
 
-  function loadVideos(){
-    let videos=JSON.parse(localStorage.getItem("videos"))||[];
-    const scroll=document.getElementById("videoScroll");
-    const mainVideo=document.getElementById("mainVideo");
-    if(!scroll||!mainVideo) return;
-
-    scroll.innerHTML="";
-    videos.slice().reverse().forEach((video)=>{
-      const btn=document.createElement("button");
-      btn.textContent=video.title;
-      btn.onclick=()=>{
-        mainVideo.src=getYouTubeEmbed(video.link);
-      };
-      scroll.appendChild(btn);
-    });
-
-    if(videos.length){
-      mainVideo.src=getYouTubeEmbed(videos[videos.length-1].link);
-    }
-  }
-
-  function loadTeamMembers(){
-    const members=JSON.parse(localStorage.getItem("teamMembers"))||[];
-    const grid=document.getElementById("teamGrid");
-    if(!grid) return;
-
-    grid.innerHTML="";
-    members.forEach((m)=>{
-      const div=document.createElement("div");
-      div.className="member";
-      div.innerHTML=`
-        <img src="${m.img||'maroon.jpg'}">
-        <h3>${m.name}</h3>
-        <p>${m.role}</p>
+    // Admin cards
+    if(document.getElementById("videoTab").classList.contains("active")){
+      const card=document.createElement("div");
+      card.className="admin-card";
+      card.innerHTML=`
+        <strong>${x.title}</strong><br>
+        <strong>Link:</strong> ${x.link}<br>
+        <strong>Transcript:</strong> ${x.transcript||''}<br>
+        <button onclick="editVideo(${i})">Edit</button>
+        <button onclick="deleteVideo(${i})">Delete</button>
       `;
-      grid.appendChild(div);
-    });
-  }
-
+      manager.appendChild(card);
+    }
+  });
+}
+function addVideo(){
+  const t=prompt("Video title:"), l=prompt("YouTube link:"), tr=prompt("Transcript:");
+  if(!t||!l) return;
+  const v=JSON.parse(localStorage.getItem("videos"))||[];
+  v.push({title:t,link:l,transcript:tr});
+  localStorage.setItem("videos",JSON.stringify(v));
   loadVideos();
-  loadTeamMembers();
+}
+function editVideo(i){
+  const v=JSON.parse(localStorage.getItem("videos"))||[];
+  const vid=v[i];
+  const t=prompt("Video title:",vid.title);
+  const l=prompt("YouTube link:",vid.link);
+  const tr=prompt("Transcript:",vid.transcript||"");
+  if(!t||!l) return;
+  v[i]={title:t,link:l,transcript:tr};
+  localStorage.setItem("videos",JSON.stringify(v));
+  loadVideos();
+}
+function deleteVideo(i){
+  const v=JSON.parse(localStorage.getItem("videos"))||[];
+  v.splice(i,1);
+  localStorage.setItem("videos",JSON.stringify(v));
+  loadVideos();
+}
 
-});
+// ================= TEAM MEMBERS =================
+function loadTeamMembers(){
+  const tM=JSON.parse(localStorage.getItem("teamMembers"))||[];
+  const grid=document.getElementById("teamGrid"); grid.innerHTML="";
+  const manager=document.getElementById("teamManager"); manager.innerHTML="";
+  tM.forEach((m,i)=>{
+    const div=document.createElement("div"); div.className="member";
+    const img=document.createElement("img"); img.src=m.img||"maroon.jpg"; div.appendChild(img);
+    const h=document.createElement("h3"); h.textContent=m.name; h.setAttribute('data-contact',`${m.email||'No email'}, ${m.phone||'No phone'}`); div.appendChild(h);
+    const p=document.createElement("p"); p.textContent=m.role; div.appendChild(p);
+    grid.appendChild(div);
+    if(document.getElementById("teamTab").classList.contains("active")){
+      const card=document.createElement("div"); card.className="admin-card";
+      card.innerHTML=`<strong>${m.name}</strong><br><strong>${m.role}</strong><br>Email: ${m.email||''} <button onclick="editEmail(${i})">Edit</button><br>Phone: ${m.phone||''} <button onclick="editPhone(${i})">Edit</button><br><button onclick="editTeamMember(${i})">Edit Name/Role/Image</button> <button onclick="deleteTeamMember(${i})">Delete</button>`;
+      manager.appendChild(card);
+    }
+  });
+}
+function addTeamMember(){const n=prompt("Name:"); const r=prompt("Role:"); const i=prompt("Image filename (leave empty for maroon.jpg):"); if(!n||!r) return; const tM=JSON.parse(localStorage.getItem("teamMembers"))||[]; tM.push({name:n,role:r,img:i||"maroon.jpg",email:'',phone:''}); localStorage.setItem("teamMembers",JSON.stringify(tM)); loadTeamMembers();}
+function editTeamMember(i){const tM=JSON.parse(localStorage.getItem("teamMembers"))||[]; const m=tM[i]; const n=prompt("Name:",m.name); const r=prompt("Role:",m.role); const im=prompt("Image filename:",m.img); tM[i]={name:n||m.name,role:r||m.role,img:im||m.img,email:m.email,phone:m.phone}; localStorage.setItem("teamMembers",JSON.stringify(tM)); loadTeamMembers();}
+function deleteTeamMember(i){const tM=JSON.parse(localStorage.getItem("teamMembers"))||[]; tM.splice(i,1); localStorage.setItem("teamMembers",JSON.stringify(tM)); loadTeamMembers();}
+function editEmail(i){const tM=JSON.parse(localStorage.getItem("teamMembers"))||[]; const m=tM[i]; const e=prompt("Enter email:",m.email||''); if(e!==null){m.email=e; localStorage.setItem("teamMembers",JSON.stringify(tM)); loadTeamMembers();}}
+function editPhone(i){const tM=JSON.parse(localStorage.getItem("teamMembers"))||[]; const m=tM[i]; const p=prompt("Enter phone number:",m.phone||''); if(p!==null){m.phone=p; localStorage.setItem("teamMembers",JSON.stringify(tM)); loadTeamMembers();}}
+
+// ================= TAB SWITCH =================
+function switchTab(tab){
+  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
+  document.getElementById(tab).classList.add("active");
+  document.querySelectorAll(".admin-tab").forEach(t=>t.classList.remove("active"));
+  document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add("active");
+
+  // Load content for active tab only
+  if(tab==='joinTab') loadSubmissions();
+  if(tab==='videoTab') loadVideos();
+  if(tab==='teamTab') loadTeamMembers();
+}
+
+// ================= PASSWORD =================
+async function changeAdminPassword(){const n=prompt("Enter new password:"); if(!n) return; ADMIN_PASSWORD_HASH=await hashPassword(n); alert("Password updated!");}
+
+// Load videos and team on page load for non-admin view
+window.onload=()=>{loadVideos(); loadTeamMembers();};
 </script>
-
 </body>
 </html>
