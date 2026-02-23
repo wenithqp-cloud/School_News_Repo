@@ -306,3 +306,5 @@ function switchTab(tab){document.querySelectorAll(".tab-content").forEach(t=>t.c
 // ================= ADMIN PASSWORD =================
 async function changeAdminPassword(){const c=prompt("Current password:"); if(await hashPassword(c)!==ADMIN_PASSWORD_HASH){alert("Incorrect"); return;} const n=prompt("New password:"); if(!n) return; ADMIN_PASSWORD_HASH=await hashPassword(n); alert("Password updated.");}
 </script>
+</body>
+</html>
