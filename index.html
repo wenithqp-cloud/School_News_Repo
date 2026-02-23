@@ -4,50 +4,115 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Eldorado High School - News Broadcasting Club</title>
-<style>
-/* ================== GLOBAL ================== */
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-body { background: #0f172a; color: white; scroll-behavior: smooth; }
-section { padding: 80px 10%; }
-h1, h2 { margin-bottom: 20px; }
-button { padding: 12px 20px; border: none; background: #2563eb; color: white; cursor: pointer; border-radius: 6px; transition: 0.3s; }
-button:hover { background: #1e40af; }
+<style>/* ====== Eldorado Maroon & Gold Theme ====== */
 
-/* ========== NAVBAR ========== */
-nav { position: fixed; width: 100%; top: 0; background: rgba(15,23,42,0.95); padding: 15px 10%; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-nav a { color: white; text-decoration: none; margin-left: 20px; font-weight: bold; cursor: pointer; }
-nav a:hover { color: #60a5fa; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #5a0f14, #7a1c22);
+  color: #f5d26a; /* soft gold text */
+}
 
-/* ========== HERO ========== */
-.hero { height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; background: linear-gradient(to right, #1e3a8a, #2563eb); }
-.hero h1 { font-size: 3rem; }
-.hero p { margin: 20px 0; font-size: 1.2rem; }
+/* Header */
+header {
+  background-color: #4a0c10;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 4px solid #d4af37; /* gold */
+}
 
-/* ========== SECTIONS ========== */
-.about { background: #1e293b; }
-.broadcasts { background: #0f172a; }
-.team { background: #1e293b; }
-.join { background: #0f172a; text-align: center; }
-.video-grid, .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-.video-card, .member { background: #1e293b; padding: 15px; border-radius: 10px; }
-.member { background: #0f172a; }
-.join input { padding: 10px; margin: 10px; width: 250px; border-radius: 6px; border: none; }
+h1, h2, h3 {
+  color: #ffd700; /* brighter gold */
+}
 
-/* ========== FOOTER ========== */
-footer { background: #020617; text-align: center; padding: 20px; }
+/* Navigation */
+nav {
+  background-color: #6b151b;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 10px;
+}
 
-/* ========== ADMIN MODAL ========== */
-#adminModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 3000; }
-.modal-box { background: #1f2937; padding: 30px; border-radius: 10px; text-align: center; }
+nav a {
+  color: #ffd700;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+}
 
-/* ========== ADMIN DASHBOARD ========== */
-.admin-dashboard { display: none; min-height: 100vh; background: #111827; padding: 50px 10%; color: white; }
-.admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-.admin-tab { padding: 10px 20px; background: #1f2937; cursor: pointer; border-radius: 6px; }
-.admin-tab.active { background: #2563eb; }
-.tab-content { display: none; }
-.tab-content.active { display: block; }
-.admin-card { background: #1f2937; padding: 15px; margin-bottom: 10px; border-radius: 8px; }
+nav a:hover {
+  color: white;
+}
+
+/* Video Section */
+.video-container {
+  width: 100%;
+  max-width: 100%;
+  padding: 20px;
+}
+
+.video-container iframe {
+  width: 100%;
+  height: 60vh;
+  border: 4px solid #d4af37;
+  border-radius: 10px;
+}
+
+/* Video Scroll Bar */
+.video-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  padding: 15px;
+  background-color: #4a0c10;
+  border-top: 3px solid #d4af37;
+}
+
+.video-scroll button {
+  background-color: #7a1c22;
+  color: #ffd700;
+  border: 2px solid #d4af37;
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: 0.3s;
+}
+
+.video-scroll button:hover {
+  background-color: #d4af37;
+  color: #4a0c10;
+}
+
+/* Admin Dashboard */
+#adminDashboard {
+  background-color: #4a0c10;
+  border: 3px solid #d4af37;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 10px;
+}
+
+/* Forms */
+input, textarea {width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: 2px solid #d4af37;
+  background-color: #7a1c22;
+  color: #ffd700;}
+
+button {background-color: #d4af37;
+  color: #4a0c10;
+  border: none;
+  padding: 10px 15px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;}
+  
+button:hover {background-color: #ffd700;}
 </style>
 </head>
 <body>
