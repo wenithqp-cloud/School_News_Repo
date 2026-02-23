@@ -27,13 +27,7 @@ body::before {
 @keyframes spin {from{transform:translate(-50%, -50%) rotate(0deg);} to{transform:translate(-50%, -50%) rotate(360deg);}}
 
 /* ================= HEADER ================= */
-.school-header {
-  position:fixed; top:0;width:100%;
-  background:#7a0019;color:white;
-  padding:15px 5%; display:flex;
-  justify-content:space-between;align-items:center;
-  border-bottom:5px solid #ffd700; z-index:1000;
-}
+.school-header {position:fixed; top:0;width:100%;background:#7a0019;color:white;padding:15px 5%;display:flex;justify-content:space-between;align-items:center;border-bottom:5px solid #ffd700; z-index:1000;}
 .header-left {display:flex;align-items:center;gap:15px;}
 .header-left img {height:60px;}
 .header-text h1 {margin:0;font-size:1.3rem;}
@@ -67,9 +61,18 @@ html {scroll-snap-type: y mandatory;}
 .member {background:#fff;padding:15px;border-left:4px solid #7a0019;border-radius:6px;position:relative;cursor:pointer;display:flex;flex-direction:column;align-items:center;transition:transform 0.3s, box-shadow 0.3s;}
 .member:hover {transform:scale(1.05);box-shadow:0 8px 20px rgba(0,0,0,0.2);}
 .member img {width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:10px;transition:transform 0.3s ease;}
-.member h3 {margin:5px 0 0 0;}
+.member h3 {margin:5px 0 0 0; position:relative;}
 .member p {margin:0; font-size:0.9rem; color:#555;}
-.member:hover img {transform:scale(1.1);}
+
+/* ================= TEAM TOOLTIP ================= */
+.member h3:hover::after {
+  content: attr(data-contact);
+  position: absolute;
+  bottom:-30px; left:50%; transform:translateX(-50%);
+  background: #7a0019; color: #ffd700;
+  padding:4px 10px; border-radius:4px;
+  font-size:0.75rem; white-space:nowrap; z-index:10;
+}
 
 /* ================= JOIN ================= */
 .join {background:#eaeaea;flex-direction:column;}
@@ -173,24 +176,67 @@ function scrollToSection(id){document.getElementById(id).scrollIntoView({behavio
 // ================= ADMIN =================
 let ADMIN_USERNAME="admin1973", ADMIN_PASSWORD_HASH=null;
 async function hashPassword(p){const d=new TextEncoder().encode(p); const h=await crypto.subtle.digest("SHA-256",d); return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,"0")).join("");}
-async function checkAdmin(){if(!ADMIN_PASSWORD_HASH) ADMIN_PASSWORD_HASH=await hashPassword("admin1973"); const user=document.getElementById("adminUser").value; const pass=document.getElementById("adminPass").value; const hashedInput=await hashPassword(pass); if(user===ADMIN_USERNAME && hashedInput===ADMIN_PASSWORD_HASH){document.getElementById("adminModal").style.display="none"; document.getElementById("adminDashboard").style.display="block"; loadSubmissions(); loadVideos(); loadTeamMembers();} else alert("Incorrect username or password.");}
+async function checkAdmin(){
+  if(!ADMIN_PASSWORD_HASH) ADMIN_PASSWORD_HASH=await hashPassword("admin1973");
+  const user=document.getElementById("adminUser").value;
+  const pass=document.getElementById("adminPass").value;
+  const hashedInput=await hashPassword(pass);
+  if(user===ADMIN_USERNAME && hashedInput===ADMIN_PASSWORD_HASH){
+    document.getElementById("adminModal").style.display="none";
+    document.getElementById("adminDashboard").style.display="block";
+    loadSubmissions(); loadVideos(); loadTeamMembers();
+  } else alert("Incorrect username or password.");
+}
 function openAdmin(){document.getElementById("adminModal").style.display="flex";}
 function closeAdmin(){document.getElementById("adminModal").style.display="none";}
 function logout(){location.reload();}
 
 // ================= FORM =================
-function submitForm(e){e.preventDefault(); const n=document.getElementById("name").value; const em=document.getElementById("email").value; const s=JSON.parse(localStorage.getItem("submissions"))||[]; s.push({name:n,email:em}); localStorage.setItem("submissions",JSON.stringify(s)); alert("Thanks!"); e.target.reset();}
-function loadSubmissions(){const s=JSON.parse(localStorage.getItem("submissions"))||[]; const c=document.getElementById("submissions"); c.innerHTML=""; if(s.length===0){c.innerHTML="<p>No join requests yet.</p>"; return;} s.forEach((v,i)=>{const d=document.createElement("div");d.className="admin-card"; d.innerHTML=`<strong>Name:</strong> ${v.name}<br><strong>Email:</strong> ${v.email}<br><button onclick="deleteEntry(${i})">Delete</button>`; c.appendChild(d);});}
-function deleteEntry(i){const s=JSON.parse(localStorage.getItem("submissions"))||[]; s.splice(i,1); localStorage.setItem("submissions",JSON.stringify(s)); loadSubmissions();}
+function submitForm(e){
+  e.preventDefault();
+  const n=document.getElementById("name").value;
+  const em=document.getElementById("email").value;
+  const s=JSON.parse(localStorage.getItem("submissions"))||[];
+  s.push({name:n,email:em});
+  localStorage.setItem("submissions",JSON.stringify(s));
+  alert("Thanks!");
+  e.target.reset();
+}
+function loadSubmissions(){
+  const s=JSON.parse(localStorage.getItem("submissions"))||[];
+  const c=document.getElementById("submissions"); c.innerHTML="";
+  if(s.length===0){c.innerHTML="<p>No join requests yet.</p>"; return;}
+  s.forEach((v,i)=>{
+    const d=document.createElement("div"); d.className="admin-card";
+    d.innerHTML=`<strong>Name:</strong> ${v.name}<br><strong>Email:</strong> ${v.email}<br><button onclick="deleteEntry(${i})">Delete</button>`;
+    c.appendChild(d);
+  });
+}
+function deleteEntry(i){
+  const s=JSON.parse(localStorage.getItem("submissions"))||[]; s.splice(i,1);
+  localStorage.setItem("submissions",JSON.stringify(s)); loadSubmissions();
+}
 
 // ================= VIDEO =================
 function getYouTubeEmbed(u){const r=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/; const m=u.match(r); return m&&m[1]?`https://www.youtube.com/embed/${m[1]}`:u;}
-function loadVideos(){let v=JSON.parse(localStorage.getItem("videos"))||[]; v=v.reverse(); const vs=document.getElementById("videoScroll"); const mv=document.getElementById("mainVideo"); const t=document.getElementById("videoTranscript"); vs.innerHTML=""; if(v.length===0){mv.src=""; t.textContent=""; return;} mv.src=getYouTubeEmbed(v[0].link); t.textContent=v[0].transcript||""; v.forEach(x=>{const b=document.createElement("button"); b.textContent=x.title; b.onclick=()=>{mv.src=getYouTubeEmbed(x.link); t.textContent=x.transcript||""}; vs.appendChild(b);});}
+function loadVideos(){
+  let v=JSON.parse(localStorage.getItem("videos"))||[];
+  v=v.reverse();
+  const vs=document.getElementById("videoScroll");
+  const mv=document.getElementById("mainVideo");
+  const t=document.getElementById("videoTranscript");
+  vs.innerHTML="";
+  if(v.length===0){mv.src=""; t.textContent=""; return;}
+  mv.src=getYouTubeEmbed(v[0].link); t.textContent=v[0].transcript||"";
+  v.forEach(x=>{
+    const b=document.createElement("button");
+    b.textContent=x.title;
+    b.onclick=()=>{mv.src=getYouTubeEmbed(x.link); t.textContent=x.transcript||""};
+    vs.appendChild(b);
+  });
+}
 function addVideo(){const t=prompt("Video title:"), l=prompt("YouTube link:"), tr=prompt("Transcript:"); if(!t||!l) return; const v=JSON.parse(localStorage.getItem("videos"))||[]; v.push({title:t,link:l,transcript:tr}); localStorage.setItem("videos",JSON.stringify(v)); loadVideos();}
-window.onload=()=>{
-  loadVideos();
-  loadTeamMembers(); // Make team visible to all users
-};
+window.onload=()=>{loadVideos(); loadTeamMembers();};
 
 // ================= TEAM MEMBERS =================
 function loadTeamMembers(){
@@ -198,26 +244,37 @@ function loadTeamMembers(){
   const grid=document.getElementById("teamGrid"); grid.innerHTML="";
   const manager=document.getElementById("teamManager"); manager.innerHTML="";
   tM.forEach((m,i)=>{
-    // PUBLIC GRID
     const div=document.createElement("div"); div.className="member";
     const img=document.createElement("img"); img.src=m.img||"maroon.jpg"; div.appendChild(img);
-    const h=document.createElement("h3"); h.textContent=m.name; div.appendChild(h);
+    const h=document.createElement("h3"); 
+    h.textContent=m.name; 
+    h.setAttribute('data-contact',`${m.email||'No email'}, ${m.phone||'No phone'}`);
+    div.appendChild(h);
     const p=document.createElement("p"); p.textContent=m.role; div.appendChild(p);
     grid.appendChild(div);
-    // ADMIN MANAGER
     if(document.getElementById("adminDashboard").style.display==="block"){
       const card=document.createElement("div"); card.className="admin-card";
-      card.innerHTML=`<strong>${m.name}</strong><br><strong>${m.role}</strong><br><button onclick="editTeamMember(${i})">Edit</button> <button onclick="deleteTeamMember(${i})">Delete</button>`;
+      card.innerHTML=`<strong>${m.name}</strong><br><strong>${m.role}</strong><br>
+        Email: ${m.email||''} <button onclick="editEmail(${i})">Edit</button><br>
+        Phone: ${m.phone||''} <button onclick="editPhone(${i})">Edit</button><br>
+        <button onclick="editTeamMember(${i})">Edit Name/Role/Image</button> <button onclick="deleteTeamMember(${i})">Delete</button>`;
       manager.appendChild(card);
     }
   });
 }
-function addTeamMember(){const n=prompt("Name:"); const r=prompt("Role:"); const i=prompt("Image filename (leave empty for maroon.jpg):"); if(!n||!r) return; const tM=JSON.parse(localStorage.getItem("teamMembers"))||[]; tM.push({name:n,role:r,img:i||"maroon.jpg"}); localStorage.setItem("teamMembers",JSON.stringify(tM)); loadTeamMembers();}
-function editTeamMember(i){const tM=JSON.parse(localStorage.getItem("teamMembers"))||[]; const m=tM[i]; const n=prompt("Name:",m.name); const r=prompt("Role:",m.role); const im=prompt("Image filename:",m.img); tM[i]={name:n||m.name,role:r||m.role,img:im||m.img}; localStorage.setItem("teamMembers",JSON.stringify(tM)); loadTeamMembers();}
+function addTeamMember(){const n=prompt("Name:"); const r=prompt("Role:"); const i=prompt("Image filename (leave empty for maroon.jpg):"); if(!n||!r) return; const tM=JSON.parse(localStorage.getItem("teamMembers"))||[]; tM.push({name:n,role:r,img:i||"maroon.jpg",email:'',phone:''}); localStorage.setItem("teamMembers",JSON.stringify(tM)); loadTeamMembers();}
+function editTeamMember(i){const tM=JSON.parse(localStorage.getItem("teamMembers"))||[]; const m=tM[i]; const n=prompt("Name:",m.name); const r=prompt("Role:",m.role); const im=prompt("Image filename:",m.img); tM[i]={name:n||m.name,role:r||m.role,img:im||m.img,email:m.email,phone:m.phone}; localStorage.setItem("teamMembers",JSON.stringify(tM)); loadTeamMembers();}
 function deleteTeamMember(i){const tM=JSON.parse(localStorage.getItem("teamMembers"))||[]; tM.splice(i,1); localStorage.setItem("teamMembers",JSON.stringify(tM)); loadTeamMembers();}
+function editEmail(i){const tM=JSON.parse(localStorage.getItem("teamMembers"))||[]; const m=tM[i]; const e=prompt("Enter email:",m.email||''); if(e!==null){m.email=e; localStorage.setItem("teamMembers",JSON.stringify(tM)); loadTeamMembers();}}
+function editPhone(i){const tM=JSON.parse(localStorage.getItem("teamMembers"))||[]; const m=tM[i]; const p=prompt("Enter phone number:",m.phone||''); if(p!==null){m.phone=p; localStorage.setItem("teamMembers",JSON.stringify(tM)); loadTeamMembers();}}
 
 // ================= TAB SWITCH =================
-function switchTab(tab){document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active")); document.getElementById(tab).classList.add("active"); document.querySelectorAll(".admin-tab").forEach(t=>t.classList.remove("active")); document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add("active");}
+function switchTab(tab){
+  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
+  document.getElementById(tab).classList.add("active");
+  document.querySelectorAll(".admin-tab").forEach(t=>t.classList.remove("active"));
+  document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add("active");
+}
 
 // ================= PASSWORD =================
 async function changeAdminPassword(){const n=prompt("Enter new password:"); if(!n) return; ADMIN_PASSWORD_HASH=await hashPassword(n); alert("Password updated!");}
