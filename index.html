@@ -13,7 +13,8 @@ body {background-color:#f8f5f1;color:#333;line-height:1.6;position:relative;}
 /* ================= BACKGROUND ================= */
 body::before {
   content:"";
-  position:fixed; top:50%; left:50%;
+  position:fixed;
+  top:50%;left:50%;
   width:700px;height:700px;
   background:url("footer_logo-584425766.png") no-repeat center;
   background-size:contain;
@@ -73,11 +74,9 @@ html {scroll-snap-type: y mandatory;}
   font-size: 0.75rem;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.2s;
   z-index: 9999;
-  transform: translateY(5px);
 }
-.tooltip.show {opacity:1; transform: translateY(0);}
 
 /* ================= JOIN ================= */
 .join {background:#eaeaea;flex-direction:column;}
@@ -148,7 +147,7 @@ footer {background:#7a0019;color:white;text-align:center;padding:15px;}
 
 <footer>© 2026 School News Broadcasting Club</footer>
 
-<!-- TOOLTIP -->
+<!-- TOOLTIP ELEMENT -->
 <div id="tooltip" class="tooltip"></div>
 
 <!-- ADMIN MODAL -->
@@ -162,6 +161,7 @@ footer {background:#7a0019;color:white;text-align:center;padding:15px;}
   </div>
 </div>
 
+<!-- ADMIN DASHBOARD -->
 <div class="admin-dashboard" id="adminDashboard">
   <h1>🎥 Admin Panel</h1>
   <div class="admin-tabs">
@@ -178,44 +178,124 @@ footer {background:#7a0019;color:white;text-align:center;padding:15px;}
 </div>
 
 <script>
-// =============== SCROLL =================
+// ================= ROTATION =================
+window.addEventListener("scroll",()=>{document.body.style.setProperty("--rotation",window.scrollY*0.12+"deg");});
+
+// ================= SCROLL =================
 function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
 
-// =============== TOOLTIP =================
-const tooltip = document.getElementById("tooltip");
+// ================= ADMIN LOGIN =================
+let ADMIN_USERNAME = "admin1973";
+let ADMIN_PASSWORD_HASH = null;
+let isAdminLoggedIn = false;
 
-// =============== VIDEOS =================
-function getYouTubeEmbed(url){const r=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/; const m=url.match(r); return m&&m[1]?`https://www.youtube.com/embed/${m[1]}`:url;}
+async function hashPassword(password){
+  const data = new TextEncoder().encode(password);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,"0")).join("");
+}
+
+async function checkAdmin(){
+  if(!ADMIN_PASSWORD_HASH) ADMIN_PASSWORD_HASH = await hashPassword("admin1973");
+  const user = document.getElementById("adminUser").value.trim();
+  const pass = document.getElementById("adminPass").value;
+  const hashedInput = await hashPassword(pass);
+  if(user===ADMIN_USERNAME && hashedInput===ADMIN_PASSWORD_HASH){
+    isAdminLoggedIn = true;
+    document.getElementById("adminModal").style.display="none";
+    document.getElementById("adminDashboard").style.display="block";
+    switchTab('joinTab');
+    document.getElementById("adminUser").value="";
+    document.getElementById("adminPass").value="";
+  } else alert("Incorrect username or password.");
+}
+
+function openAdmin(){
+  if(!isAdminLoggedIn) document.getElementById("adminModal").style.display="flex";
+  else {document.getElementById("adminDashboard").style.display="block"; switchTab('joinTab');}
+}
+function closeAdmin(){document.getElementById("adminModal").style.display="none";}
+function logout(){isAdminLoggedIn=false;document.getElementById("adminDashboard").style.display="none";alert("Logged out successfully.");}
+
+// ================= TAB SWITCH =================
+function switchTab(tab){
+  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
+  document.getElementById(tab).classList.add("active");
+  document.querySelectorAll(".admin-tab").forEach(t=>t.classList.remove("active"));
+  document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add("active");
+  if(!isAdminLoggedIn) return;
+  if(tab==='joinTab') loadSubmissions();
+  if(tab==='videoTab') loadVideos();
+  if(tab==='teamTab') loadTeamMembers();
+}
+
+// ================= PASSWORD =================
+async function changeAdminPassword(){
+  if(!isAdminLoggedIn) return alert("You must be logged in to change password.");
+  const newPass = prompt("Enter new password:");
+  if(!newPass) return;
+  ADMIN_PASSWORD_HASH = await hashPassword(newPass);
+  alert("Password updated successfully!");
+}
+
+// ================= FORM =================
+function submitForm(e){
+  e.preventDefault();
+  const n=document.getElementById("name").value;
+  const em=document.getElementById("email").value;
+  const s=JSON.parse(localStorage.getItem("submissions"))||[];
+  s.push({name:n,email:em});
+  localStorage.setItem("submissions",JSON.stringify(s));
+  alert("Thanks!");
+  e.target.reset();
+}
+function loadSubmissions(){
+  if(!isAdminLoggedIn) return;
+  const s=JSON.parse(localStorage.getItem("submissions"))||[];
+  const c=document.getElementById("submissions"); c.innerHTML="";
+  if(s.length===0){c.innerHTML="<p>No join requests yet.</p>"; return;}
+  s.forEach((v,i)=>{
+    const d=document.createElement("div"); d.className="admin-card";
+    d.innerHTML=`<strong>Name:</strong> ${v.name}<br><strong>Email:</strong> ${v.email}<br><button onclick="deleteEntry(${i})">Delete</button>`;
+    c.appendChild(d);
+  });
+}
+function deleteEntry(i){const s=JSON.parse(localStorage.getItem("submissions"))||[]; s.splice(i,1); localStorage.setItem("submissions",JSON.stringify(s)); loadSubmissions();}
+
+// ================= VIDEOS =================
+function getYouTubeEmbed(u){const r=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/; const m=u.match(r); return m&&m[1]?`https://www.youtube.com/embed/${m[1]}`:u;}
 function loadVideos(){
-  let videos = JSON.parse(localStorage.getItem("videos"))||[];
-  videos = videos.reverse();
+  let v=JSON.parse(localStorage.getItem("videos"))||[];
+  v=v.reverse();
   const vs=document.getElementById("videoScroll");
   const mv=document.getElementById("mainVideo");
   const t=document.getElementById("videoTranscript");
   const manager=document.getElementById("videoManager");
   vs.innerHTML=""; manager.innerHTML="";
-  if(videos.length===0){mv.src=""; t.textContent=""; return;}
-  mv.src=getYouTubeEmbed(videos[0].link); t.textContent=videos[0].transcript||"";
-  videos.forEach((v,i)=>{
-    // scroll buttons
-    const btn=document.createElement("button"); btn.textContent=v.title;
-    btn.onclick=()=>{mv.src=getYouTubeEmbed(v.link); t.textContent=v.transcript||"";};
-    vs.appendChild(btn);
+  if(v.length===0){mv.src=""; t.textContent=""; return;}
+  mv.src=getYouTubeEmbed(v[0].link); t.textContent=v[0].transcript||"";
+  v.forEach((x,i)=>{
+    const b=document.createElement("button"); b.textContent=x.title;
+    b.onclick=()=>{mv.src=getYouTubeEmbed(x.link); t.textContent=x.transcript||"";};
+    vs.appendChild(b);
 
-    // admin cards
-    if(document.getElementById("videoTab").classList.contains("active")){
+    if(isAdminLoggedIn && document.getElementById("videoTab").classList.contains("active")){
       const card=document.createElement("div"); card.className="admin-card";
-      card.innerHTML=`<strong>${v.title}</strong><br>Link: ${v.link}<br>Transcript:${v.transcript||''}<br><button onclick="editVideo(${i})">Edit</button> <button onclick="deleteVideo(${i})">Delete</button>`;
+      card.innerHTML=`<strong>${x.title}</strong><br><strong>Link:</strong> ${x.link}<br><strong>Transcript:</strong> ${x.transcript||''}<br><button onclick="editVideo(${i})">Edit</button><button onclick="deleteVideo(${i})">Delete</button>`;
       manager.appendChild(card);
     }
   });
 }
+function addVideo(){if(!isAdminLoggedIn) return; const t=prompt("Video title:"), l=prompt("YouTube link:"), tr=prompt("Transcript:"); if(!t||!l) return; const v=JSON.parse(localStorage.getItem("videos"))||[]; v.push({title:t,link:l,transcript:tr}); localStorage.setItem("videos",JSON.stringify(v)); loadVideos();}
+function editVideo(i){if(!isAdminLoggedIn) return; const v=JSON.parse(localStorage.getItem("videos"))||[]; const vid=v[i]; const t=prompt("Video title:",vid.title); const l=prompt("YouTube link:",vid.link); const tr=prompt("Transcript:",vid.transcript||""); if(!t||!l) return; v[i]={title:t,link:l,transcript:tr}; localStorage.setItem("videos",JSON.stringify(v)); loadVideos();}
+function deleteVideo(i){if(!isAdminLoggedIn) return; const v=JSON.parse(localStorage.getItem("videos"))||[]; v.splice(i,1); localStorage.setItem("videos",JSON.stringify(v)); loadVideos();}
 
-// =============== TEAM =================
+// ================= TEAM MEMBERS =================
 function loadTeamMembers(){
   const tM=JSON.parse(localStorage.getItem("teamMembers"))||[];
   const grid=document.getElementById("teamGrid"); grid.innerHTML="";
   const manager=document.getElementById("teamManager"); manager.innerHTML="";
+  const tooltip=document.getElementById("tooltip");
   tM.forEach((m,i)=>{
     const div=document.createElement("div"); div.className="member";
     const img=document.createElement("img"); img.src=m.img||"maroon.jpg"; div.appendChild(img);
@@ -223,32 +303,25 @@ function loadTeamMembers(){
     const p=document.createElement("p"); p.textContent=m.role; div.appendChild(p);
     grid.appendChild(div);
 
-    // tooltip
-    div.addEventListener("mouseenter", e=>{
-      tooltip.textContent=`${m.email||'No email'}, ${m.phone||'No phone'}`;
-      tooltip.classList.add("show");
-    });
-    div.addEventListener("mousemove", e=>{
-      tooltip.style.left=(e.pageX+15)+"px"; tooltip.style.top=(e.pageY+15)+"px";
-    });
-    div.addEventListener("mouseleave", e=>{
-      tooltip.classList.remove("show");
-    });
+    div.addEventListener("mouseenter",e=>{tooltip.textContent=`${m.email||'No email'}, ${m.phone||'No phone'}`; tooltip.style.opacity=1;});
+    div.addEventListener("mousemove",e=>{tooltip.style.left=(e.pageX+15)+"px"; tooltip.style.top=(e.pageY+15)+"px";});
+    div.addEventListener("mouseleave",e=>{tooltip.style.opacity=0;});
 
-    // admin cards
-    if(document.getElementById("teamTab").classList.contains("active")){
+    if(isAdminLoggedIn && document.getElementById("teamTab").classList.contains("active")){
       const card=document.createElement("div"); card.className="admin-card";
-      card.innerHTML=`<strong>${m.name}</strong><br>Role:${m.role}<br>Email:${m.email||''} <button onclick="editEmail(${i})">Edit</button><br>Phone:${m.phone||''} <button onclick="editPhone(${i})">Edit</button><br><button onclick="editTeamMember(${i})">Edit Name/Role/Image</button> <button onclick="deleteTeamMember(${i})">Delete</button>`;
+      card.innerHTML=`<strong>${m.name}</strong><br><strong>${m.role}</strong><br>Email: ${m.email||''} <button onclick="editEmail(${i})">Edit</button><br>Phone: ${m.phone||''} <button onclick="editPhone(${i})">Edit</button><br><button onclick="editTeamMember(${i})">Edit Name/Role/Image</button> <button onclick="deleteTeamMember(${i})">Delete</button>`;
       manager.appendChild(card);
     }
   });
 }
+function addTeamMember(){if(!isAdminLoggedIn) return; const n=prompt("Name:"), r=prompt("Role:"), i=prompt("Image URL:"); if(!n||!r) return; const t=JSON.parse(localStorage.getItem("teamMembers"))||[]; t.push({name:n,role:r,img:i}); localStorage.setItem("teamMembers",JSON.stringify(t)); loadTeamMembers();}
+function editTeamMember(i){if(!isAdminLoggedIn) return; const t=JSON.parse(localStorage.getItem("teamMembers"))||[]; const m=t[i]; const n=prompt("Name:",m.name); const r=prompt("Role:",m.role); const img=prompt("Image URL:",m.img); if(!n||!r) return; t[i]={name:n,role:r,img:img}; localStorage.setItem("teamMembers",JSON.stringify(t)); loadTeamMembers();}
+function deleteTeamMember(i){if(!isAdminLoggedIn) return; const t=JSON.parse(localStorage.getItem("teamMembers"))||[]; t.splice(i,1); localStorage.setItem("teamMembers",JSON.stringify(t)); loadTeamMembers();}
+function editEmail(i){if(!isAdminLoggedIn) return; const t=JSON.parse(localStorage.getItem("teamMembers"))||[]; const e=prompt("Email:",t[i].email||""); if(e!==null){t[i].email=e; localStorage.setItem("teamMembers",JSON.stringify(t)); loadTeamMembers();}}
+function editPhone(i){if(!isAdminLoggedIn) return; const t=JSON.parse(localStorage.getItem("teamMembers"))||[]; const p=prompt("Phone:",t[i].phone||""); if(p!==null){t[i].phone=p; localStorage.setItem("teamMembers",JSON.stringify(t)); loadTeamMembers();}}
 
-// =============== INIT =================
-window.onload=()=>{
-  loadVideos();
-  loadTeamMembers();
-};
+// ================= INIT =================
+window.onload=()=>{loadVideos(); loadTeamMembers();}
 </script>
 </body>
 </html>
