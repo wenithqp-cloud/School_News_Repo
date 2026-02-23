@@ -266,4 +266,19 @@ function loadTeamAdmin(){ const container=document.getElementById("teamManager")
 // ================= VIDEOS =================
 function getYouTubeEmbed(url){ const regex=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/; const match=url.match(regex); return match&&match[1]?`https://www.youtube.com/embed/${match[1]}`:url; }
 function loadVideos(){ let videos=JSON.parse(localStorage.getItem("videos"))||[]; videos=videos.reverse(); const videoScroll=document.getElementById("videoScroll"); const mainVideo=document.getElementById("mainVideo"); const transcriptEl=document.getElementById("videoTranscript"); videoScroll.innerHTML=""; if(videos.length===0){ mainVideo.src=""; transcriptEl.textContent=""; return; } mainVideo.src=getYouTubeEmbed(videos[0].link); transcriptEl.textContent=videos[0].transcript||""; videos.forEach((v,i)=>{ const btn=document.createElement("button"); btn.textContent=v.title; btn.onclick=()=>{ mainVideo.src=getYouTubeEmbed(v.link); transcriptEl.textContent=v.transcript||""; }; videoScroll.appendChild(btn); }); const videoContainer=document.getElementById("videoManager"); videoContainer.innerHTML=""; videos.forEach((v,i)=>{ const adminCard=document.createElement("div"); adminCard.className="admin-card"; adminCard.innerHTML=`<strong>${v.title}</strong><br><button onclick="editVideo(${videos.length-1-i})">Edit</button><button onclick="deleteVideo(${videos.length-1-i})">Delete</button>`; videoContainer.appendChild(adminCard); }); }
-function addVideo(){ const title=prompt("Video title:"); const link=prompt("YouTube link:"); const transcript=prompt("Transcript:"); if(!title||!link) return; const videos=JSON.parse(localStorage
+function addVideo(){ const title=prompt("Video title:"); const link=prompt("YouTube link:"); const transcript=prompt("Transcript:"); if(!title||!link) return; const videos=JSON.parse(localStorage.getItem("videos"))||[]; videos.push({title,link,transcript}); localStorage.setItem("videos",JSON.stringify(videos)); loadVideos(); }
+function editVideo(i){ const videos=JSON.parse(localStorage.getItem("videos"))||[]; const v=videos[i]; const title=prompt("Edit title:",v.title)||v.title; const link=prompt("Edit link:",v.link)||v.link; const transcript=prompt("Edit transcript:",v.transcript)||v.transcript; videos[i]={title,link,transcript}; localStorage.setItem("videos",JSON.stringify(videos)); loadVideos(); }
+function deleteVideo(i){ if(!confirm("Delete this video?")) return; const videos=JSON.parse(localStorage.getItem("videos"))||[]; videos.splice(i,1); localStorage.setItem("videos",JSON.stringify(videos)); loadVideos(); }
+
+// ================= SUBMISSIONS =================
+function loadSubmissions(){ const submissions=JSON.parse(localStorage.getItem("submissions"))||[]; const container=document.getElementById("submissions"); container.innerHTML=""; submissions.forEach(s=>{ const div=document.createElement("div"); div.className="admin-card"; div.innerHTML=`<strong>${s.name}</strong> - ${s.email}`; container.appendChild(div); }); }
+
+// ================= OTHER =================
+function openAdmin(){ document.getElementById("adminModal").style.display="flex"; }
+function closeAdmin(){ document.getElementById("adminModal").style.display="none"; }
+function switchTab(id){ document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active")); document.getElementById(id).classList.add("active"); document.querySelectorAll(".admin-tab").forEach(t=>t.classList.remove("active")); document.querySelector(`[onclick="switchTab('${id}')"]`).classList.add("active"); }
+function logout(){ document.getElementById("adminDashboard").style.display="none"; alert("Logged out"); }
+initAdminPassword();
+</script>
+</body>
+</html>
