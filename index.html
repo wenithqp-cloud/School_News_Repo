@@ -8,71 +8,165 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:"Helvetica Neue",Arial,sans-serif;}
 html,body{height:100%;scroll-behavior:smooth;overflow-x:hidden;}
-body{background:#c5b1bb;color:#222;line-height:1.6;}
+
+body{
+background:#c5b1bb;
+color:#222;
+line-height:1.6;
+}
 
 /* HEADER */
 .school-header{
-position:fixed;top:0;width:100%;
-background:#660032;color:white;
-padding:18px 5%;display:flex;
-justify-content:space-between;align-items:center;
+position:fixed;
+top:0;
+width:100%;
+background:#660032;
+color:white;
+padding:18px 5%;
+display:flex;
+justify-content:space-between;
+align-items:center;
 border-bottom:4px solid rgba(255,215,0,.7);
+box-shadow:0 4px 15px rgba(0,0,0,.2);
 z-index:1000;
 }
+
 .header-left{display:flex;align-items:center;gap:15px;}
 .header-left img{height:55px;}
+.header-text h1{font-size:1.3rem;}
+.header-text span{font-size:.85rem;color:#ffd700;letter-spacing:1px;}
+
 .school-header nav a{
-color:white;text-decoration:none;margin-left:18px;
-font-weight:600;cursor:pointer;
+color:white;
+text-decoration:none;
+margin-left:18px;
+font-weight:600;
+cursor:pointer;
+transition:.3s;
 }
 .school-header nav a:hover{color:#ffd700;}
 
-/* SECTIONS */
 section{
-width:100%;min-height:100vh;
-display:flex;justify-content:center;align-items:center;
+width:100%;
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
 flex-direction:column;
 padding:140px 5% 80px;
 }
 
 /* HERO */
 .hero{background:#660032;color:white;text-align:center;}
+.hero h1{font-size:3rem;margin-bottom:15px;}
+.hero p{font-size:1.4rem;margin-bottom:20px;}
 .hero button{
 background:#ffd700;color:#660032;border:none;
-padding:12px 25px;border-radius:4px;cursor:pointer;
+padding:12px 25px;border-radius:4px;
+cursor:pointer;font-weight:600;
+}
+.hero button:hover{background:white;transform:scale(1.05);}
+
+/* BROADCASTS */
+.broadcasts{
+background:rgba(255,255,255,.85);
+border:4px solid rgba(102,0,50,.6);
+border-top:6px solid #ffd700;
+border-radius:10px;
+box-shadow:0 8px 25px rgba(0,0,0,.15);
+text-align:center;
 }
 
-/* CARDS */
-.broadcasts,.team,.join{
-background:rgba(255,255,255,.9);
-width:100%;text-align:center;
-}
 .video-main{width:80%;max-width:900px;margin:20px auto;}
-.video-player{width:100%;height:50vh;border:3px solid #660032;}
-.video-scroll{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px;justify-content:center;}
-.video-scroll button{
-background:#660032;color:white;border:none;padding:8px 15px;border-radius:4px;cursor:pointer;
+.video-player{
+width:100%;height:50vh;border-radius:8px;
+border:3px solid #660032;
 }
-.video-scroll button:hover{background:#ffd700;color:#660032;}
+.video-scroll{
+display:flex;justify-content:center;
+flex-wrap:wrap;gap:10px;margin-top:15px;
+}
+.video-scroll button{
+background:#660032;color:white;border:none;
+padding:8px 15px;border-radius:4px;cursor:pointer;
+}
+.video-scroll button:hover{
+background:#ffd700;color:#660032;
+}
 
-.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:40px;width:80%;}
-.member{background:white;padding:15px;border-left:4px solid #660032;border-radius:8px;}
-.member img{width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:10px;}
+/* TEAM */
+.team{background:rgba(255,255,255,.8);text-align:center;}
+.team-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:40px;width:80%;
+}
+.member{
+background:white;padding:15px;
+border-left:4px solid #660032;
+border-radius:8px;text-align:center;
+}
+.member img{
+width:120px;height:120px;
+border-radius:50%;object-fit:cover;
+margin-bottom:10px;
+}
 
-.join input{padding:10px;margin:5px;width:250px;border-radius:4px;border:1px solid #bbb;}
-.join button{background:#660032;color:white;border:none;padding:10px 20px;border-radius:4px;}
+/* JOIN */
+.join{background:rgba(255,255,255,.85);text-align:center;}
+.join input{
+padding:10px;margin:5px;width:250px;
+border-radius:4px;border:1px solid #bbb;
+}
+.join button{
+background:#660032;color:white;
+border:none;padding:10px 20px;
+border-radius:4px;cursor:pointer;
+}
+.join button:hover{
+background:#ffd700;color:#660032;
+}
 
-footer{background:#660032;color:white;text-align:center;padding:18px;}
+footer{
+background:#660032;color:white;
+text-align:center;padding:18px;
+}
+
+/* LOGIN MODAL */
+#loginModal{
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.85);
+justify-content:center;
+align-items:center;
+z-index:5000;
+}
+.login-box{
+background:white;
+padding:30px;
+border-radius:8px;
+width:300px;
+text-align:center;
+}
+.login-box input{
+width:100%;padding:8px;margin:5px 0;
+}
+.login-box button{
+background:#660032;color:white;
+border:none;padding:8px 15px;
+margin-top:5px;cursor:pointer;
+}
 
 /* ADMIN PANEL */
 #adminPanel{
 display:none;
 position:fixed;
 inset:0;
-background:rgba(0,0,0,.85);
-z-index:5000;
+background:rgba(0,0,0,.9);
 overflow-y:auto;
 padding:80px 5%;
+z-index:6000;
 }
 .admin-box{
 background:white;
@@ -82,51 +176,40 @@ max-width:900px;
 margin:auto;
 }
 .admin-tabs{
-display:flex;
-gap:10px;
-margin-bottom:20px;
-flex-wrap:wrap;
+display:flex;gap:10px;
+margin-bottom:20px;flex-wrap:wrap;
 }
 .admin-tab{
 padding:8px 15px;
-background:#660032;
-color:white;
-cursor:pointer;
-border-radius:4px;
+background:#660032;color:white;
+cursor:pointer;border-radius:4px;
 }
 .admin-tab.active{
-background:#ffd700;
-color:#660032;
+background:#ffd700;color:#660032;
 }
 .tab-content{display:none;}
 .tab-content.active{display:block;}
-.admin-box input, .admin-box textarea{
-width:100%;
-padding:8px;
-margin:5px 0;
+.admin-box input,.admin-box textarea{
+width:100%;padding:8px;margin:5px 0;
 }
 .admin-box button{
-background:#660032;
-color:white;
-border:none;
-padding:8px 15px;
-cursor:pointer;
-margin-top:5px;
+background:#660032;color:white;
+border:none;padding:8px 15px;
+cursor:pointer;margin-top:5px;
 }
 .close-admin{
-float:right;
-cursor:pointer;
-color:red;
-font-weight:bold;
+float:right;color:red;
+cursor:pointer;font-weight:bold;
 }
 </style>
 </head>
+
 <body>
 
 <header class="school-header">
 <div class="header-left">
 <img src="maroon.webp">
-<div>
+<div class="header-text">
 <h1>Eldorado High School</h1>
 <span>News Broadcasting Club</span>
 </div>
@@ -136,13 +219,13 @@ font-weight:bold;
 <a onclick="scrollToSection('broadcasts')">Broadcasts</a>
 <a onclick="scrollToSection('team')">Team</a>
 <a onclick="scrollToSection('join')">Join</a>
-<a onclick="openAdmin()">Admin</a>
+<a onclick="openLogin()">Admin</a>
 </nav>
 </header>
 
 <section id="hero" class="hero">
 <h1 id="heroTitle">Welcome to the News Broadcasting Club</h1>
-<p id="heroDesc">Delivering school stories. Sharing student voices.</p>
+<p id="heroDesc">Delivering school stories. Sharing student voices. Creating future journalists.</p>
 <button onclick="scrollToSection('broadcasts')">Watch Latest Broadcast</button>
 </section>
 
@@ -163,6 +246,7 @@ allowfullscreen></iframe>
 
 <section id="join" class="join">
 <h2>Join the Club</h2>
+<p>Interested in journalism, filming, or editing? Sign up below!</p>
 <form onsubmit="submitForm(event)">
 <input type="text" placeholder="Your Name" required>
 <input type="email" placeholder="Your Email" required><br>
@@ -173,6 +257,16 @@ allowfullscreen></iframe>
 <footer id="footerText">
 © 2026 Eldorado High School Broadcasting Club
 </footer>
+
+<!-- LOGIN -->
+<div id="loginModal">
+<div class="login-box">
+<h3>Admin Login</h3>
+<input id="loginUser" placeholder="Username">
+<input id="loginPass" type="password" placeholder="Password">
+<button onclick="checkLogin()">Login</button>
+</div>
+</div>
 
 <!-- ADMIN PANEL -->
 <div id="adminPanel">
@@ -188,20 +282,17 @@ allowfullscreen></iframe>
 </div>
 
 <div id="heroTab" class="tab-content active">
-<h3>Edit Hero</h3>
 <input id="adminHeroTitle" placeholder="Hero Title">
 <textarea id="adminHeroDesc" placeholder="Hero Description"></textarea>
 <button onclick="updateHero()">Update Hero</button>
 </div>
 
 <div id="videoTab" class="tab-content">
-<h3>Add Video (YouTube Embed URL)</h3>
-<input id="adminVideoURL" placeholder="https://www.youtube.com/embed/...">
+<input id="adminVideoURL" placeholder="YouTube Embed URL">
 <button onclick="addVideo()">Add Video</button>
 </div>
 
 <div id="teamTab" class="tab-content">
-<h3>Add Team Member</h3>
 <input id="adminMemberName" placeholder="Name">
 <input id="adminMemberRole" placeholder="Role">
 <input id="adminMemberImg" placeholder="Image URL">
@@ -209,7 +300,6 @@ allowfullscreen></iframe>
 </div>
 
 <div id="footerTab" class="tab-content">
-<h3>Edit Footer</h3>
 <input id="adminFooterText" placeholder="Footer Text">
 <button onclick="updateFooter()">Update Footer</button>
 </div>
@@ -218,17 +308,31 @@ allowfullscreen></iframe>
 </div>
 
 <script>
+const ADMIN_USER="admin1973";
+const ADMIN_PASS="eldo2026";
+
 function scrollToSection(id){
 document.getElementById(id).scrollIntoView({behavior:'smooth'});
 }
 
 function submitForm(e){
 e.preventDefault();
-alert("Thanks for joining!");
+alert("Thank you for joining!");
 }
 
-function openAdmin(){
+function openLogin(){
+document.getElementById("loginModal").style.display="flex";
+}
+
+function checkLogin(){
+const user=document.getElementById("loginUser").value;
+const pass=document.getElementById("loginPass").value;
+if(user===ADMIN_USER && pass===ADMIN_PASS){
+document.getElementById("loginModal").style.display="none";
 document.getElementById("adminPanel").style.display="block";
+}else{
+alert("Incorrect login.");
+}
 }
 
 function closeAdmin(){
