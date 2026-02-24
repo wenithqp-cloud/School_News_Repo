@@ -20,6 +20,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);line-height:1.7;}
 .school-header nav a{color:white;text-decoration:none;margin-left:22px;font-weight:500;font-size:.95rem;transition:.3s;cursor:pointer;position:relative;}
 .school-header nav a:hover,.school-header nav a.active{color:var(--accent);}
 .school-header nav a.active::after{content:"";position:absolute;bottom:-6px;left:0;width:100%;height:2px;background:var(--accent);}
+
 #emojiScrollContainer{width:100%;height:30px;overflow:hidden;background:var(--primary-soft);color:white;display:flex;align-items:center;font-size:1.2rem;font-weight:bold;white-space:nowrap;position:fixed;top:68px;left:0;z-index:999;}
 #emojiScroll{display:inline-block;white-space:nowrap;will-change:transform;}
 
@@ -62,6 +63,9 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;font
 .admin-card{background:white;padding:15px;margin-bottom:10px;border-left:4px solid var(--primary-soft);box-shadow:0 2px 6px rgba(0,0,0,.08);}
 .tab-content{display:none;}
 .tab-content.active{display:block;}
+.video-scroll{margin-top:20px;display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;justify-content:center;}
+.video-scroll button{background:var(--primary);color:white;border:none;padding:10px 18px;border-radius:8px;font-size:.9rem;cursor:pointer;transition:.3s;}
+.video-scroll button:hover{background:var(--accent);color:var(--primary);}
 </style>
 </head>
 <body>
@@ -92,6 +96,7 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;font
   <h2>Latest Broadcasts</h2>
   <iframe id="mainVideo" class="video-player" src="" allowfullscreen></iframe>
   <div id="videoTranscript">Select a video to see the transcript.</div>
+  <div class="video-scroll" id="videoScroll"></div>
 </section>
 
 <section id="team" class="team">
@@ -113,21 +118,43 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;font
 <div class="admin-dashboard" id="adminDashboard">
   <h1>Admin Panel</h1>
   <div class="admin-tabs">
-    <div class="admin-tab active" onclick="switchTab('teamTab')">Team Members</div>
+    <div class="admin-tab active" onclick="switchTab('joinTab')">Join Requests</div>
+    <div class="admin-tab" onclick="switchTab('videoTab')">Broadcast Videos</div>
+    <div class="admin-tab" onclick="switchTab('teamTab')">Team Members</div>
   </div>
-  <div id="teamTab" class="tab-content active">
-    <button onclick="addTeamMember()">Add Member</button>
-    <div id="teamManager"></div>
-  </div>
+
+  <div id="joinTab" class="tab-content active"><h2>Join Requests</h2><div id="submissions"></div></div>
+  <div id="videoTab" class="tab-content"><h2>Manage Videos</h2><button onclick="addVideo()">Add Video</button><div id="videoManager"></div></div>
+  <div id="teamTab" class="tab-content"><h2>Manage Team Members</h2><button onclick="addTeamMember()">Add Member</button><div id="teamManager"></div></div>
 </div>
 
 <script>
-// Smooth scroll
+// Scroll
 function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
 function openAdmin(){document.getElementById('adminDashboard').style.display='block';}
-function switchTab(tab){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.getElementById(tab).classList.add('active');document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');loadTeamMembers();}
+function switchTab(tab){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.getElementById(tab).classList.add('active');document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');if(tab==='teamTab') loadTeamMembers();if(tab==='videoTab') loadVideos();if(tab==='joinTab') loadSubmissions();}
 
-// Team 3D
+// Emoji scroll
+const emojiScroll=document.getElementById("emojiScroll");
+let pos=0;
+function scrollEmoji(){pos--;if(pos<-emojiScroll.offsetWidth) pos=window.innerWidth;emojiScroll.style.transform=`translateX(${pos}px)`;}
+setInterval(scrollEmoji,30);
+
+// Join Form
+function submitForm(e){e.preventDefault();const name=document.getElementById("name").value,email=document.getElementById("email").value;const s=JSON.parse(localStorage.getItem("submissions")||"[]");s.push({name,email});localStorage.setItem("submissions",JSON.stringify(s));alert("Submitted!");document.getElementById("name").value="";document.getElementById("email").value="";}
+
+// Load submissions
+function loadSubmissions(){const s=JSON.parse(localStorage.getItem("submissions")||"[]");const container=document.getElementById("submissions");container.innerHTML="";if(!s.length){container.innerHTML="<p>No join requests.</p>";return;}s.forEach((entry,i)=>{const div=document.createElement("div");div.className="admin-card";div.innerHTML=`<strong>${entry.name}</strong><br>${entry.email}<br><button onclick="deleteEntry(${i})">Delete</button>`;container.appendChild(div);});}
+function deleteEntry(i){const s=JSON.parse(localStorage.getItem("submissions")||"[]");s.splice(i,1);localStorage.setItem("submissions",JSON.stringify(s));loadSubmissions();}
+
+// Videos
+function getYouTubeEmbed(u){const m=u.match(/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/);return m&&m[1]?`https://www.youtube.com/embed/${m[1]}`:u;}
+function loadVideos(){const v=JSON.parse(localStorage.getItem("videos")||"[]");const vs=document.getElementById("videoScroll");vs.innerHTML="";const mv=document.getElementById("mainVideo");const tDiv=document.getElementById("videoTranscript");mv.src=v[0]?getYouTubeEmbed(v[0].link):"";tDiv.textContent=v[0]?.transcript||"Select a video to see the transcript.";const manager=document.getElementById("videoManager");manager.innerHTML="";v.forEach((video,i)=>{const btn=document.createElement("button");btn.textContent=video.title;btn.onclick=()=>{mv.src=getYouTubeEmbed(video.link);tDiv.textContent=video.transcript||"No transcript.";};vs.appendChild(btn);const card=document.createElement("div");card.className="admin-card";card.innerHTML=`<strong>${video.title}</strong><br>Link: ${video.link}<br>Transcript: ${video.transcript||""}<br><button onclick="editVideo(${i})">Edit</button> <button onclick="deleteVideo(${i})">Delete</button>`;manager.appendChild(card);});}
+function addVideo(){const t=prompt("Video title:"),l=prompt("YouTube link:"),tr=prompt("Transcript:");if(!t||!l)return;const v=JSON.parse(localStorage.getItem("videos")||"[]");v.push({title:t,link:l,transcript:tr});localStorage.setItem("videos",JSON.stringify(v));loadVideos();}
+function editVideo(i){const v=JSON.parse(localStorage.getItem("videos")||"[]");const t=prompt("Video title:",v[i].title),l=prompt("YouTube link:",v[i].link),tr=prompt("Transcript:",v[i].transcript||"");if(!t||!l)return;v[i]={title:t,link:l,transcript:tr};localStorage.setItem("videos",JSON.stringify(v));loadVideos();}
+function deleteVideo(i){const v=JSON.parse(localStorage.getItem("videos")||"[]");v.splice(i,1);localStorage.setItem("videos",JSON.stringify(v));loadVideos();}
+
+// Team
 function loadTeamMembers(){
   const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");
   const grid=document.getElementById("teamGrid"); grid.innerHTML="";
@@ -135,33 +162,20 @@ function loadTeamMembers(){
   tM.forEach((m,i)=>{
     const div=document.createElement("div"); div.className="member"; div.setAttribute("data-contact",(m.email||"No email")+", "+(m.phone||"No phone"));
     const logo=document.createElement("div"); logo.className="main-logo-container";
-    const img=document.createElement("img"); img.src=m.img||"maroon.jpg"; logo.appendChild(img);
-    div.appendChild(logo);
+    const img=document.createElement("img"); img.src=m.img||"maroon.jpg"; logo.appendChild(img); div.appendChild(logo);
     const h=document.createElement("h3"); h.textContent=m.name||"No Name"; div.appendChild(h);
     const p=document.createElement("p"); p.textContent=m.role||"No Role"; div.appendChild(p);
     grid.appendChild(div);
-
-    // Admin
-    const card=document.createElement("div"); card.className="admin-card";
-    card.innerHTML=`<strong>${m.name||""}</strong><br>${m.role||""}<br>Email: ${m.email||""}<br>Phone: ${m.phone||""}<br>
-      <button onclick="editTeamMember(${i})">Edit</button> <button onclick="deleteTeamMember(${i})">Delete</button>`;
-    manager.appendChild(card);
+    const card=document.createElement("div"); card.className="admin-card"; card.innerHTML=`<strong>${m.name||""}</strong><br>${m.role||""}<br>Email: ${m.email||""}<br>Phone: ${m.phone||""}<br><button onclick="editTeamMember(${i})">Edit</button> <button onclick="deleteTeamMember(${i})">Delete</button>`; manager.appendChild(card);
   });
   if(typeof VanillaTilt!=="undefined") VanillaTilt.init(document.querySelectorAll(".main-logo-container"),{max:15,speed:400,glare:true,"max-glare":0.2});
 }
 
-// Admin Functions
 function addTeamMember(){const n=prompt("Name:"),r=prompt("Role:"),e=prompt("Email:"),p=prompt("Phone:"),img=prompt("Image URL:");if(!n||!r)return;const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");tM.push({name:n,role:r,email:e,phone:p,img});localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}
 function editTeamMember(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");const n=prompt("Name:",tM[i].name),r=prompt("Role:",tM[i].role),img=prompt("Image URL:",tM[i].img);if(!n||!r)return;tM[i]={name:n,role:r,email:tM[i].email,phone:tM[i].phone,img};localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}
 function deleteTeamMember(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");tM.splice(i,1);localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}
 
-// Join form
-function submitForm(e){e.preventDefault();const name=document.getElementById("name").value,email=document.getElementById("email").value;const s=JSON.parse(localStorage.getItem("submissions")||"[]");s.push({name,email});localStorage.setItem("submissions",JSON.stringify(s));alert("Submitted!");document.getElementById("name").value="";document.getElementById("email").value="";}
-
-// Broadcasts
-function getYouTubeEmbed(url){const m=url.match(/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/);return m&&m[1]?`https://www.youtube.com/embed/${m[1]}`:url;}
-function loadVideos(){const v=JSON.parse(localStorage.getItem("videos")||"[]");const mv=document.getElementById("mainVideo");const tDiv=document.getElementById("videoTranscript");mv.src=v[0]?getYouTubeEmbed(v[0].link):"";tDiv.textContent=v[0]?.transcript||"Select a video to see the transcript.";}
-window.onload=()=>{loadTeamMembers();loadVideos();};
+window.onload=()=>{loadTeamMembers();loadVideos();loadSubmissions();};
 </script>
 </body>
 </html>
