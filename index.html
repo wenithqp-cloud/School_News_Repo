@@ -9,18 +9,98 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
 
 <style>
-/* (YOUR ENTIRE ORIGINAL CSS STAYS EXACTLY THE SAME — NOT REMOVED FOR LENGTH HERE) */
-/* KEEP YOUR CURRENT STYLE SECTION UNCHANGED */
+/* ================= KEEP YOUR ENTIRE ORIGINAL CSS ================= */
+/* Your current CSS stays exactly the same. DO NOT REMOVE OR ALTER */
+:root{
+  --primary:#6b0f1a;
+  --primary-soft:#8f2333;
+  --accent:#f2c94c;
+  --bg:#f4f1ec;
+  --card:#ffffff;
+  --text:#2f2f2f;
+  --muted:#666;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+html,body{height:100%;scroll-behavior:smooth;overflow-x:hidden;}
+body{background:var(--bg);color:var(--text);line-height:1.7;letter-spacing:.3px;}
+/* ... KEEP ALL OTHER CSS HERE ... */
 </style>
 </head>
 <body>
 
-<!-- KEEP ALL YOUR EXISTING HTML EXACTLY THE SAME ABOVE -->
+<!-- ================= KEEP ALL YOUR EXISTING HTML ================= -->
+<header class="school-header">
+  <div class="header-left">
+    <img src="footer_logo-584425766.png">
+    <div class="header-text"><h1>Eldorado High School</h1><span>News Broadcasting Club</span></div>
+  </div>
+  <nav>
+    <a onclick="scrollToSection('hero')">Home</a>
+    <a onclick="scrollToSection('broadcasts')">Broadcasts</a>
+    <a onclick="scrollToSection('team')">Team</a>
+    <a onclick="scrollToSection('join')">Join</a>
+    <a onclick="openAdmin()">Admin</a>
+  </nav>
+</header>
+
+<section id="hero" class="hero">
+  <h1>Welcome to the News Broadcasting Club</h1>
+  <p>Delivering school stories. Sharing student voices. Creating future journalists.</p>
+  <button onclick="scrollToSection('broadcasts')">Watch Latest Broadcast</button>
+</section>
+
+<section id="broadcasts" class="broadcasts">
+  <h2>Latest Broadcasts</h2>
+  <div class="video-main">
+    <iframe id="mainVideo" class="video-player" src="" allowfullscreen></iframe>
+    <div id="videoTranscript">Select a video to see the transcript.</div>
+  </div>
+  <div class="video-scroll" id="videoScroll"></div>
+</section>
+
+<section id="team" class="team">
+  <h2>Meet the Team</h2>
+  <div class="team-grid" id="teamGrid"></div>
+</section>
+
+<section id="join" class="join">
+  <h2>Join the Club</h2>
+  <form onsubmit="submitForm(event)">
+    <input type="text" id="name" placeholder="Your Name" required>
+    <input type="email" id="email" placeholder="Your Email" required><br>
+    <button type="submit">Submit</button>
+  </form>
+</section>
+
+<footer>© 2026 Eldorado High School Broadcasting Club</footer>
+
+<!-- Admin Modal -->
+<div id="adminModal">
+  <div class="modal-box">
+    <h2>Admin Login</h2>
+    <input type="text" id="adminUser" placeholder="Username">
+    <input type="password" id="adminPass" placeholder="Password"><br>
+    <button onclick="checkAdmin()">Login</button>
+    <button onclick="closeAdmin()">Cancel</button>
+  </div>
+</div>
+
+<div class="admin-dashboard" id="adminDashboard">
+  <h1>Admin Panel</h1>
+  <div class="admin-tabs">
+    <div class="admin-tab active" onclick="switchTab('joinTab')">Join Requests</div>
+    <div class="admin-tab" onclick="switchTab('videoTab')">Broadcast Videos</div>
+    <div class="admin-tab" onclick="switchTab('teamTab')">Team Members</div>
+  </div>
+
+  <div id="joinTab" class="tab-content active"><h2>Join Requests</h2><div id="submissions"></div></div>
+  <div id="videoTab" class="tab-content"><h2>Manage Videos</h2><button onclick="addVideo()">Add Video</button><div id="videoManager"></div></div>
+  <div id="teamTab" class="tab-content"><h2>Manage Team Members</h2><button onclick="addTeamMember()">Add Member</button><div id="teamManager"></div></div>
+</div>
 
 <script>
 
 /* ================= KEEP ALL YOUR EXISTING JS ABOVE ================= */
-
 
 /* ===== UPDATED TEAM MEMBERS WITH 3D TILT ===== */
 function loadTeamMembers(){
