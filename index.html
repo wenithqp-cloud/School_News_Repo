@@ -9,8 +9,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
 
 <style>
-/* ================= KEEP YOUR ENTIRE ORIGINAL CSS ================= */
-/* Your current CSS stays exactly the same. DO NOT REMOVE OR ALTER */
 :root{
   --primary:#6b0f1a;
   --primary-soft:#8f2333;
@@ -21,14 +19,76 @@
   --muted:#666;
 }
 *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
-html,body{height:100%;scroll-behavior:smooth;overflow-x:hidden;}
-body{background:var(--bg);color:var(--text);line-height:1.7;letter-spacing:.3px;}
-/* ... KEEP ALL OTHER CSS HERE ... */
+html,body{height:100%;scroll-behavior:smooth;overflow-x:hidden;background:var(--bg);color:var(--text);line-height:1.7;letter-spacing:.3px;}
+
+/* HEADER */
+.school-header{
+  position:fixed;top:0;width:100%;background:rgba(107,15,26,.88);backdrop-filter:blur(10px);color:white;padding:14px 6%;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--accent);z-index:1000;
+}
+.header-left{display:flex;align-items:center;gap:14px;}
+.header-left img{height:50px;}
+.header-text h1{font-size:1.1rem;font-weight:600;}
+.header-text span{font-size:.8rem;color:var(--accent);letter-spacing:1px;}
+.school-header nav a{color:white;text-decoration:none;margin-left:22px;font-weight:500;font-size:.95rem;transition:.3s;cursor:pointer;position:relative;}
+.school-header nav a:hover,.school-header nav a.active{color:var(--accent);}
+.school-header nav a.active::after{content:"";position:absolute;bottom:-6px;left:0;width:100%;height:2px;background:var(--accent);}
+
+/* SECTIONS */
+section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:8% 6%;opacity:0;transform:translateY(40px);transition:all .8s ease;}
+section.visible{opacity:1;transform:translateY(0);}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--primary),var(--primary-soft));color:white;text-align:center;}
+.hero h1{font-size:2.7rem;font-weight:600;margin-bottom:18px;}
+.hero p{font-size:1.15rem;max-width:600px;margin-bottom:28px;opacity:.95;}
+.hero button{background:var(--accent);color:var(--primary);border:none;padding:14px 28px;border-radius:8px;font-weight:600;cursor:pointer;transition:.3s;}
+.hero button:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.15);}
+
+/* TEAM GRID FIXED */
+.team{text-align:center;}
+.team h2{margin-bottom:40px;font-size:1.8rem;}
+.team-grid{
+  width:90%;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:40px;
+}
+.member{
+  background:var(--card);
+  padding:28px 20px;
+  border-radius:18px;
+  box-shadow:0 10px 25px rgba(0,0,0,.06);
+  transition:.3s;
+  position:relative;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.member:hover{transform:translateY(-6px);box-shadow:0 15px 35px rgba(0,0,0,.1);}
+.main-logo-container{
+  width:110px;
+  height:110px;
+  position:relative;
+  margin-bottom:15px;
+}
+.main-logo-container img{
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  object-fit:cover;
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;margin:auto;
+}
+.member h3{font-size:1.1rem;margin-bottom:4px;text-align:center;}
+.member p{color:var(--muted);font-size:.9rem;text-align:center;}
+.member::after{content:attr(data-contact);position:absolute;bottom:-38px;left:50%;transform:translateX(-50%);background:var(--primary);color:var(--accent);padding:6px 12px;border-radius:6px;font-size:.75rem;opacity:0;transition:.3s;}
+.member:hover::after{opacity:1;transform:translateX(-50%) translateY(-4px);}
 </style>
 </head>
 <body>
 
-<!-- ================= KEEP ALL YOUR EXISTING HTML ================= -->
 <header class="school-header">
   <div class="header-left">
     <img src="footer_logo-584425766.png">
@@ -49,157 +109,83 @@ body{background:var(--bg);color:var(--text);line-height:1.7;letter-spacing:.3px;
   <button onclick="scrollToSection('broadcasts')">Watch Latest Broadcast</button>
 </section>
 
-<section id="broadcasts" class="broadcasts">
-  <h2>Latest Broadcasts</h2>
-  <div class="video-main">
-    <iframe id="mainVideo" class="video-player" src="" allowfullscreen></iframe>
-    <div id="videoTranscript">Select a video to see the transcript.</div>
-  </div>
-  <div class="video-scroll" id="videoScroll"></div>
-</section>
-
 <section id="team" class="team">
   <h2>Meet the Team</h2>
   <div class="team-grid" id="teamGrid"></div>
 </section>
 
-<section id="join" class="join">
-  <h2>Join the Club</h2>
-  <form onsubmit="submitForm(event)">
-    <input type="text" id="name" placeholder="Your Name" required>
-    <input type="email" id="email" placeholder="Your Email" required><br>
-    <button type="submit">Submit</button>
-  </form>
-</section>
-
-<footer>© 2026 Eldorado High School Broadcasting Club</footer>
-
-<!-- Admin Modal -->
-<div id="adminModal">
-  <div class="modal-box">
-    <h2>Admin Login</h2>
-    <input type="text" id="adminUser" placeholder="Username">
-    <input type="password" id="adminPass" placeholder="Password"><br>
-    <button onclick="checkAdmin()">Login</button>
-    <button onclick="closeAdmin()">Cancel</button>
-  </div>
-</div>
-
-<div class="admin-dashboard" id="adminDashboard">
+<div class="admin-dashboard" id="adminDashboard" style="display:none;">
   <h1>Admin Panel</h1>
   <div class="admin-tabs">
-    <div class="admin-tab active" onclick="switchTab('joinTab')">Join Requests</div>
-    <div class="admin-tab" onclick="switchTab('videoTab')">Broadcast Videos</div>
-    <div class="admin-tab" onclick="switchTab('teamTab')">Team Members</div>
+    <div class="admin-tab active" onclick="switchTab('teamTab')">Team Members</div>
   </div>
-
-  <div id="joinTab" class="tab-content active"><h2>Join Requests</h2><div id="submissions"></div></div>
-  <div id="videoTab" class="tab-content"><h2>Manage Videos</h2><button onclick="addVideo()">Add Video</button><div id="videoManager"></div></div>
-  <div id="teamTab" class="tab-content"><h2>Manage Team Members</h2><button onclick="addTeamMember()">Add Member</button><div id="teamManager"></div></div>
+  <div id="teamTab" class="tab-content active">
+    <button onclick="addTeamMember()">Add Member</button>
+    <div id="teamManager"></div>
+  </div>
 </div>
 
 <script>
+function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
+function switchTab(tab){document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));document.getElementById(tab).classList.add("active");document.querySelectorAll(".admin-tab").forEach(t=>t.classList.remove("active"));document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add("active");if(tab==='teamTab') loadTeamMembers();}
 
-/* ================= KEEP ALL YOUR EXISTING JS ABOVE ================= */
-
-/* ===== UPDATED TEAM MEMBERS WITH 3D TILT ===== */
 function loadTeamMembers(){
-
-  const tM = JSON.parse(localStorage.getItem("teamMembers") || "[]");
-
-  const grid = document.getElementById("teamGrid");
+  const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");
+  const grid=document.getElementById("teamGrid");
   if(!grid) return;
-  grid.innerHTML = "";
-
-  const manager = document.getElementById("teamManager");
-  if(manager) manager.innerHTML = "";
-
-  const teamTab = document.getElementById("teamTab");
+  grid.innerHTML="";
+  const manager=document.getElementById("teamManager");
+  if(manager) manager.innerHTML="";
+  const teamTab=document.getElementById("teamTab");
 
   tM.forEach((m,i)=>{
-
-    const div = document.createElement("div");
-    div.className = "member";
-    div.setAttribute("data-contact",
-      (m.email || "No email") + ", " + (m.phone || "No phone")
-    );
+    const div=document.createElement("div");
+    div.className="member";
+    div.setAttribute("data-contact",(m.email||"No email")+", "+(m.phone||"No phone"));
 
     // 3D container
-    const logoContainer = document.createElement("div");
-    logoContainer.className = "main-logo-container";
-    logoContainer.style.position = "relative";
-    logoContainer.style.width = "110px";
-    logoContainer.style.height = "110px";
-    logoContainer.style.transformStyle = "preserve-3d";
+    const logoContainer=document.createElement("div");
+    logoContainer.className="main-logo-container";
 
-    const img = document.createElement("img");
-    img.src = m.img || "maroon.jpg";
-    img.style.position = "absolute";
-    img.style.left = "0";
-    img.style.right = "0";
-    img.style.top = "0";
-    img.style.margin = "auto";
-    img.style.width = "110px";
-    img.style.height = "110px";
-    img.style.borderRadius = "50%";
-    img.style.objectFit = "cover";
-    img.style.transform = "translateZ(20px)";
-
+    // Add multiple layers here if needed
+    const img=document.createElement("img");
+    img.src=m.img||"maroon.jpg";
+    img.style.transform="translateZ(20px)";
     logoContainer.appendChild(img);
+
     div.appendChild(logoContainer);
 
-    const h = document.createElement("h3");
-    h.textContent = m.name || "No Name";
-    div.appendChild(h);
-
-    const p = document.createElement("p");
-    p.textContent = m.role || "No Role";
-    div.appendChild(p);
+    const h=document.createElement("h3"); h.textContent=m.name||"No Name"; div.appendChild(h);
+    const p=document.createElement("p"); p.textContent=m.role||"No Role"; div.appendChild(p);
 
     grid.appendChild(div);
 
-    // ADMIN CARD
+    // Admin card
     if(manager && teamTab && teamTab.classList.contains("active")){
-      const card = document.createElement("div");
-      card.className = "admin-card";
-      card.innerHTML =
-        "<strong>" + (m.name || "") + "</strong><br>" +
-        (m.role || "") + "<br>" +
-        "Email: " + (m.email || "") +
-        ' <button onclick="editEmail(' + i + ')">Edit</button><br>' +
-        "Phone: " + (m.phone || "") +
-        ' <button onclick="editPhone(' + i + ')">Edit</button><br>' +
-        '<button onclick="editTeamMember(' + i + ')">Edit Name/Role/Image</button> ' +
-        '<button onclick="deleteTeamMember(' + i + ')">Delete</button>';
-
+      const card=document.createElement("div");
+      card.className="admin-card";
+      card.innerHTML="<strong>"+(m.name||"")+"</strong><br>"+(m.role||"")+"<br>Email: "+(m.email||"")+' <button onclick="editEmail('+i+')">Edit</button><br>'+"Phone: "+(m.phone||"")+' <button onclick="editPhone('+i+')">Edit</button><br>'+'<button onclick="editTeamMember('+i+')">Edit Name/Role/Image</button> <button onclick="deleteTeamMember('+i+')">Delete</button>';
       manager.appendChild(card);
     }
-
   });
 
-  // SAFE TILT INIT
-  if(typeof VanillaTilt !== "undefined"){
-
-    document.querySelectorAll(".main-logo-container").forEach(el=>{
-      if(el.vanillaTilt){
-        el.vanillaTilt.destroy();
-      }
-    });
-
-    VanillaTilt.init(
-      document.querySelectorAll(".main-logo-container"),
-      {
-        max: 15,
-        speed: 400,
-        glare: true,
-        "max-glare": 0.2
-      }
-    );
+  // Vanilla Tilt safe init
+  if(typeof VanillaTilt!=="undefined"){
+    document.querySelectorAll(".main-logo-container").forEach(el=>{if(el.vanillaTilt) el.vanillaTilt.destroy();});
+    VanillaTilt.init(document.querySelectorAll(".main-logo-container"),{max:15,speed:400,glare:true,"max-glare":0.2});
   }
 }
 
-/* ===== KEEP YOUR ORIGINAL window.onload ===== */
+/* ===== ADMIN FUNCTIONS ===== */
+function addTeamMember(){const n=prompt("Name:"),r=prompt("Role:"),e=prompt("Email:"),p=prompt("Phone:"),img=prompt("Image URL:");if(!n||!r)return;const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");tM.push({name:n,role:r,email:e,phone:p,img});localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}
+function editTeamMember(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");const n=prompt("Name:",tM[i].name),r=prompt("Role:",tM[i].role),img=prompt("Image URL:",tM[i].img);if(!n||!r)return;tM[i].name=n;tM[i].role=r;tM[i].img=img;localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}
+function editEmail(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");const e=prompt("Email:",tM[i].email);if(e!==null){tM[i].email=e;localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}}
+function editPhone(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");const p=prompt("Phone:",tM[i].phone);if(p!==null){tM[i].phone=p;localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}}
+function deleteTeamMember(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");tM.splice(i,1);localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}
 
+/* ===== INITIAL LOAD ===== */
+window.onload=()=>{loadTeamMembers();};
 </script>
+
 </body>
 </html>
