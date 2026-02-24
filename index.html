@@ -165,7 +165,7 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;font
 </div>
 
 <script>
-// SCROLL NAV
+// NAVIGATION SCROLL
 function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
 const sections=document.querySelectorAll("section");
 const navLinks=document.querySelectorAll(".school-header nav a");
@@ -178,11 +178,18 @@ window.addEventListener("scroll",()=>{
 // EMOJI SCROLL
 let emojiScrollText=localStorage.getItem('emojiScroll')||'🔥🎬📢 Welcome! 🎥✨';
 document.getElementById('emojiScroll').textContent=emojiScrollText;
-function animateEmojiScroll(){const scroll=document.getElementById('emojiScroll');let left=scroll.offsetLeft;left-=1;if(left<-scroll.offsetWidth) left=scroll.parentElement.offsetWidth;scroll.style.transform=`translateX(${left}px)`;requestAnimationFrame(animateEmojiScroll);}
+function animateEmojiScroll(){
+  const scroll=document.getElementById('emojiScroll');
+  let left=scroll.offsetLeft;
+  left-=1;
+  if(left<-scroll.offsetWidth) left=scroll.parentElement.offsetWidth;
+  scroll.style.transform=`translateX(${left}px)`;
+  requestAnimationFrame(animateEmojiScroll);
+}
 animateEmojiScroll();
 function updateEmojiScroll(){const val=document.getElementById('emojiInput').value;localStorage.setItem('emojiScroll',val);document.getElementById('emojiScroll').textContent=val;}
 
-// TEAM MEMBERS WITH 3D
+// TEAM MEMBERS 3D
 function loadTeamMembers(){
   const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");
   const grid=document.getElementById("teamGrid"); if(!grid)return; grid.innerHTML="";
@@ -196,27 +203,41 @@ function loadTeamMembers(){
     const p=document.createElement("p"); p.textContent=m.role||"No Role"; div.appendChild(p);
     grid.appendChild(div);
 
-    // Admin card
-    if(manager){const card=document.createElement("div");card.className="admin-card";card.innerHTML="<strong>"+(m.name||"")+"</strong><br>"+(m.role||"")+"<br>Email: "+(m.email||"")+' <button onclick="editEmail('+i+')">Edit</button><br>'+"Phone: "+(m.phone||"")+' <button onclick="editPhone('+i+')">Edit</button><br>'+'<button onclick="editTeamMember('+i+')">Edit Name/Role/Image</button> <button onclick="deleteTeamMember('+i+')">Delete</button>';manager.appendChild(card);}
+    if(manager){
+      const card=document.createElement("div");
+      card.className="admin-card";
+      card.innerHTML="<strong>"+(m.name||"")+"</strong><br>"+(m.role||"")+"<br>Email: "+(m.email||"")+' <button onclick="editEmail('+i+')">Edit</button><br>'+"Phone: "+(m.phone||"")+' <button onclick="editPhone('+i+')">Edit</button><br>'+'<button onclick="editTeamMember('+i+')">Edit Name/Role/Image</button> <button onclick="deleteTeamMember('+i+')">Delete</button>';
+      manager.appendChild(card);
+    }
   });
-  if(typeof VanillaTilt!=="undefined"){VanillaTilt.init(document.querySelectorAll(".main-logo-container"),{max:15,speed:400,glare:true,"max-glare":0.2});}
+  if(typeof VanillaTilt!=="undefined"){
+    VanillaTilt.init(document.querySelectorAll(".main-logo-container"),{max:15,speed:400,glare:true,"max-glare":0.2});
+  }
 }
 
-// ADMIN FUNCTIONS
+// Add/Edit/Delete Team
 function addTeamMember(){const n=prompt("Name:"),r=prompt("Role:"),e=prompt("Email:"),p=prompt("Phone:"),img=prompt("Image URL:");if(!n||!r)return;const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");tM.push({name:n,role:r,email:e,phone:p,img});localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}
 function editTeamMember(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");const n=prompt("Name:",tM[i].name),r=prompt("Role:",tM[i].role),img=prompt("Image URL:",tM[i].img);if(!n||!r)return;tM[i].name=n;tM[i].role=r;tM[i].img=img;localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}
 function editEmail(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");const e=prompt("Email:",tM[i].email);if(e!==null){tM[i].email=e;localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}}
 function editPhone(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");const p=prompt("Phone:",tM[i].phone);if(p!==null){tM[i].phone=p;localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}}
 function deleteTeamMember(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");tM.splice(i,1);localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}
 
-// FORM
-function submitForm(e){e.preventDefault();const name=document.getElementById("name").value;const email=document.getElementById("email").value;const submissions=JSON.parse(localStorage.getItem("submissions")||"[]");submissions.push({name,email});localStorage.setItem("submissions",JSON.stringify(submissions));alert("Thanks for signing up!");e.target.reset();}
+// BROADCAST VIDEOS
+function getYouTubeEmbed(url){const r=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/;const m=url.match(r);return m&&m[1]?`https://www.youtube.com/embed/${m[1]}`:url;}
+function loadVideos(){const v=JSON.parse(localStorage.getItem("videos")||"[]");const vs=document.getElementById("videoScroll");vs.innerHTML="";const mv=document.getElementById("mainVideo");const tDiv=document.getElementById("videoTranscript");mv.src=v[0]?getYouTubeEmbed(v[0].link):"";tDiv.textContent=v[0]?.transcript||"Select a video to see the transcript.";const manager=document.getElementById("videoManager");if(manager)manager.innerHTML="";v.forEach((video,i)=>{const btn=document.createElement("button");btn.textContent=video.title;btn.onclick=()=>{mv.src=getYouTubeEmbed(video.link); tDiv.textContent=video.transcript||"No transcript available."};vs.appendChild(btn);if(manager && document.getElementById("videoTab").classList.contains("active")){const card=document.createElement("div");card.className="admin-card";card.innerHTML=`<strong>${video.title}</strong><br>Link: ${video.link}<br>Transcript: ${video.transcript||''}<br><button onclick="editVideo(${i})">Edit</button> <button onclick="deleteVideo(${i})">Delete</button>`;manager.appendChild(card);}});}
+function addVideo(){const t=prompt("Video title:"),l=prompt("YouTube link:"),tr=prompt("Transcript:");if(!t||!l)return;const v=JSON.parse(localStorage.getItem("videos")||"[]");v.push({title:t,link:l,transcript:tr});localStorage.setItem("videos",JSON.stringify(v));loadVideos();}
+function editVideo(i){const v=JSON.parse(localStorage.getItem("videos")||"[]");const t=prompt("Video title:",v[i].title),l=prompt("YouTube link:",v[i].link),tr=prompt("Transcript:",v[i].transcript);if(!t||!l)return;v[i]={title:t,link:l,transcript:tr};localStorage.setItem("videos",JSON.stringify(v));loadVideos();}
+function deleteVideo(i){const v=JSON.parse(localStorage.getItem("videos")||"[]");v.splice(i,1);localStorage.setItem("videos",JSON.stringify(v));loadVideos();}
 
-// INITIAL LOAD
-window.onload=()=>{
-  loadTeamMembers();
-  // You can also init videos/admin later
-};
+// JOIN FORM
+function submitForm(e){e.preventDefault();const name=document.getElementById("name").value,email=document.getElementById("email").value;const s=JSON.parse(localStorage.getItem("submissions")||"[]");s.push({name,email});localStorage.setItem("submissions",JSON.stringify(s));alert("Submitted!");document.getElementById("name").value="";document.getElementById("email").value="";loadSubmissions();}
+function loadSubmissions(){const s=JSON.parse(localStorage.getItem("submissions")||"[]");const subDiv=document.getElementById("submissions");subDiv.innerHTML="";s.forEach(sub=>{const d=document.createElement("div");d.className="admin-card";d.textContent=`${sub.name} - ${sub.email}`;subDiv.appendChild(d);});}
+
+// ADMIN PANEL
+function openAdmin(){document.getElementById("adminDashboard").style.display="block";}
+function switchTab(tab){document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));document.getElementById(tab).classList.add("active");document.querySelectorAll(".admin-tab").forEach(t=>t.classList.remove("active"));document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add("active");if(tab==='teamTab') loadTeamMembers();if(tab==='videoTab') loadVideos();if(tab==='joinTab') loadSubmissions();}
+window.onload=()=>{loadTeamMembers();loadVideos();loadSubmissions();};
 </script>
+
 </body>
 </html>
