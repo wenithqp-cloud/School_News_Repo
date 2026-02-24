@@ -32,9 +32,7 @@
 
 <section id="team" class="team visible">
   <h2>Meet the Team</h2>
-  <div class="team-grid" id="teamGrid">
-    <div class="member" data-contact="Vice President"><img src="header_logo.png" alt="Noe"><h3>Noe</h3><p>Vice President</p></div>
-  </div>
+  <div class="team-grid" id="teamGrid"></div>
 </section>
 
 <section id="join" class="join visible">
@@ -107,7 +105,7 @@
   <div id="footerTab" class="tab-content">
     <h2>Edit Footer</h2>
     <input type="text" id="editFooter" placeholder="Footer Text">
-    <button onclick="saveFooter()">Save Footer</button>
+    <button onclick="saveFooter()">Save</button>
   </div>
 </div>
 
@@ -195,7 +193,7 @@ function saveJoin(){
   const title=document.getElementById("editJoinTitle").value;
   const btnText=document.getElementById("editJoinBtn").value;
   if(title) document.getElementById("joinTitle").innerText=title;
-  if(btnText) document.getElementById("joinBtn").innerText=btnText;
+  if(btnText) document.getElementById("heroBtn").innerText=btnText;
   alert("Join section updated!");
 }
 
@@ -247,7 +245,7 @@ if(teamMembers.length===0){
 function addTeamMember(){
   const name=prompt("Member Name:");
   const role=prompt("Member Role:");
-  const img=prompt("Image filename (must exist in folder):");
+  const img=prompt("Image filename (must exist in folder or URL):");
   if(name && role && img){teamMembers.push({name,role,img}); localStorage.setItem("team",JSON.stringify(teamMembers)); renderTeam();}
 }
 function renderTeam(){
@@ -263,7 +261,7 @@ function renderTeam(){
     const card=document.createElement("div"); card.className="admin-card";
     card.innerHTML=`<input value="${m.name}" placeholder="Name" onchange="updateTeam(${i}, 'name', this.value)">
                       <input value="${m.role}" placeholder="Role" onchange="updateTeam(${i}, 'role', this.value)">
-                      <input value="${m.img}" placeholder="Image" onchange="updateTeam(${i}, 'img', this.value)">
+                      <input value="${m.img}" placeholder="Image URL" onchange="updateTeam(${i}, 'img', this.value)">
                       <button onclick="deleteTeam(${i})">Delete</button>`;
     manager.appendChild(card);
   });
