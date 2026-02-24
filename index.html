@@ -31,6 +31,34 @@ body{background:var(--bg);color:var(--text);line-height:1.7;letter-spacing:.3px;
 .school-header nav a:hover, .school-header nav a.active{color:var(--accent);}
 .school-header nav a.active::after{ content:""; position:absolute; bottom:-6px; left:0; width:100%; height:2px; background:var(--accent); }
 
+/* SCROLLING NEWS BAR */
+#newsBarContainer {
+  position: fixed;
+  top:72px;
+  width: 100%;
+  overflow: hidden;
+  background: linear-gradient(90deg, #6b0f1a, #8f2333);
+  height: 40px;
+  display: flex;
+  align-items: center;
+  z-index: 999;
+  border-bottom: 2px solid var(--accent);
+}
+#newsBar {
+  display: inline-block;
+  white-space: nowrap;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 1rem;
+  padding-left: 100%;
+  animation: scrollNews 20s linear infinite;
+}
+#newsBar:hover { animation-play-state: paused; }
+@keyframes scrollNews {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-100%); }
+}
+
 /* SECTIONS */
 section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:8% 6%;opacity:0;transform:translateY(40px);transition:all .8s ease;}
 section.visible{opacity:1;transform:translateY(0);}
@@ -89,6 +117,8 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;font
 .admin-card{background:white;padding:15px;margin-bottom:10px;border-left:4px solid var(--primary-soft);box-shadow:0 2px 6px rgba(0,0,0,.08);}
 .tab-content{display:none;}
 .tab-content.active{display:block;}
+.admin-news-card{background:white;padding:10px;margin:8px;border-left:4px solid var(--primary-soft);display:flex;justify-content:space-between;align-items:center;}
+.admin-news-card button{margin-left:5px;}
 </style>
 </head>
 <body>
@@ -106,6 +136,9 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;font
 <a onclick="openAdmin()">Admin</a>
 </nav>
 </header>
+
+<!-- SCROLLING NEWS BAR -->
+<div id="newsBarContainer"><div id="newsBar"></div></div>
 
 <section id="hero" class="hero">
 <h1>Welcome to the News Broadcasting Club</h1>
@@ -156,29 +189,18 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;font
 <div class="admin-tab active" onclick="switchTab('joinTab',this)">Join Requests</div>
 <div class="admin-tab" onclick="switchTab('videoTab',this)">Broadcast Videos</div>
 <div class="admin-tab" onclick="switchTab('teamTab',this)">Team Members</div>
+<div class="admin-tab" onclick="switchTab('newsTab',this)">News Bar</div>
 </div>
 
-<div id="joinTab" class="tab-content active">
-<h2>Join Requests</h2>
-<div id="submissions"></div>
-</div>
-
-<div id="videoTab" class="tab-content">
-<h2>Manage Videos</h2>
-<button onclick="addVideo()">Add Video</button>
-<div id="videoManager"></div>
-</div>
-
-<div id="teamTab" class="tab-content">
-<h2>Manage Team Members</h2>
-<button onclick="addTeamMember()">Add Member</button>
-<div id="teamManager"></div>
-</div>
+<div id="joinTab" class="tab-content active"><h2>Join Requests</h2><div id="submissions"></div></div>
+<div id="videoTab" class="tab-content"><h2>Manage Videos</h2><button onclick="addVideo()">Add Video</button><div id="videoManager"></div></div>
+<div id="teamTab" class="tab-content"><h2>Manage Team Members</h2><button onclick="addTeamMember()">Add Member</button><div id="teamManager"></div></div>
+<div id="newsTab" class="tab-content"><h2>Manage News Bar</h2><button onclick="addNews()">Add News Item</button><div id="newsManager"></div></div>
 
 </div>
 
 <script>
-// SCROLL
+// =================== SCROLL & SECTION ===================
 function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
 const sections=document.querySelectorAll("section");
 const navLinks=document.querySelectorAll(".school-header nav a");
@@ -193,7 +215,7 @@ window.addEventListener("scroll",()=>{
   });
 });
 
-// FORM
+// =================== FORM ===================
 function submitForm(e){
   e.preventDefault();
   const name=document.getElementById("name").value;
@@ -205,16 +227,15 @@ function submitForm(e){
   e.target.reset();
 }
 
-// ADMIN LOGIN
+// =================== ADMIN LOGIN ===================
 let ADMIN_USERNAME="admin1973", ADMIN_PASSWORD_HASH=null;
 async function hashPassword(p){
   const d=new TextEncoder().encode(p);
   const h=await crypto.subtle.digest("SHA-256",d);
   return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,"0")).join("");
 }
-
 async function checkAdmin(){
-  if(!ADMIN_PASSWORD_HASH) ADMIN_PASSWORD_HASH=await hashPassword("eldo2026"); // password
+  if(!ADMIN_PASSWORD_HASH) ADMIN_PASSWORD_HASH=await hashPassword("eldo2026");
   const user=document.getElementById("adminUser").value;
   const pass=document.getElementById("adminPass").value;
   const hashedInput=await hashPassword(pass);
@@ -224,11 +245,10 @@ async function checkAdmin(){
     switchTab('joinTab',document.querySelector(".admin-tab.active"));
   }else alert("Incorrect username or password.");
 }
-
 function openAdmin(){document.getElementById("adminModal").style.display="flex";}
 function closeAdmin(){document.getElementById("adminModal").style.display="none";}
 
-// TAB SWITCH
+// =================== TAB SWITCH ===================
 function switchTab(tab,el){
   document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
   document.getElementById(tab).classList.add("active");
@@ -237,9 +257,10 @@ function switchTab(tab,el){
   if(tab==='joinTab') loadSubmissions();
   if(tab==='videoTab') loadVideos();
   if(tab==='teamTab') loadTeamMembers();
+  if(tab==='newsTab') loadNewsManager();
 }
 
-// JOIN SUBMISSIONS
+// =================== SUBMISSIONS ===================
 function loadSubmissions(){
   const s=JSON.parse(localStorage.getItem("submissions")||"[]");
   const container=document.getElementById("submissions");
@@ -259,12 +280,8 @@ function deleteEntry(i){
   loadSubmissions();
 }
 
-// VIDEO MANAGEMENT
-function getYouTubeEmbed(url){
-  const r=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/;
-  const m=url.match(r);
-  return m&&m[1]?`https://www.youtube.com/embed/${m[1]}`:url;
-}
+// =================== VIDEOS ===================
+function getYouTubeEmbed(url){const r=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/;const m=url.match(r);return m&&m[1]?`https://www.youtube.com/embed/${m[1]}`:url;}
 function loadVideos(){
   const v=JSON.parse(localStorage.getItem("videos")||"[]");
   const vs=document.getElementById("videoScroll");
@@ -290,30 +307,11 @@ function loadVideos(){
     }
   });
 }
-function addVideo(){
-  const t=prompt("Video title:"), l=prompt("YouTube link:"), tr=prompt("Transcript:");
-  if(!t||!l) return;
-  const v=JSON.parse(localStorage.getItem("videos")||"[]");
-  v.push({title:t,link:l,transcript:tr});
-  localStorage.setItem("videos",JSON.stringify(v));
-  loadVideos();
-}
-function editVideo(i){
-  const v=JSON.parse(localStorage.getItem("videos")||"[]");
-  const t=prompt("Video title:",v[i].title), l=prompt("YouTube link:",v[i].link), tr=prompt("Transcript:",v[i].transcript||"");
-  if(!t||!l) return;
-  v[i]={title:t,link:l,transcript:tr};
-  localStorage.setItem("videos",JSON.stringify(v));
-  loadVideos();
-}
-function deleteVideo(i){
-  const v=JSON.parse(localStorage.getItem("videos")||"[]");
-  v.splice(i,1);
-  localStorage.setItem("videos",JSON.stringify(v));
-  loadVideos();
-}
+function addVideo(){const t=prompt("Video title:"), l=prompt("YouTube link:"), tr=prompt("Transcript:");if(!t||!l)return;const v=JSON.parse(localStorage.getItem("videos")||"[]");v.push({title:t,link:l,transcript:tr});localStorage.setItem("videos",JSON.stringify(v));loadVideos();}
+function editVideo(i){const v=JSON.parse(localStorage.getItem("videos")||"[]");const t=prompt("Video title:",v[i].title), l=prompt("YouTube link:",v[i].link), tr=prompt("Transcript:",v[i].transcript||"");if(!t||!l)return;v[i]={title:t,link:l,transcript:tr};localStorage.setItem("videos",JSON.stringify(v));loadVideos();}
+function deleteVideo(i){const v=JSON.parse(localStorage.getItem("videos")||"[]");v.splice(i,1);localStorage.setItem("videos",JSON.stringify(v));loadVideos();}
 
-// TEAM MEMBERS
+// =================== TEAM MEMBERS ===================
 function loadTeamMembers(){
   const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");
   const grid=document.getElementById("teamGrid");
@@ -339,42 +337,58 @@ function loadTeamMembers(){
     }
   });
 }
-function addTeamMember(){
-  const n=prompt("Name:"), r=prompt("Role:"), e=prompt("Email:"), p=prompt("Phone:"), img=prompt("Image URL:");
-  if(!n||!r) return;
-  const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");
-  tM.push({name:n,role:r,email:e,phone:p,img});
-  localStorage.setItem("teamMembers",JSON.stringify(tM));
-  loadTeamMembers();
+function addTeamMember(){const n=prompt("Name:"), r=prompt("Role:"), e=prompt("Email:"), p=prompt("Phone:"), img=prompt("Image URL:");if(!n||!r)return;const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");tM.push({name:n,role:r,email:e,phone:p,img});localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}
+function editTeamMember(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");const n=prompt("Name:",tM[i].name), r=prompt("Role:",tM[i].role), img=prompt("Image URL:",tM[i].img);if(!n||!r)return;tM[i].name=n;tM[i].role=r;tM[i].img=img;localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}
+function editEmail(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");const e=prompt("Email:",tM[i].email);if(e!==null){tM[i].email=e;localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}}
+function editPhone(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");const p=prompt("Phone:",tM[i].phone);if(p!==null){tM[i].phone=p;localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}}
+function deleteTeamMember(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");tM.splice(i,1);localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}
+
+// =================== NEWS BAR ===================
+function loadNewsBar(){
+  const news = JSON.parse(localStorage.getItem("newsItems")||"[]");
+  const newsBar = document.getElementById("newsBar");
+  newsBar.textContent = news.map(n=>n.text).join(" ⚡ ");
 }
-function editTeamMember(i){
-  const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");
-  const n=prompt("Name:",tM[i].name), r=prompt("Role:",tM[i].role), img=prompt("Image URL:",tM[i].img);
-  if(!n||!r) return; tM[i].name=n; tM[i].role=r; tM[i].img=img;
-  localStorage.setItem("teamMembers",JSON.stringify(tM));
-  loadTeamMembers();
+function addNews(){
+  const text = prompt("Enter news text (emojis allowed):");
+  if(!text) return;
+  const news = JSON.parse(localStorage.getItem("newsItems")||"[]");
+  news.push({text});
+  localStorage.setItem("newsItems",JSON.stringify(news));
+  loadNewsBar();
+  loadNewsManager();
 }
-function editEmail(i){
-  const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");
-  const e=prompt("Email:",tM[i].email);
-  if(e!==null){tM[i].email=e; localStorage.setItem("teamMembers",JSON.stringify(tM)); loadTeamMembers();}
+function editNews(i){
+  const news = JSON.parse(localStorage.getItem("newsItems")||"[]");
+  const text = prompt("Edit news text:", news[i].text);
+  if(text!==null){news[i].text=text; localStorage.setItem("newsItems",JSON.stringify(news)); loadNewsBar(); loadNewsManager();}
 }
-function editPhone(i){
-  const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");
-  const p=prompt("Phone:",tM[i].phone);
-  if(p!==null){tM[i].phone=p; localStorage.setItem("teamMembers",JSON.stringify(tM)); loadTeamMembers();}
+function deleteNews(i){
+  const news = JSON.parse(localStorage.getItem("newsItems")||"[]");
+  news.splice(i,1);
+  localStorage.setItem("newsItems",JSON.stringify(news));
+  loadNewsBar(); loadNewsManager();
 }
-function deleteTeamMember(i){
-  const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");
-  tM.splice(i,1);
-  localStorage.setItem("teamMembers",JSON.stringify(tM));
-  loadTeamMembers();
+function loadNewsManager(){
+  const managerDiv = document.getElementById("newsManager");
+  if(!managerDiv) return;
+  const news = JSON.parse(localStorage.getItem("newsItems")||"[]");
+  managerDiv.innerHTML="";
+  news.forEach((n,i)=>{
+    const div=document.createElement("div");
+    div.className="admin-news-card";
+    div.innerHTML=`<span>${n.text}</span><div>
+      <button onclick="editNews(${i})">Edit</button>
+      <button onclick="deleteNews(${i})">Delete</button>
+    </div>`;
+    managerDiv.appendChild(div);
+  });
 }
 
-// INITIAL LOAD
+// =================== INITIAL LOAD ===================
 window.onload=()=>{
   sections.forEach(s=>s.classList.add("visible"));
-  loadVideos(); loadTeamMembers();
+  loadVideos(); loadTeamMembers(); loadNewsBar();
 };
 </script>
 </body>
