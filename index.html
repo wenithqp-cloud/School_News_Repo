@@ -47,19 +47,25 @@ html,body{height:100%;scroll-behavior:smooth;overflow-x:hidden;background:var(--
 }
 .hero-3d-container{
   position: absolute;
-  top:0;left:50%;transform:translateX(-50%);
-  width:120%;height:120%;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  width:80%; height:60%; /* smaller and centered */
   pointer-events:none;
   z-index:0;
 }
 .hero-3d-container img{
   position:absolute;
-  top:0;left:0;width:100%;height:100%;object-fit:cover;
+  top:0; left:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  border-radius:15px; /* softer edges */
   transition:transform 0.1s ease-out;
 }
 .hero-particles{
   position:absolute;
-  top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;
+  top:0; left:0;
+  width:100%; height:100%;
+  pointer-events:none; z-index:1;
 }
 .hero-particles canvas{
   width:100%;
@@ -71,8 +77,8 @@ html,body{height:100%;scroll-behavior:smooth;overflow-x:hidden;background:var(--
   z-index:2;
   color:white;
 }
-.hero-text h1{font-size:2.7rem;font-weight:600;margin-bottom:18px;}
-.hero-text p{font-size:1.15rem;max-width:600px;margin-bottom:28px;opacity:.95;}
+.hero-text h1{font-size:2.5rem;font-weight:600;margin-bottom:18px;}
+.hero-text p{font-size:1.1rem;max-width:550px;margin-bottom:28px;opacity:.95;}
 .hero-text button{background:var(--accent);color:var(--primary);border:none;padding:14px 28px;border-radius:8px;font-weight:600;cursor:pointer;transition:.3s;}
 .hero-text button:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.15);}
 
@@ -100,14 +106,14 @@ html,body{height:100%;scroll-behavior:smooth;overflow-x:hidden;background:var(--
 }
 .member:hover{transform:translateY(-6px);box-shadow:0 15px 35px rgba(0,0,0,.1);}
 .main-logo-container{
-  width:110px;
-  height:110px;
+  width:90px;
+  height:90px;
   position:relative;
   margin-bottom:15px;
 }
 .main-logo-container img{
-  width:110px;
-  height:110px;
+  width:90px;
+  height:90px;
   border-radius:50%;
   object-fit:cover;
   position:absolute; top:0; left:0; right:0; bottom:0; margin:auto;
@@ -192,7 +198,7 @@ document.addEventListener('mousemove', e=>{
   const y = (window.innerHeight/2 - e.clientY)/50;
   layers.forEach(l=>{
     const depth = parseFloat(l.dataset.depth);
-    l.style.transform = `translateX(${x*depth*100}px) translateY(${y*depth*100}px) scale(1.05)`;
+    l.style.transform = `translateX(${x*depth*100}px) translateY(${y*depth*100}px) scale(1.0)`; // smaller scale
   });
 });
 
@@ -216,10 +222,9 @@ for(let i=0;i<100;i++){
 function animateParticles(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   particles.forEach(p=>{
-    p.x += p.speedX;
-    p.y += p.speedY;
-    if(p.x<0) p.x=canvas.width; if(p.x>canvas.width) p.x=0;
-    if(p.y<0) p.y=canvas.height; if(p.y>canvas.height) p.y=0;
+    p.x += p.speedX; p.y += p.speedY;
+    if(p.x<0)p.x=canvas.width; if(p.x>canvas.width)p.x=0;
+    if(p.y<0)p.y=canvas.height; if(p.y>canvas.height)p.y=0;
     ctx.beginPath();
     ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
     ctx.fillStyle='rgba(255,255,255,0.15)';
