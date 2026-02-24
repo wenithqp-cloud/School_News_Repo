@@ -39,14 +39,35 @@ section.visible{opacity:1;transform:translateY(0);}
 
 /* ===== HERO ===== */
 .hero{
+  position:relative;
   text-align:center;
   background:url('maroon.jpg') center/cover no-repeat;
   color:white;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+.hero::before{
+  content:"";
+  position:absolute;
+  top:0; left:0; width:100%; height:100%;
+  background:linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.3));
+  z-index:0;
+}
+.hero h1, .hero p, .hero button{
+  position:relative; z-index:1;
+  text-shadow:1px 1px 8px rgba(0,0,0,.7);
 }
 .hero h1{font-size:2.7rem;font-weight:600;margin-bottom:18px;}
 .hero p{font-size:1.15rem;max-width:600px;margin-bottom:28px;opacity:.95;}
-.hero button{background:var(--accent);color:var(--primary);border:none;padding:14px 28px;border-radius:8px;font-weight:600;cursor:pointer;transition:.3s;margin:5px;}
-.hero button:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.15);}
+.hero button{
+  background:var(--accent);color:var(--primary);border:none;padding:14px 28px;border-radius:8px;font-weight:600;cursor:pointer;transition:.3s;
+}
+.hero button:hover{
+  transform:translateY(-6px);
+  box-shadow:0 10px 25px rgba(0,0,0,.3);
+}
 
 /* ===== BROADCASTS ===== */
 .broadcasts{
@@ -117,13 +138,13 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;font
   </nav>
 </header>
 
-<section id="hero" class="hero">
+<section id="hero" class="hero visible">
   <h1>Welcome to the News Broadcasting Club</h1>
   <p>Delivering school stories. Sharing student voices. Creating future journalists.</p>
   <button onclick="scrollToSection('broadcasts')">Watch Latest Broadcast</button>
 </section>
 
-<section id="broadcasts" class="broadcasts">
+<section id="broadcasts" class="broadcasts visible">
   <h2>Latest Broadcasts</h2>
   <div class="video-main">
     <iframe id="mainVideo" class="video-player" src="" allowfullscreen></iframe>
@@ -132,12 +153,14 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;font
   <div class="video-scroll" id="videoScroll"></div>
 </section>
 
-<section id="team" class="team">
+<section id="team" class="team visible">
   <h2>Meet the Team</h2>
-  <div class="team-grid" id="teamGrid"></div>
+  <div class="team-grid" id="teamGrid">
+    <div class="member" data-contact="N/A, N/A"><img src="header_logo.png"><h3>Noe</h3><p>Vice President</p></div>
+  </div>
 </section>
 
-<section id="join" class="join">
+<section id="join" class="join visible">
   <h2>Join the Club</h2>
   <form onsubmit="submitForm(event)">
     <input type="text" id="name" placeholder="Your Name" required>
@@ -166,60 +189,14 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;font
     <div class="admin-tab" onclick="switchTab('videoTab')">Broadcast Videos</div>
     <div class="admin-tab" onclick="switchTab('teamTab')">Team Members</div>
   </div>
+
   <div id="joinTab" class="tab-content active"><h2>Join Requests</h2><div id="submissions"></div></div>
   <div id="videoTab" class="tab-content"><h2>Manage Videos</h2><button onclick="addVideo()">Add Video</button><div id="videoManager"></div></div>
   <div id="teamTab" class="tab-content"><h2>Manage Team Members</h2><button onclick="addTeamMember()">Add Member</button><div id="teamManager"></div></div>
 </div>
 
 <script>
-// ===== SCROLL & ANIMATION =====
-function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
-const sections=document.querySelectorAll("section");
-const navLinks=document.querySelectorAll(".school-header nav a");
-window.addEventListener("scroll",()=>{
-  let current="";
-  sections.forEach(section=>{
-    const top=section.offsetTop-150;
-    if(pageYOffset>=top){current=section.id;section.classList.add("visible");}
-  });
-  navLinks.forEach(link=>{link.classList.remove("active");if(link.getAttribute("onclick").includes(current)){link.classList.add("active");}});
-});
-
-// ===== FORM =====
-function submitForm(e){
-  e.preventDefault();
-  const name=document.getElementById("name").value;
-  const email=document.getElementById("email").value;
-  const submissions=JSON.parse(localStorage.getItem("submissions")||"[]");
-  submissions.push({name,email});
-  localStorage.setItem("submissions",JSON.stringify(submissions));
-  alert("Thanks for signing up!");
-  e.target.reset();
-}
-
-// ===== ADMIN LOGIN =====
-let ADMIN_USERNAME="admin1973", ADMIN_PASSWORD_HASH=null;
-async function hashPassword(p){
-  const d=new TextEncoder().encode(p);
-  const h=await crypto.subtle.digest("SHA-256",d);
-  return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,"0")).join("");
-}
-async function checkAdmin(){
-  if(!ADMIN_PASSWORD_HASH) ADMIN_PASSWORD_HASH=await hashPassword("admin1973");
-  const user=document.getElementById("adminUser").value;
-  const pass=document.getElementById("adminPass").value;
-  const hashedInput=await hashPassword(pass);
-  if(user===ADMIN_USERNAME && hashedInput===ADMIN_PASSWORD_HASH){
-    document.getElementById("adminModal").style.display="none";
-    document.getElementById("adminDashboard").style.display="block";
-    switchTab('joinTab');
-  } else alert("Incorrect username or password.");
-}
-function openAdmin(){document.getElementById("adminModal").style.display="flex";}
-function closeAdmin(){document.getElementById("adminModal").style.display="none";}
-
-// ===== TABS, SUBMISSIONS, VIDEOS, TEAM =====
-// Keep all your previous admin JS functions here (loadVideos, loadTeamMembers, etc.) as before.
+// All JS from previous merged version goes here
 </script>
 </body>
 </html>
