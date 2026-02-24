@@ -1,23 +1,50 @@
-<!-- Add this at the end of your body, before </body> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eldorado High School - News Broadcasting Club</title>
+
+<!-- VANILLA TILT -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
 
+<style>
+/* (YOUR ENTIRE ORIGINAL CSS STAYS EXACTLY THE SAME — NOT REMOVED FOR LENGTH HERE) */
+/* KEEP YOUR CURRENT STYLE SECTION UNCHANGED */
+</style>
+</head>
+<body>
+
+<!-- KEEP ALL YOUR EXISTING HTML EXACTLY THE SAME ABOVE -->
+
 <script>
-// ===== TEAM MEMBERS =====
+
+/* ================= KEEP ALL YOUR EXISTING JS ABOVE ================= */
+
+
+/* ===== UPDATED TEAM MEMBERS WITH 3D TILT ===== */
 function loadTeamMembers(){
+
   const tM = JSON.parse(localStorage.getItem("teamMembers") || "[]");
-  const grid = document.getElementById("teamGrid"); 
+
+  const grid = document.getElementById("teamGrid");
+  if(!grid) return;
   grid.innerHTML = "";
-  const manager = document.getElementById("teamManager"); 
-  manager.innerHTML = "";
 
-  tM.forEach((m, i) => {
+  const manager = document.getElementById("teamManager");
+  if(manager) manager.innerHTML = "";
 
-    // TEAM GRID CARD
-    const div = document.createElement("div"); 
-    div.className = "member"; 
-    div.setAttribute("data-contact", `${m.email || 'No email'}, ${m.phone || 'No phone'}`);
+  const teamTab = document.getElementById("teamTab");
 
-    // 3D container for tilt
+  tM.forEach((m,i)=>{
+
+    const div = document.createElement("div");
+    div.className = "member";
+    div.setAttribute("data-contact",
+      (m.email || "No email") + ", " + (m.phone || "No phone")
+    );
+
+    // 3D container
     const logoContainer = document.createElement("div");
     logoContainer.className = "main-logo-container";
     logoContainer.style.position = "relative";
@@ -25,74 +52,74 @@ function loadTeamMembers(){
     logoContainer.style.height = "110px";
     logoContainer.style.transformStyle = "preserve-3d";
 
-    // Layered images
-    const layers = [
-      {src: m.img || "maroon.jpg", z: 20}
-    ];
+    const img = document.createElement("img");
+    img.src = m.img || "maroon.jpg";
+    img.style.position = "absolute";
+    img.style.left = "0";
+    img.style.right = "0";
+    img.style.top = "0";
+    img.style.margin = "auto";
+    img.style.width = "110px";
+    img.style.height = "110px";
+    img.style.borderRadius = "50%";
+    img.style.objectFit = "cover";
+    img.style.transform = "translateZ(20px)";
 
-    layers.forEach(layer => {
-      const img = document.createElement("img");
-      img.src = layer.src;
-      img.style.position = "absolute";
-      img.style.left = "0";
-      img.style.right = "0";
-      img.style.top = "0";
-      img.style.margin = "auto";
-      img.style.transform = `translateZ(${layer.z}px)`;
-      img.style.width = "110px";
-      img.style.height = "110px";
-      img.style.borderRadius = "50%";
-      img.style.objectFit = "cover";
-      logoContainer.appendChild(img);
-    });
-
+    logoContainer.appendChild(img);
     div.appendChild(logoContainer);
 
-    // Name & role
-    const h = document.createElement("h3"); 
-    h.textContent = m.name; 
+    const h = document.createElement("h3");
+    h.textContent = m.name || "No Name";
     div.appendChild(h);
 
-    const p = document.createElement("p"); 
-    p.textContent = m.role; 
+    const p = document.createElement("p");
+    p.textContent = m.role || "No Role";
     div.appendChild(p);
 
     grid.appendChild(div);
 
-    // ADMIN PANEL CARD
-    if(document.getElementById("teamTab").classList.contains("active")){
-      const card = document.createElement("div"); 
+    // ADMIN CARD
+    if(manager && teamTab && teamTab.classList.contains("active")){
+      const card = document.createElement("div");
       card.className = "admin-card";
-      card.innerHTML = `
-        <strong>${m.name}</strong><br>
-        ${m.role}<br>
-        Email: ${m.email || ''} 
-        <button onclick="editEmail(${i})">Edit</button><br>
-        Phone: ${m.phone || ''} 
-        <button onclick="editPhone(${i})">Edit</button><br>
-        <button onclick="editTeamMember(${i})">Edit Name/Role/Image</button> 
-        <button onclick="deleteTeamMember(${i})">Delete</button>
-      `;
+      card.innerHTML =
+        "<strong>" + (m.name || "") + "</strong><br>" +
+        (m.role || "") + "<br>" +
+        "Email: " + (m.email || "") +
+        ' <button onclick="editEmail(' + i + ')">Edit</button><br>' +
+        "Phone: " + (m.phone || "") +
+        ' <button onclick="editPhone(' + i + ')">Edit</button><br>' +
+        '<button onclick="editTeamMember(' + i + ')">Edit Name/Role/Image</button> ' +
+        '<button onclick="deleteTeamMember(' + i + ')">Delete</button>';
+
       manager.appendChild(card);
     }
+
   });
 
-  // SAFE tilt initialization
-  if (typeof VanillaTilt !== "undefined") {
+  // SAFE TILT INIT
+  if(typeof VanillaTilt !== "undefined"){
 
-    // Destroy existing tilt instances (prevents duplicate bug)
-    document.querySelectorAll(".main-logo-container").forEach(el => {
-      if (el.vanillaTilt) {
+    document.querySelectorAll(".main-logo-container").forEach(el=>{
+      if(el.vanillaTilt){
         el.vanillaTilt.destroy();
       }
     });
 
-    VanillaTilt.init(document.querySelectorAll(".main-logo-container"), {
-      max: 15,
-      speed: 400,
-      glare: true,
-      "max-glare": 0.2,
-    });
+    VanillaTilt.init(
+      document.querySelectorAll(".main-logo-container"),
+      {
+        max: 15,
+        speed: 400,
+        glare: true,
+        "max-glare": 0.2
+      }
+    );
   }
 }
+
+/* ===== KEEP YOUR ORIGINAL window.onload ===== */
+
 </script>
+</body>
+</html>
