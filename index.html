@@ -43,20 +43,32 @@ html,body{height:100%;scroll-behavior:smooth;overflow-x:hidden;background:var(--
   flex-direction:column;
   justify-content:center;
   align-items:center;
+  perspective:1200px;
 }
 .hero-3d-container{
   position: absolute;
   top:0;left:50%;transform:translateX(-50%);
-  width:100%;height:100%;pointer-events:none;z-index:0;
+  width:120%;height:120%;
+  pointer-events:none;
+  z-index:0;
 }
 .hero-3d-container img{
+  position:absolute;
+  top:0;left:0;width:100%;height:100%;object-fit:cover;
+  transition:transform 0.1s ease-out;
+}
+.hero-particles{
+  position:absolute;
+  top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;
+}
+.hero-particles canvas{
   width:100%;
   height:100%;
-  object-fit:cover;
+  display:block;
 }
 .hero-text{
   position:relative;
-  z-index:1;
+  z-index:2;
   color:white;
 }
 .hero-text h1{font-size:2.7rem;font-weight:600;margin-bottom:18px;}
@@ -131,7 +143,12 @@ html,body{height:100%;scroll-behavior:smooth;overflow-x:hidden;background:var(--
 
 <section id="hero" class="hero">
   <div class="hero-3d-container">
-    <img src="maroon.jpg" alt="Background" class="hero-3d-image">
+    <img src="maroon.jpg" data-depth="0.02">
+    <img src="maroon.jpg" data-depth="0.05">
+    <img src="maroon.jpg" data-depth="0.1">
+  </div>
+  <div class="hero-particles">
+    <canvas id="particleCanvas"></canvas>
   </div>
   <div class="hero-text">
     <h1>Welcome to the News Broadcasting Club</h1>
@@ -167,7 +184,52 @@ function switchTab(tab){
   if(tab==='teamTab') loadTeamMembers();
 }
 
-// TEAM MEMBERS WITH 3D TILT
+// HERO 3D PARALLAX
+const hero = document.querySelector('.hero-3d-container');
+const layers = hero.querySelectorAll('img');
+document.addEventListener('mousemove', e=>{
+  const x = (window.innerWidth/2 - e.clientX)/50;
+  const y = (window.innerHeight/2 - e.clientY)/50;
+  layers.forEach(l=>{
+    const depth = parseFloat(l.dataset.depth);
+    l.style.transform = `translateX(${x*depth*100}px) translateY(${y*depth*100}px) scale(1.05)`;
+  });
+});
+
+// HERO PARTICLES
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+for(let i=0;i<100;i++){
+  particles.push({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    size: Math.random()*3+1,
+    speedX: (Math.random()-0.5)*0.3,
+    speedY: (Math.random()-0.5)*0.3
+  });
+}
+
+function animateParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    p.x += p.speedX;
+    p.y += p.speedY;
+    if(p.x<0) p.x=canvas.width; if(p.x>canvas.width) p.x=0;
+    if(p.y<0) p.y=canvas.height; if(p.y>canvas.height) p.y=0;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,0.15)';
+    ctx.fill();
+  });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// TEAM MEMBERS
 function loadTeamMembers(){
   const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");
   const grid=document.getElementById("teamGrid"); grid.innerHTML="";
@@ -175,16 +237,12 @@ function loadTeamMembers(){
   tM.forEach((m,i)=>{
     const div=document.createElement("div"); div.className="member";
     div.setAttribute("data-contact",`${m.email||'No email'}, ${m.phone||'No phone'}`);
-
     const logoContainer=document.createElement("div"); logoContainer.className="main-logo-container";
     const img=document.createElement("img"); img.src=m.img||"maroon.jpg"; img.style.transform="translateZ(20px)";
     logoContainer.appendChild(img); div.appendChild(logoContainer);
-
     const h=document.createElement("h3"); h.textContent=m.name||"No Name"; div.appendChild(h);
     const p=document.createElement("p"); p.textContent=m.role||"No Role"; div.appendChild(p);
-
     grid.appendChild(div);
-
     if(manager && document.getElementById("teamTab").classList.contains("active")){
       const card=document.createElement("div"); card.className="admin-card";
       card.innerHTML=`<strong>${m.name}</strong><br>${m.role}<br>Email: ${m.email||''} <button onclick="editEmail(${i})">Edit</button><br>
@@ -207,16 +265,10 @@ function editEmail(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"
 function editPhone(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");const p=prompt("Phone:",tM[i].phone);if(p!==null){tM[i].phone=p;localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}}
 function deleteTeamMember(i){const tM=JSON.parse(localStorage.getItem("teamMembers")||"[]");tM.splice(i,1);localStorage.setItem("teamMembers",JSON.stringify(tM));loadTeamMembers();}
 
-// HERO 3D MAROON IMAGE
-window.addEventListener('DOMContentLoaded', () => {
-  const heroImage = document.querySelector('.hero-3d-image');
-  if(heroImage && typeof VanillaTilt !== 'undefined'){
-    VanillaTilt.init(heroImage,{max:20,speed:400,glare:true,"max-glare":0.3,scale:1.05});
-  }
-});
-
 // INITIAL LOAD
 window.onload=()=>{loadTeamMembers();};
+window.onresize=()=>{canvas.width=window.innerWidth; canvas.height=window.innerHeight;};
 </script>
+
 </body>
 </html>
