@@ -1,3 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eldorado High School - News Broadcasting Club</title>
+<style>
+:root {
+  --primary: #6b0f1a;
+  --primary-soft: #8f2333;
+  --accent: #f2c94c;
+  --bg: #f4f1ec;
+  --text: #222;
+  --text-light: #fff;
+  --card-bg: #fff;
+  --card-shadow: rgba(0,0,0,0.1);
+}
+* {margin:0;padding:0;box-sizing:border-box;font-family:"Helvetica Neue",Arial,sans-serif;}
+html, body {height:100%; scroll-behavior:smooth; background: var(--bg); color: var(--text);}
+button {cursor:pointer; border:none; background: var(--primary); color: var(--text-light); padding: 0.5rem 1rem; border-radius:6px; transition: 0.3s;}
+button:hover {background: var(--primary-soft);}
+a {text-decoration:none; color: inherit;}
+h1,h2,h3,p {margin-bottom: 0.5rem;}
+h2 {margin-top:1rem;}
+
+.school-header {display:flex; justify-content: space-between; align-items: center; padding:1rem 2rem; background: var(--primary); color: var(--text-light);}
+.school-header .header-left {display:flex; align-items: center; gap: 1rem;}
+.school-header .header-left img {width:50px; height:auto;}
+.school-header nav {display:flex; align-items: center; gap:1rem;}
+.school-header nav a {padding:0.5rem; transition:0.3s;}
+.school-header nav a.active, .school-header nav a:hover {color: var(--accent);}
+
+.hero {padding: 5rem 2rem; text-align:center; background: var(--primary-soft) center/cover no-repeat; color: var(--text-light);}
+.hero h1 {font-size:3rem; margin-bottom:1rem;}
+.hero p {font-size:1.2rem; margin-bottom:2rem;}
+.hero button {font-size:1rem;}
+
+section {padding:3rem 2rem; max-width:1200px; margin:0 auto;}
+section h2 {text-align:center; font-size:2rem; margin-bottom:1.5rem;}
+
+.video-main {display:flex; flex-direction: column; align-items:center; gap:1rem;}
+.video-player {width:100%; max-width:800px; height:450px; border-radius:8px;}
+#videoScroll {display:flex; justify-content:center; gap:0.5rem; margin-top:1rem; flex-wrap:wrap;}
+#videoScroll button {background: var(--primary-soft); color:#fff;}
+
+.team-grid {display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:1rem; justify-items:center;}
+.member {background: var(--card-bg); padding:1rem; border-radius:8px; text-align:center; box-shadow:0 2px 8px var(--card-shadow);}
+.member img {width:100px; height:100px; object-fit:cover; border-radius:50%; margin-bottom:0.5rem;}
+
+.join form {display:flex; flex-direction: column; align-items:center; gap:0.5rem;}
+.join input {padding:0.5rem; width:250px; border:1px solid #ccc; border-radius:6px;}
+.join button {width:100px;}
+
+footer {padding:2rem; text-align:center; background: var(--primary); color: var(--text-light); margin-top:2rem;}
+
+.admin-dashboard {position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); color:#fff; overflow-y:auto; display:none; padding:2rem;}
+.admin-tabs {display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;}
+.admin-tab {padding:0.5rem 1rem; background: #333; border-radius:6px; cursor:pointer; transition:0.3s;}
+.admin-tab.active {background: var(--accent); color:#000;}
+.tab-content {display:none;}
+.tab-content.active {display:block;}
+.admin-card {background:#222; padding:1rem; margin:0.5rem 0; border-radius:6px; display:flex; flex-direction: column; gap:0.5rem;}
+.admin-card input {padding:0.4rem; border-radius:4px; border:none;}
+
+#adminModal {position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); display:none; justify-content:center; align-items:center;}
+#adminModal .modal-box {background:#fff; padding:2rem; border-radius:8px; text-align:center; width:300px; color:#000; display:flex; flex-direction:column; gap:0.5rem;}
+
+body.dark {background:#121212; color:#eee;}
+body.dark .school-header {background:#1f1f1f; color:#eee;}
+body.dark footer {background:#1f1f1f; color:#eee;}
+body.dark .hero {color:#fff;}
+
+@media(max-width:768px){
+  .school-header {flex-direction:column; gap:0.5rem;}
+  .video-player {height:250px;}
+  .hero h1 {font-size:2rem;}
+}
+</style>
+</head>
 <body>
 
 <header class="school-header">
@@ -15,7 +94,7 @@
   </nav>
 </header>
 
-<section id="hero" class="hero visible" style="background: url('maroon.webp') center/cover no-repeat;">
+<section id="hero" class="hero visible">
   <h1 id="heroTitle">Welcome to the News Broadcasting Club</h1>
   <p id="heroDesc">Delivering school stories. Sharing student voices. Creating future journalists.</p>
   <button id="heroBtn" onclick="scrollToSection('broadcasts')">Watch Latest Broadcast</button>
@@ -46,7 +125,6 @@
 
 <footer id="footerText">© 2026 Eldorado High School Broadcasting Club</footer>
 
-<!-- Admin Modal -->
 <div id="adminModal">
   <div class="modal-box">
     <h2>Admin Login</h2>
@@ -57,7 +135,6 @@
   </div>
 </div>
 
-<!-- Admin Dashboard -->
 <div class="admin-dashboard" id="adminDashboard">
   <h1>Admin Panel</h1>
   <div class="admin-tabs">
@@ -69,243 +146,128 @@
     <div class="admin-tab" onclick="switchTab('footerTab')">Footer</div>
   </div>
 
-  <div id="joinTab" class="tab-content active">
-    <h2>Join Requests</h2>
-    <div id="submissions"></div>
-  </div>
-
-  <div id="videoTab" class="tab-content">
-    <h2>Manage Videos</h2>
-    <button onclick="addVideo()">Add Video</button>
-    <div id="videoManager"></div>
-  </div>
-
-  <div id="teamTab" class="tab-content">
-    <h2>Manage Team Members</h2>
-    <button onclick="addTeamMember()">Add Member</button>
-    <div id="teamManager"></div>
-  </div>
-
-  <div id="heroTab" class="tab-content">
-    <h2>Edit Hero Section</h2>
-    <input type="text" id="editHeroTitle" placeholder="Hero Title">
-    <textarea id="editHeroDesc" placeholder="Hero Description"></textarea>
-    <input type="text" id="editHeroBtn" placeholder="Button Text">
-    <input type="file" id="editHeroBGFile" accept="image/*">
-    <button onclick="saveHero()">Save Hero</button>
-  </div>
-
-  <div id="joinEditTab" class="tab-content">
-    <h2>Edit Join Section</h2>
-    <input type="text" id="editJoinTitle" placeholder="Join Section Title">
-    <input type="text" id="editJoinBtn" placeholder="Join Button Text">
-    <button onclick="saveJoin()">Save Join Section</button>
-  </div>
-
-  <div id="footerTab" class="tab-content">
-    <h2>Edit Footer</h2>
-    <input type="text" id="editFooter" placeholder="Footer Text">
-    <button onclick="saveFooter()">Save</button>
-  </div>
+  <div id="joinTab" class="tab-content active"><h2>Join Requests</h2><div id="submissions"></div></div>
+  <div id="videoTab" class="tab-content"><h2>Manage Videos</h2><button onclick="addVideo()">Add Video</button><div id="videoManager"></div></div>
+  <div id="teamTab" class="tab-content"><h2>Manage Team Members</h2><button onclick="addTeamMember()">Add Member</button><input type="file" id="teamBatchUpload" multiple accept="image/*" style="display:none;"><div id="teamManager"></div></div>
+  <div id="heroTab" class="tab-content"><h2>Edit Hero Section</h2><input type="text" id="editHeroTitle" placeholder="Hero Title"><textarea id="editHeroDesc" placeholder="Hero Description"></textarea><input type="text" id="editHeroBtn" placeholder="Button Text"><input type="file" id="editHeroBGFile" accept="image/*"><button onclick="saveHero()">Save Hero</button></div>
+  <div id="joinEditTab" class="tab-content"><h2>Edit Join Section</h2><input type="text" id="editJoinTitle" placeholder="Join Section Title"><input type="text" id="editJoinBtn" placeholder="Join Button Text"><button onclick="saveJoin()">Save Join Section</button></div>
+  <div id="footerTab" class="tab-content"><h2>Edit Footer</h2><input type="text" id="editFooter" placeholder="Footer Text"><button onclick="saveFooter()">Save</button></div>
 </div>
 
 <script>
+// ===== Helpers =====
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
 // ===== Dark Mode =====
 function toggleDarkMode(){document.body.classList.toggle('dark');}
 
 // ===== Scroll =====
 function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
-const sections=document.querySelectorAll("section");
-const navLinks=document.querySelectorAll(".school-header nav a");
-window.addEventListener("scroll",()=>{
-  let current="";
-  sections.forEach(section=>{
-    const top=section.offsetTop-150;
-    if(pageYOffset>=top){current=section.id;section.classList.add("visible");}
-  });
-  navLinks.forEach(link=>{
-    link.classList.remove("active");
-    if(link.getAttribute("onclick").includes(current)){link.classList.add("active");}
-  });
+const sections=$$('section');
+const navLinks=$$('.school-header nav a');
+window.addEventListener('scroll', ()=>{
+  let current='';
+  sections.forEach(sec=>{if(pageYOffset>=sec.offsetTop-150) current=sec.id;});
+  navLinks.forEach(a=>a.classList.remove('active'));
+  navLinks.forEach(a=>{if(a.getAttribute('onclick').includes(current)) a.classList.add('active');});
 });
 
-// ===== Form Submission =====
+// ===== Join Form =====
 function submitForm(e){
   e.preventDefault();
-  const name=document.getElementById("name").value;
-  const email=document.getElementById("email").value;
-  const submissions=JSON.parse(localStorage.getItem("submissions")||"[]");
-  submissions.push({name,email});
-  localStorage.setItem("submissions",JSON.stringify(submissions));
+  const subs=JSON.parse(localStorage.getItem('submissions')||'[]');
+  subs.push({name:$('#name').value,email:$('#email').value});
+  localStorage.setItem('submissions',JSON.stringify(subs));
   alert("Thanks for signing up!");
   e.target.reset();
   renderSubmissions();
 }
 function renderSubmissions(){
-  const subs=document.getElementById("submissions");
-  const submissions=JSON.parse(localStorage.getItem("submissions")||"[]");
-  subs.innerHTML=submissions.map((s,i)=>`<div class="admin-card">#${i+1} Name: ${s.name}, Email: ${s.email}</div>`).join("");
+  const subsEl=$('#submissions');
+  const subs=JSON.parse(localStorage.getItem('submissions')||'[]');
+  subsEl.innerHTML=subs.map((s,i)=>`<div class="admin-card">#${i+1} Name: ${s.name}, Email: ${s.email}</div>`).join('');
 }
 renderSubmissions();
 
-// ===== Admin Login =====
-let ADMIN_USERNAME="admin1973", ADMIN_PASSWORD_HASH=null;
-async function hashPassword(p){
-  const d=new TextEncoder().encode(p);
-  const h=await crypto.subtle.digest("SHA-256",d);
-  return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,"0")).join("");
-}
+// ===== Admin =====
+const ADMIN_USERNAME='admin1973'; let ADMIN_PASSWORD_HASH=null;
+async function hashPassword(p){const d=new TextEncoder().encode(p); const h=await crypto.subtle.digest('SHA-256',d); return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');}
 async function checkAdmin(){
-  if(!ADMIN_PASSWORD_HASH) ADMIN_PASSWORD_HASH=await hashPassword("admin1973");
-  const user=document.getElementById("adminUser").value;
-  const pass=document.getElementById("adminPass").value;
-  const hashedInput=await hashPassword(pass);
-  if(user===ADMIN_USERNAME && hashedInput===ADMIN_PASSWORD_HASH){
-    document.getElementById("adminModal").style.display="none";
-    document.getElementById("adminDashboard").style.display="block";
+  if(!ADMIN_PASSWORD_HASH) ADMIN_PASSWORD_HASH=await hashPassword('admin1973');
+  const user=$('#adminUser').value; const pass=$('#adminPass').value;
+  const hashed=await hashPassword(pass);
+  if(user===ADMIN_USERNAME && hashed===ADMIN_PASSWORD_HASH){
+    $('#adminModal').style.display='none';
+    $('#adminDashboard').style.display='block';
     switchTab('joinTab');
-  } else alert("Incorrect username or password.");
+  }else alert('Incorrect username or password.');
 }
-function openAdmin(){document.getElementById("adminModal").style.display="flex";}
-function closeAdmin(){document.getElementById("adminModal").style.display="none";}
+function openAdmin(){$('#adminModal').style.display='flex';}
+function closeAdmin(){$('#adminModal').style.display='none';}
 function switchTab(tab){
-  document.querySelectorAll(".admin-tab").forEach(t=>t.classList.remove("active"));
-  document.querySelectorAll(".tab-content").forEach(c=>c.classList.remove("active"));
-  document.querySelector(`.admin-tab[onclick*='${tab}']`).classList.add("active");
-  document.getElementById(tab).classList.add("active");
+  $$('.admin-tab').forEach(t=>t.classList.remove('active'));
+  $$('.tab-content').forEach(c=>c.classList.remove('active'));
+  $(`.admin-tab[onclick*='${tab}']`).classList.add('active');
+  $(`#${tab}`).classList.add('active');
 }
 
-// ===== Hero Section with Image Upload =====
+// ===== Hero =====
 function saveHero(){
-  const title=document.getElementById("editHeroTitle").value;
-  const desc=document.getElementById("editHeroDesc").value;
-  const btnText=document.getElementById("editHeroBtn").value;
-  const bgFile=document.getElementById("editHeroBGFile").files[0];
-
-  if(title) document.getElementById("heroTitle").innerText=title;
-  if(desc) document.getElementById("heroDesc").innerText=desc;
-  if(btnText) document.getElementById("heroBtn").innerText=btnText;
-
-  if(bgFile){
-    const reader=new FileReader();
-    reader.onload=(e)=>{
-      document.querySelector(".hero").style.background=`url('${e.target.result}') center/cover no-repeat`;
-      localStorage.setItem("heroBG", e.target.result);
-    }
-    reader.readAsDataURL(bgFile);
-  }
-
-  alert("Hero section updated!");
+  if($('#editHeroTitle').value) $('#heroTitle').innerText=$('#editHeroTitle').value;
+  if($('#editHeroDesc').value) $('#heroDesc').innerText=$('#editHeroDesc').value;
+  if($('#editHeroBtn').value) $('#heroBtn').innerText=$('#editHeroBtn').value;
+  const f=$('#editHeroBGFile').files[0];
+  if(f){const r=new FileReader(); r.onload=e=>{$('.hero').style.background=`url('${e.target.result}') center/cover no-repeat`; localStorage.setItem('heroBG',e.target.result);} ; r.readAsDataURL(f);}
+  alert("Hero updated!");
 }
-window.addEventListener("load",()=>{
-  const savedBG=localStorage.getItem("heroBG");
-  if(savedBG) document.querySelector(".hero").style.background=`url('${savedBG}') center/cover no-repeat`;
-});
+window.addEventListener('load',()=>{const bg=localStorage.getItem('heroBG'); if(bg) $('.hero').style.background=`url('${bg}') center/cover no-repeat`;});
 
 // ===== Join Section =====
-function saveJoin(){
-  const title=document.getElementById("editJoinTitle").value;
-  const btnText=document.getElementById("editJoinBtn").value;
-  if(title) document.getElementById("joinTitle").innerText=title;
-  if(btnText) document.getElementById("joinBtn").innerText=btnText;
-  alert("Join section updated!");
-}
+function saveJoin(){if($('#editJoinTitle').value) $('#joinTitle').innerText=$('#editJoinTitle').value; if($('#editJoinBtn').value) $('#joinBtn').innerText=$('#editJoinBtn').value; alert('Join section updated!');}
 
 // ===== Footer =====
-function saveFooter(){
-  const text=document.getElementById("editFooter").value;
-  if(text) document.getElementById("footerText").innerText=text;
-  alert("Footer updated!");
-}
+function saveFooter(){if($('#editFooter').value) $('#footerText').innerText=$('#editFooter').value; alert('Footer updated!');}
 
-// ===== Video Manager =====
-const videoScroll=document.getElementById("videoScroll");
-const mainVideo=document.getElementById("mainVideo");
-let videos=JSON.parse(localStorage.getItem("videos")||"[]");
-if(videos.length===0){
-  videos=[{url:"https://www.youtube.com/embed/dQw4w9WgXcQ"}];
-  localStorage.setItem("videos",JSON.stringify(videos));
-}
-function addVideo(){
-  const url=prompt("Enter video URL:");
-  if(url){videos.push({url}); localStorage.setItem("videos",JSON.stringify(videos)); renderVideos();}
-}
+// ===== Videos =====
+let videos=JSON.parse(localStorage.getItem('videos')||'[]');
+if(videos.length===0){videos=[{url:'https://www.youtube.com/embed/dQw4w9WgXcQ'}]; localStorage.setItem('videos',JSON.stringify(videos));}
+function addVideo(){const url=prompt('Enter video URL:'); if(url){videos.push({url}); localStorage.setItem('videos',JSON.stringify(videos)); renderVideos();}}
 function renderVideos(){
-  videoScroll.innerHTML="";
-  const manager=document.getElementById("videoManager");
-  manager.innerHTML="";
+  $('#videoScroll').innerHTML=''; $('#videoManager').innerHTML='';
   videos.forEach((v,i)=>{
-    const btn=document.createElement("button");
-    btn.innerText="Video "+(i+1);
-    btn.onclick=()=>mainVideo.src=v.url;
-    videoScroll.appendChild(btn);
-
-    const card=document.createElement("div"); card.className="admin-card";
-    card.innerHTML=`<input value="${v.url}" onchange="updateVideo(${i},this.value)"> <button onclick="deleteVideo(${i})">Delete</button>`;
-    manager.appendChild(card);
+    const btn=document.createElement('button'); btn.innerText='Video '+(i+1); btn.onclick=()=>$('#mainVideo').src=v.url; $('#videoScroll').appendChild(btn);
+    const card=document.createElement('div'); card.className='admin-card'; card.innerHTML=`<input value="${v.url}" onchange="updateVideo(${i}, this.value)"><button onclick="deleteVideo(${i})">Delete</button>`; $('#videoManager').appendChild(card);
   });
 }
-function updateVideo(index,url){videos[index].url=url; localStorage.setItem("videos",JSON.stringify(videos)); renderVideos();}
-function deleteVideo(index){videos.splice(index,1); localStorage.setItem("videos",JSON.stringify(videos)); renderVideos();}
+function updateVideo(i,val){videos[i].url=val; localStorage.setItem('videos',JSON.stringify(videos)); renderVideos();}
+function deleteVideo(i){videos.splice(i,1); localStorage.setItem('videos',JSON.stringify(videos)); renderVideos();}
 renderVideos();
 
-// ===== Team Manager with Image Upload =====
-let teamMembers=JSON.parse(localStorage.getItem("team")||"[]");
-const teamGrid=document.getElementById("teamGrid");
-if(teamMembers.length===0){
-  teamMembers=[{name:"Noe",role:"Vice President",img:"header_logo.png"}];
-  localStorage.setItem("team",JSON.stringify(teamMembers));
-}
+// ===== Team =====
+let teamMembers=JSON.parse(localStorage.getItem('team')||'[]');
+if(teamMembers.length===0){teamMembers=[{name:'Noe',role:'Vice President',img:'header_logo.png'}]; localStorage.setItem('team',JSON.stringify(teamMembers));}
 function addTeamMember(){
-  const name=prompt("Member Name:");
-  const role=prompt("Member Role:");
-  const imgInput=document.createElement("input");
-  imgInput.type="file"; imgInput.accept="image/*";
-  imgInput.click();
-  imgInput.onchange=()=>{
-    const file=imgInput.files[0];
-    if(!file) return;
-    const reader=new FileReader();
-    reader.onload=(e)=>{
-      if(name && role){
-        teamMembers.push({name,role,img:e.target.result});
-        localStorage.setItem("team",JSON.stringify(teamMembers));
-        renderTeam();
-      }
-    }
-    reader.readAsDataURL(file);
-  }
+  const name=prompt('Member Name:'); const role=prompt('Member Role:'); const input=$('#teamBatchUpload'); input.click();
+  input.onchange=()=>{Array.from(input.files).forEach(file=>{const r=new FileReader(); r.onload=e=>{if(name&&role){teamMembers.push({name,role,img:e.target.result}); localStorage.setItem('team',JSON.stringify(teamMembers)); renderTeam();}}; r.readAsDataURL(file);});};
 }
 function renderTeam(){
-  teamGrid.innerHTML="";
-  const manager=document.getElementById("teamManager");
-  manager.innerHTML="";
+  $('#teamGrid').innerHTML=''; $('#teamManager').innerHTML='';
   teamMembers.forEach((m,i)=>{
-    const div=document.createElement("div"); div.className="member";
-    div.setAttribute("data-contact",m.role);
-    div.innerHTML=`<img src="${m.img}" alt="${m.name}"><h3>${m.name}</h3><p>${m.role}</p>`;
-    teamGrid.appendChild(div);
-
-    const card=document.createElement("div"); card.className="admin-card";
-    card.innerHTML=`<input value="${m.name}" placeholder="Name" onchange="updateTeam(${i}, 'name', this.value)">
-                      <input value="${m.role}" placeholder="Role" onchange="updateTeam(${i}, 'role', this.value)">
-                      <input type="file" onchange="updateTeamImage(${i}, this.files[0])">
-                      <button onclick="deleteTeam(${i})">Delete</button>`;
-    manager.appendChild(card);
+    const div=document.createElement('div'); div.className='member'; div.innerHTML=`<img src="${m.img}" alt="${m.name}"><h3>${m.name}</h3><p>${m.role}</p>`; $('#teamGrid').appendChild(div);
+    const card=document.createElement('div'); card.className='admin-card';
+    card.innerHTML=`<input value="${m.name}" placeholder="Name" onchange="updateTeam(${i},'name',this.value)">
+    <input value="${m.role}" placeholder="Role" onchange="updateTeam(${i},'role',this.value)">
+    <input type="file" onchange="updateTeamImage(${i},this.files[0])">
+    <button onclick="deleteTeam(${i})">Delete</button>`;
+    $('#teamManager').appendChild(card);
   });
 }
-function updateTeam(i,key,value){teamMembers[i][key]=value; localStorage.setItem("team",JSON.stringify(teamMembers)); renderTeam();}
-function updateTeamImage(i,file){
-  const reader=new FileReader();
-  reader.onload=(e)=>{
-    teamMembers[i].img=e.target.result;
-    localStorage.setItem("team",JSON.stringify(teamMembers));
-    renderTeam();
-  }
-  reader.readAsDataURL(file);
-}
-function deleteTeam(i){teamMembers.splice(i,1); localStorage.setItem("team",JSON.stringify(teamMembers)); renderTeam();}
+function updateTeam(i,k,v){teamMembers[i][k]=v; localStorage.setItem('team',JSON.stringify(teamMembers)); renderTeam();}
+function updateTeamImage(i,f){const r=new FileReader(); r.onload=e=>{teamMembers[i].img=e.target.result; localStorage.setItem('team',JSON.stringify(teamMembers)); renderTeam();}; r.readAsDataURL(f);}
+function deleteTeam(i){teamMembers.splice(i,1); localStorage.setItem('team',JSON.stringify(teamMembers)); renderTeam();}
 renderTeam();
-
 </script>
+
 </body>
+</html>
