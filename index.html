@@ -1,5 +1,6 @@
 <!-- Add this at the end of your body, before </body> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
+
 <script>
 // ===== TEAM MEMBERS =====
 function loadTeamMembers(){
@@ -10,6 +11,7 @@ function loadTeamMembers(){
   manager.innerHTML = "";
 
   tM.forEach((m, i) => {
+
     // TEAM GRID CARD
     const div = document.createElement("div"); 
     div.className = "member"; 
@@ -22,16 +24,10 @@ function loadTeamMembers(){
     logoContainer.style.width = "110px";
     logoContainer.style.height = "110px";
     logoContainer.style.transformStyle = "preserve-3d";
-    logoContainer.setAttribute("data-tilt", "");
-    logoContainer.setAttribute("data-tilt-max", "15");
-    logoContainer.setAttribute("data-tilt-speed", "100");
 
     // Layered images
     const layers = [
-      {src: m.img || "maroon.jpg", z: 0},       // base image
-      // Add extra overlays if desired
-      // {src: "maroon_overlay1.png", z: 5},
-      // {src: "maroon_overlay2.png", z: 10}
+      {src: m.img || "maroon.jpg", z: 20}
     ];
 
     layers.forEach(layer => {
@@ -56,6 +52,7 @@ function loadTeamMembers(){
     const h = document.createElement("h3"); 
     h.textContent = m.name; 
     div.appendChild(h);
+
     const p = document.createElement("p"); 
     p.textContent = m.role; 
     div.appendChild(p);
@@ -66,18 +63,36 @@ function loadTeamMembers(){
     if(document.getElementById("teamTab").classList.contains("active")){
       const card = document.createElement("div"); 
       card.className = "admin-card";
-      card.innerHTML = `<strong>${m.name}</strong><br>${m.role}<br>Email: ${m.email || ''} <button onclick="editEmail(${i})">Edit</button><br>Phone: ${m.phone || ''} <button onclick="editPhone(${i})">Edit</button><br>
-      <button onclick="editTeamMember(${i})">Edit Name/Role/Image</button> <button onclick="deleteTeamMember(${i})">Delete</button>`;
+      card.innerHTML = `
+        <strong>${m.name}</strong><br>
+        ${m.role}<br>
+        Email: ${m.email || ''} 
+        <button onclick="editEmail(${i})">Edit</button><br>
+        Phone: ${m.phone || ''} 
+        <button onclick="editPhone(${i})">Edit</button><br>
+        <button onclick="editTeamMember(${i})">Edit Name/Role/Image</button> 
+        <button onclick="deleteTeamMember(${i})">Delete</button>
+      `;
       manager.appendChild(card);
     }
   });
 
-  // Initialize Vanilla Tilt for all new logo containers
-  VanillaTilt.init(document.querySelectorAll(".main-logo-container"), {
-    max: 15,
-    speed: 400,
-    glare: true,
-    "max-glare": 0.2,
-  });
+  // SAFE tilt initialization
+  if (typeof VanillaTilt !== "undefined") {
+
+    // Destroy existing tilt instances (prevents duplicate bug)
+    document.querySelectorAll(".main-logo-container").forEach(el => {
+      if (el.vanillaTilt) {
+        el.vanillaTilt.destroy();
+      }
+    });
+
+    VanillaTilt.init(document.querySelectorAll(".main-logo-container"), {
+      max: 15,
+      speed: 400,
+      glare: true,
+      "max-glare": 0.2,
+    });
+  }
 }
 </script>
