@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Eldorado High School - News Broadcasting Club</title>
 
-<!-- VANILLA TILT -->
+<!-- Vanilla Tilt -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
 
 <style>
@@ -67,7 +67,7 @@ section{
   transform:translateY(40px);
   transition:all .8s ease;
   width:100%;
-  margin-top:30px; /* to offset emoji scroll */
+  margin-top:30px; /* offset emoji scroll */
 }
 section.visible{opacity:1;transform:translateY(0);}
 
@@ -222,10 +222,166 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;font
 <script>
 // ====================== JS ======================
 
+// SCROLL TO SECTION
+function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
+const sections=document.querySelectorAll("section");
+const navLinks=document.querySelectorAll(".school-header nav a");
+window.addEventListener("scroll",()=>{
+  let current="";
+  sections.forEach(section=>{
+    const top=section.offsetTop-150;
+    if(pageYOffset>=top){current=section.id;section.classList.add("visible");}
+  });
+  navLinks.forEach(link=>{link.classList.remove("active"); if(link.getAttribute("onclick").includes(current)){link.classList.add("active");}});
+});
+
+// FORM
+function submitForm(e){
+  e.preventDefault();
+  const name=document.getElementById("name").value;
+  const email=document.getElementById("email").value;
+  const submissions=JSON.parse(localStorage.getItem("submissions")||"[]");
+  submissions.push({name,email});
+  localStorage.setItem("submissions",JSON.stringify(submissions));
+  alert("Thanks for signing up!");
+  e.target.reset();
+}
+
+// ADMIN LOGIN
+let ADMIN_USERNAME="admin1973", ADMIN_PASSWORD_HASH=null;
+async function hashPassword(p){
+  const d=new TextEncoder().encode(p);
+  const h=await crypto.subtle.digest("SHA-256",d);
+  return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+async function checkAdmin(){
+  if(!ADMIN_PASSWORD_HASH) ADMIN_PASSWORD_HASH=await hashPassword("admin1973");
+  const user=document.getElementById("adminUser").value;
+  const pass=document.getElementById("adminPass").value;
+  const hashedInput=await hashPassword(pass);
+  if(user===ADMIN_USERNAME && hashedInput===ADMIN_PASSWORD_HASH){
+    document.getElementById("adminModal").style.display="none";
+    document.getElementById("adminDashboard").style.display="block";
+    switchTab('joinTab');
+  } else alert("Incorrect username or password.");
+}
+function openAdmin(){document.getElementById("adminModal").style.display="flex";}
+function closeAdmin(){document.getElementById("adminModal").style.display="none";}
+
+// TAB SWITCH
+function switchTab(tab){
+  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
+  document.getElementById(tab).classList.add("active");
+  document.querySelectorAll(".admin-tab").forEach(t=>t.classList.remove("active"));
+  document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add("active");
+  if(tab==='joinTab') loadSubmissions();
+  if(tab==='videoTab') loadVideos();
+  if(tab==='teamTab') loadTeamMembers();
+  if(tab==='emojiTab') document.getElementById('emojiInput').value = localStorage.getItem('emojiScroll')||'🔥🎬📢 Welcome! 🎥✨';
+}
+
+// SUBMISSIONS
+function loadSubmissions(){
+  const s=JSON.parse(localStorage.getItem("submissions")||"[]");
+  const container=document.getElementById("submissions");
+  container.innerHTML="";
+  if(s.length===0){container.innerHTML="<p>No join requests.</p>"; return;}
+  s.forEach((entry,i)=>{
+    const div=document.createElement("div"); div.className="admin-card";
+    div.innerHTML=`<strong>${entry.name}</strong><br>${entry.email}<br><button onclick="deleteEntry(${i})">Delete</button>`;
+    container.appendChild(div);
+  });
+}
+function deleteEntry(i){
+  const s=JSON.parse(localStorage.getItem("submissions")||"[]"); s.splice(i,1);
+  localStorage.setItem("submissions",JSON.stringify(s)); loadSubmissions();
+}
+
+// VIDEOS
+function getYouTubeEmbed(u){
+  const r=/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/;
+  const m=u.match(r);
+  return m&&m[1]?`https://www.youtube.com/embed/${m[1]}`:u;
+}
+function loadVideos(){
+  const v=JSON.parse(localStorage.getItem("videos")||"[]");
+  const vs=document.getElementById("videoScroll"); vs.innerHTML="";
+  const mv=document.getElementById("mainVideo");
+  const tDiv=document.getElementById("videoTranscript");
+  mv.src=v[0]?getYouTubeEmbed(v[0].link):"";
+  tDiv.textContent=v[0]?.transcript||"Select a video to see the transcript.";
+  const manager=document.getElementById("videoManager"); manager.innerHTML="";
+  v.forEach((video,i)=>{
+    const btn=document.createElement("button"); btn.textContent=video.title;
+    btn.onclick=()=>{mv.src=getYouTubeEmbed(video.link); tDiv.textContent=video.transcript||"No transcript available.";}
+    vs.appendChild(btn);
+    if(document.getElementById("videoTab").classList.contains("active")){
+      const card=document.createElement("div"); card.className="admin-card";
+      card.innerHTML=`<strong>${video.title}</strong><br>Link: ${video.link}<br>Transcript: ${video.transcript||''}<br>
+      <button onclick="editVideo(${i})">Edit</button> <button onclick="deleteVideo(${i})">Delete</button>`;
+      manager.appendChild(card);
+    }
+  });
+}
+function addVideo(){
+  const title=prompt("Video Title:");
+  const link=prompt("Video Link:");
+  const transcript=prompt("Transcript:");
+  if(!title||!link) return alert("Title & Link required");
+  const v=JSON.parse(localStorage.getItem("videos")||"[]");
+  v.push({title,link,transcript});
+  localStorage.setItem("videos",JSON.stringify(v));
+  loadVideos();
+}
+function editVideo(i){
+  const v=JSON.parse(localStorage.getItem("videos")||"[]");
+  v[i].title=prompt("Edit Title:",v[i].title)||v[i].title;
+  v[i].link=prompt("Edit Link:",v[i].link)||v[i].link;
+  v[i].transcript=prompt("Edit Transcript:",v[i].transcript)||v[i].transcript;
+  localStorage.setItem("videos",JSON.stringify(v));
+  loadVideos();
+}
+function deleteVideo(i){
+  const v=JSON.parse(localStorage.getItem("videos")||"[]"); v.splice(i,1);
+  localStorage.setItem("videos",JSON.stringify(v)); loadVideos();
+}
+
+// TEAM MEMBERS
+function loadTeamMembers(){
+  const t=JSON.parse(localStorage.getItem("team")||"[]");
+  const grid=document.getElementById("teamGrid"); grid.innerHTML="";
+  const manager=document.getElementById("teamManager"); manager.innerHTML="";
+  t.forEach((m,i)=>{
+    const div=document.createElement("div"); div.className="member"; div.setAttribute("data-contact",`${m.role||''} - ${m.email||''}`);
+    div.innerHTML=`<img src="${m.image||'https://via.placeholder.com/110'}"><h3>${m.name}</h3><p>${m.role||''}</p>`;
+    grid.appendChild(div); VanillaTilt.init(div,{max:15,speed:400});
+    if(document.getElementById("teamTab").classList.contains("active")){
+      const card=document.createElement("div"); card.className="admin-card";
+      card.innerHTML=`<strong>${m.name}</strong> - ${m.role||''}<br>Email: ${m.email||''}<br>Image: ${m.image||''}<br>
+      <button onclick="editTeamMember(${i})">Edit</button> <button onclick="deleteTeamMember(${i})">Delete</button>`;
+      manager.appendChild(card);
+    }
+  });
+}
+function addTeamMember(){
+  const name=prompt("Name:"); if(!name)return;
+  const role=prompt("Role:"); const email=prompt("Email:"); const img=prompt("Image URL:");
+  const t=JSON.parse(localStorage.getItem("team")||"[]"); t.push({name,role,email,image:img});
+  localStorage.setItem("team",JSON.stringify(t)); loadTeamMembers();
+}
+function editTeamMember(i){
+  const t=JSON.parse(localStorage.getItem("team")||"[]");
+  t[i].name=prompt("Edit Name:",t[i].name)||t[i].name;
+  t[i].role=prompt("Edit Role:",t[i].role)||t[i].role;
+  t[i].email=prompt("Edit Email:",t[i].email)||t[i].email;
+  t[i].image=prompt("Edit Image URL:",t[i].image)||t[i].image;
+  localStorage.setItem("team",JSON.stringify(t)); loadTeamMembers();
+}
+function deleteTeamMember(i){const t=JSON.parse(localStorage.getItem("team")||"[]"); t.splice(i,1); localStorage.setItem("team",JSON.stringify(t)); loadTeamMembers();}
+
 // EMOJI SCROLL
 let emojiScrollText = localStorage.getItem('emojiScroll') || '🔥🎬📢 Welcome! 🎥✨';
 document.getElementById('emojiScroll').textContent = emojiScrollText;
-
 function animateEmojiScroll(){
   const scroll = document.getElementById('emojiScroll');
   let left = scroll.offsetLeft;
@@ -235,7 +391,6 @@ function animateEmojiScroll(){
   requestAnimationFrame(animateEmojiScroll);
 }
 animateEmojiScroll();
-
 function saveEmojis(){
   const val = document.getElementById('emojiInput').value;
   localStorage.setItem('emojiScroll', val);
@@ -243,7 +398,9 @@ function saveEmojis(){
   alert('Emoji scroll updated!');
 }
 
-// ====================== (keep all previous JS: scroll, admin, form, videos, team) ======================
+// LOAD DATA ON PAGE LOAD
+loadSubmissions(); loadVideos(); loadTeamMembers();
 </script>
+
 </body>
 </html>
