@@ -68,6 +68,9 @@ body.dark{
   justify-content:center;
   align-items:center;
   text-align:center;
+  background: url('maroon.jpg') center/cover no-repeat;
+  color:white;
+  padding:8% 6%;
   position:relative;
   overflow:hidden;
   transition: all 0.5s ease;
@@ -117,17 +120,8 @@ body.dark .hero::before{ background:rgba(0,0,0,0.6); }
 body.dark .hero button{ background:var(--primary-soft); color:white; }
 body.dark .hero button:hover{ background:var(--accent); color:var(--primary); }
 
-/* Use picture element for responsive hero background */
-.hero-picture{
-  position:absolute; inset:0; width:100%; height:100%; z-index:-1;
-}
-.hero-picture img{
-  width:100%; height:100%; object-fit:cover;
-  object-position:center center; filter:brightness(0.65); transition: all 0.5s ease;
-}
-
-/* ================= OTHER SECTIONS ================= */
-.broadcasts, .team, .join{
+/* ================= BROADCASTS ================= */
+.broadcasts{
   background:var(--card);
   border-radius:18px;
   box-shadow:0 15px 35px rgba(0,0,0,.05);
@@ -140,21 +134,21 @@ body.dark .hero button:hover{ background:var(--accent); color:var(--primary); }
   align-items:center;
   transition: all 0.5s ease;
 }
-.broadcasts h2, .team h2, .join h2{margin-bottom:30px;font-size:1.8rem;font-weight:600;}
+.broadcasts h2{margin-bottom:30px;font-size:1.8rem;font-weight:600;}
 .video-main{width:100%; max-width:720px; margin:0 auto;}
 .video-player{width:100%;height:50vh;border-radius:14px;border:none;box-shadow:0 10px 25px rgba(0,0,0,.08);}
-#videoTranscript{margin-top:15px; padding:15px; background:#f9f9f9; border-radius:12px; text-align:left; max-height:200px; overflow-y:auto; color:var(--text);}
+#videoTranscript{margin-top:15px; padding:15px; background:#f9f9f9; border-radius:12px; text-align:left; max-height:200px; overflow-y:auto; color:var(--text); transition: all 0.5s ease;}
 .video-scroll{margin-top:20px;display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;justify-content:center;}
 .video-scroll button{background:var(--primary);color:white;border:none;padding:10px 18px;border-radius:8px;font-size:.9rem;cursor:pointer;transition:.4s;}
 .video-scroll button:hover{background:var(--accent);color:var(--primary);}
-
-/* ================= DARK MODE ================= */
-body.dark .broadcasts, body.dark .team, body.dark .join{background:#2a2a2a; color:#eee;}
+body.dark .broadcasts{background:#2a2a2a; color:#eee;}
 body.dark #videoTranscript{background:#333; color:#eee;}
 body.dark .video-scroll button{background:#444; color:#eee;}
 body.dark .video-scroll button:hover{background:var(--accent); color:#1b1b1b;}
 
-/* ================= TEAM GRID ================= */
+/* ================= TEAM ================= */
+.team{text-align:center; transition: all 0.5s ease;}
+.team h2{margin-bottom:40px;font-size:1.8rem;}
 .team-grid{width:90%; margin:0 auto; display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:40px;}
 .member{background:var(--card);padding:28px 20px;border-radius:18px;box-shadow:0 10px 25px rgba(0,0,0,.06);transition:.5s;position:relative;cursor:pointer;}
 .member:hover{transform:translateY(-6px);box-shadow:0 15px 35px rgba(0,0,0,.1);}
@@ -167,10 +161,13 @@ body.dark .member{background:#2a2a2a;}
 body.dark .member p{color:#ccc;}
 body.dark .member::after{background:var(--accent); color:#1b1b1b;}
 
-/* ================= JOIN FORM ================= */
-.join input{padding:12px;margin:8px;width:80%;border-radius:8px;border:1px solid #ddd;font-size:.95rem;}
-.join button{background:var(--primary);color:white;border:none;padding:12px 24px;border-radius:8px;cursor:pointer;}
+/* ================= JOIN ================= */
+.join{background:#ebe7e2;border-radius:18px;text-align:center;padding:40px 20px;margin:60px auto; width:90%; max-width:600px; transition: all 0.5s ease;}
+.join h2{margin-bottom:20px;}
+.join input{padding:12px;margin:8px;width:80%;border-radius:8px;border:1px solid #ddd;font-size:.95rem; transition: all 0.5s ease;}
+.join button{background:var(--primary);color:white;border:none;padding:12px 24px;border-radius:8px;cursor:pointer;transition:.5s;}
 .join button:hover{background:var(--accent);color:var(--primary);}
+body.dark .join{background:#2b2b2b;}
 body.dark .join input{background:#333;color:#eee;border:1px solid #555;}
 body.dark .join button{background:#444;color:#eee;}
 body.dark .join button:hover{background:var(--accent);color:#1b1b1b;}
@@ -178,6 +175,18 @@ body.dark .join button:hover{background:var(--accent);color:#1b1b1b;}
 /* ================= FOOTER ================= */
 footer{background:var(--primary);color:white;text-align:center;padding:18px;font-size:.9rem;transition:.5s;}
 body.dark footer{background:#111;}
+
+/* ================= MOBILE RESPONSIVE ================= */
+@media(max-width:768px){
+  .hero h1{font-size:2.2rem;}
+  .hero p{font-size:1rem;}
+  .school-header{flex-direction:column;gap:10px;}
+  .school-header nav{flex-wrap:wrap; justify-content:center;}
+  .header-left{flex-direction:column;gap:4px;}
+  .broadcasts, .team, .join{padding:28px 14px; width:95%; margin:60px auto;}
+  .video-player{height:40vh;}
+  .member img{width:90px;height:90px;}
+}
 </style>
 </head>
 <body>
@@ -198,18 +207,37 @@ body.dark footer{background:#111;}
 </header>
 
 <section id="hero" class="hero visible">
-  <picture class="hero-picture">
-    <source srcset="maroon.webp" type="image/webp">
-    <img src="maroon.jpg" alt="Eldorado Maroon Background">
-  </picture>
   <h1>Welcome to the News Broadcasting Club</h1>
   <p>Delivering school stories. Sharing student voices. Creating future journalists with creativity, courage, and impact.</p>
   <button onclick="scrollToSection('broadcasts')">Watch Latest Broadcast</button>
 </section>
 
-<!-- Broadcasts, Team, Join sections remain the same as before -->
+<section id="broadcasts" class="broadcasts visible">
+  <h2>Latest Broadcasts</h2>
+  <div class="video-main">
+    <iframe id="mainVideo" class="video-player" src="" allowfullscreen></iframe>
+    <div id="videoTranscript">Select a video to see the transcript.</div>
+  </div>
+  <div class="video-scroll" id="videoScroll"></div>
+</section>
+
+<section id="team" class="team visible">
+  <h2>Meet the Team</h2>
+  <div class="team-grid" id="teamGrid"></div>
+</section>
+
+<section id="join" class="join visible">
+  <h2>Join the Club</h2>
+  <form onsubmit="submitForm(event)">
+    <input type="text" id="name" placeholder="Your Name" required>
+    <input type="email" id="email" placeholder="Your Email" required><br>
+    <button type="submit">Submit</button>
+  </form>
+</section>
 
 <footer>© 2026 Eldorado High School Broadcasting Club</footer>
+
+<!-- Admin Modal and Dashboard remain unchanged -->
 
 <script>
 // ===== DARK MODE =====
