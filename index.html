@@ -259,13 +259,15 @@ if(teamMembers.length===0){
 function addTeamMember(){
   const name=prompt("Member Name:");
   const role=prompt("Member Role:");
-  const imgFile=document.createElement("input"); imgFile.type="file"; imgFile.accept="image/*";
-  imgFile.click();
-  imgFile.onchange=()=>{
-    const file=imgFile.files[0];
+  const imgInput=document.createElement("input");
+  imgInput.type="file"; imgInput.accept="image/*";
+  imgInput.click();
+  imgInput.onchange=()=>{
+    const file=imgInput.files[0];
+    if(!file) return;
     const reader=new FileReader();
     reader.onload=(e)=>{
-      if(name && role && e.target.result){
+      if(name && role){
         teamMembers.push({name,role,img:e.target.result});
         localStorage.setItem("team",JSON.stringify(teamMembers));
         renderTeam();
@@ -304,6 +306,6 @@ function updateTeamImage(i,file){
 }
 function deleteTeam(i){teamMembers.splice(i,1); localStorage.setItem("team",JSON.stringify(teamMembers)); renderTeam();}
 renderTeam();
-</script>
 
+</script>
 </body>
