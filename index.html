@@ -14,7 +14,7 @@ body { background-color:#f8f5f1; color:#333; line-height:1.6; position:relative;
 body::before {
   content:"";
   position:fixed;
-  top:0; /* start at top to blend into header */
+  top:0;
   left:50%;
   width:100%;
   height:700px;
@@ -25,7 +25,7 @@ body::before {
   z-index:-1;
   pointer-events:none;
   animation:spin 15s linear infinite;
-  mix-blend-mode:multiply; /* blends with header color */
+  mix-blend-mode:multiply;
 }
 @keyframes spin { 
   from{transform:translateX(-50%) rotate(0deg);} 
@@ -328,7 +328,7 @@ function saveHero(){
   if(d) $('heroDesc').textContent=d;
   if(b) $('heroBtn').textContent=b;
   const file=$('editHeroBGFile').files[0];
-  if(file){ const reader=new FileReader(); reader.onload=e=>{ document.body.style.setProperty('background-image',`url(${e.target.result})`); }; reader.readAsDataURL(file);}
+  if(file){ const reader=new FileReader(); reader.onload=e=>{ document.body.style.backgroundImage=`url(${e.target.result})`; }; reader.readAsDataURL(file);}
 }
 
 // ================= JOIN =================
