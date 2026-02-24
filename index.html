@@ -46,32 +46,20 @@ html,body{height:100%;scroll-behavior:smooth;overflow-x:hidden;background:var(--
   perspective:1200px;
   background:#6b0f1a;
 }
-.hero-3d-container{
-  position: absolute;
-  top:50%; left:50%;
-  transform: translate(-50%, -50%);
-  width:80%; height:80%;
-  pointer-events:none;
-  transform-style: preserve-3d;
-  perspective:1200px;
+.gradient-bg{position:relative;width:100%;height:100%;}
+.frontpage-container{display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;}
+.logo-container{position:relative; width:600px; height:600px; margin-bottom:20px;}
+.main-logo-container{
+  width:600px; height:600px; position:relative;
+  transform-style: preserve-3d; will-change: transform;
 }
-.hero-3d-container img{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:80%; height:auto;
-  pointer-events:none;
-  border-radius:10px;
-  transition: transform 0.15s ease-out;
+.main-logo-container img{
+  position:absolute; left:0; right:0; top:0; bottom:0; margin:auto; pointer-events:none;
 }
-
-/* HERO TEXT */
-.hero-text{
-  position:relative;
-  z-index:1;
-  color:white;
+.text-logo-container img{
+  width:100%; height:auto; pointer-events:none;
 }
+.hero-text{position:relative; z-index:2; color:white;}
 .hero-text h1{font-size:2.7rem;font-weight:600;margin-bottom:18px;}
 .hero-text p{font-size:1.15rem;max-width:600px;margin-bottom:28px;opacity:.95;}
 .hero-text button{background:var(--accent);color:var(--primary);border:none;padding:14px 28px;border-radius:8px;font-weight:600;cursor:pointer;transition:.3s;}
@@ -144,15 +132,31 @@ html,body{height:100%;scroll-behavior:smooth;overflow-x:hidden;background:var(--
 
 <!-- HERO -->
 <section id="hero" class="hero">
-  <div class="hero-3d-container" id="hero3D">
-    <img src="maroon.jpg" style="transform: translateZ(0px);">
-    <img src="maroon.jpg" style="transform: translateZ(10px);">
-    <img src="maroon.jpg" style="transform: translateZ(20px);">
-  </div>
-  <div class="hero-text">
-    <h1>Welcome to the News Broadcasting Club</h1>
-    <p>Delivering school stories. Sharing student voices. Creating future journalists.</p>
-    <button onclick="scrollToSection('team')">Meet the Team</button>
+  <div class="gradient-bg">
+    <div class="frontpage-container">
+      <div class="logo-container">
+        <div class="main-logo-container" id="hero3D" data-tilt
+             data-tilt-reverse="true"
+             data-tilt-max="20"
+             data-tilt-speed="100"
+             data-tilt-full-page-listening
+             data-tilt-gyroscopeminanglex="-25"
+             data-tilt-gyroscopemaxanglex="25"
+             data-tilt-gyroscopeminangley="-25"
+             data-tilt-gyroscopemaxangley="25">
+          <img src="maroon_background.png">
+          <img src="maroon_mid.png" style="transform:translateZ(5px);">
+          <img src="maroon_overlay1.png" style="transform:translateZ(10px);">
+          <img src="maroon_overlay2.png" style="transform:translateZ(15px);">
+        </div>
+      </div>
+      <div class="hero-text">
+        <h1>Welcome to the News Broadcasting Club</h1>
+        <p>Delivering school stories. Sharing student voices. Creating future journalists.</p>
+        <button onclick="scrollToSection('team')">Meet the Team</button>
+        <button onclick="scrollToSection('join')">Join the Club</button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -183,15 +187,15 @@ function switchTab(tab){
   if(tab==='teamTab') loadTeamMembers();
 }
 
-// HERO 3D PARALLAX
+// HERO 3D PARALLAX + VANILLATILT
 const hero3D = document.getElementById('hero3D');
 const layers = hero3D.querySelectorAll('img');
 document.addEventListener('mousemove', e=>{
   const x = (window.innerWidth/2 - e.clientX)/50;
   const y = (window.innerHeight/2 - e.clientY)/50;
   layers.forEach((l,i)=>{
-    const depth = i*0.05 + 0.02; // small progressive depth
-    l.style.transform = `translate(-50%,-50%) translateX(${x*depth*100}px) translateY(${y*depth*100}px) scale(1.05) translateZ(${i*10}px)`;
+    const depth = i*0.05 + 0.02;
+    l.style.transform = `translateX(${x*depth*100}px) translateY(${y*depth*100}px) scale(1.05) translateZ(${i*5}px)`;
   });
 });
 
