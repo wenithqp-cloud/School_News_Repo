@@ -91,7 +91,7 @@
     <input type="text" id="editHeroTitle" placeholder="Hero Title">
     <textarea id="editHeroDesc" placeholder="Hero Description"></textarea>
     <input type="text" id="editHeroBtn" placeholder="Button Text">
-    <input type="text" id="editHeroBG" placeholder="Background Image URL">
+    <input type="file" id="editHeroBGFile" accept="image/*">
     <button onclick="saveHero()">Save Hero</button>
   </div>
 
@@ -175,25 +175,39 @@ function switchTab(tab){
   document.getElementById(tab).classList.add("active");
 }
 
-// ===== Hero Section =====
+// ===== Hero Section with Image Upload =====
 function saveHero(){
   const title=document.getElementById("editHeroTitle").value;
   const desc=document.getElementById("editHeroDesc").value;
   const btnText=document.getElementById("editHeroBtn").value;
-  const bg=document.getElementById("editHeroBG").value;
+  const bgFile=document.getElementById("editHeroBGFile").files[0];
+
   if(title) document.getElementById("heroTitle").innerText=title;
   if(desc) document.getElementById("heroDesc").innerText=desc;
   if(btnText) document.getElementById("heroBtn").innerText=btnText;
-  if(bg) document.querySelector(".hero").style.background=`url('${bg}') center/cover no-repeat`;
+
+  if(bgFile){
+    const reader=new FileReader();
+    reader.onload=(e)=>{
+      document.querySelector(".hero").style.background=`url('${e.target.result}') center/cover no-repeat`;
+      localStorage.setItem("heroBG", e.target.result);
+    }
+    reader.readAsDataURL(bgFile);
+  }
+
   alert("Hero section updated!");
 }
+window.addEventListener("load",()=>{
+  const savedBG=localStorage.getItem("heroBG");
+  if(savedBG) document.querySelector(".hero").style.background=`url('${savedBG}') center/cover no-repeat`;
+});
 
 // ===== Join Section =====
 function saveJoin(){
   const title=document.getElementById("editJoinTitle").value;
   const btnText=document.getElementById("editJoinBtn").value;
   if(title) document.getElementById("joinTitle").innerText=title;
-  if(btnText) document.getElementById("heroBtn").innerText=btnText;
+  if(btnText) document.getElementById("joinBtn").innerText=btnText;
   alert("Join section updated!");
 }
 
@@ -235,7 +249,7 @@ function updateVideo(index,url){videos[index].url=url; localStorage.setItem("vid
 function deleteVideo(index){videos.splice(index,1); localStorage.setItem("videos",JSON.stringify(videos)); renderVideos();}
 renderVideos();
 
-// ===== Team Manager =====
+// ===== Team Manager with Image Upload =====
 let teamMembers=JSON.parse(localStorage.getItem("team")||"[]");
 const teamGrid=document.getElementById("teamGrid");
 if(teamMembers.length===0){
@@ -245,8 +259,20 @@ if(teamMembers.length===0){
 function addTeamMember(){
   const name=prompt("Member Name:");
   const role=prompt("Member Role:");
-  const img=prompt("Image filename (must exist in folder or URL):");
-  if(name && role && img){teamMembers.push({name,role,img}); localStorage.setItem("team",JSON.stringify(teamMembers)); renderTeam();}
+  const imgFile=document.createElement("input"); imgFile.type="file"; imgFile.accept="image/*";
+  imgFile.click();
+  imgFile.onchange=()=>{
+    const file=imgFile.files[0];
+    const reader=new FileReader();
+    reader.onload=(e)=>{
+      if(name && role && e.target.result){
+        teamMembers.push({name,role,img:e.target.result});
+        localStorage.setItem("team",JSON.stringify(teamMembers));
+        renderTeam();
+      }
+    }
+    reader.readAsDataURL(file);
+  }
 }
 function renderTeam(){
   teamGrid.innerHTML="";
@@ -261,12 +287,21 @@ function renderTeam(){
     const card=document.createElement("div"); card.className="admin-card";
     card.innerHTML=`<input value="${m.name}" placeholder="Name" onchange="updateTeam(${i}, 'name', this.value)">
                       <input value="${m.role}" placeholder="Role" onchange="updateTeam(${i}, 'role', this.value)">
-                      <input value="${m.img}" placeholder="Image URL" onchange="updateTeam(${i}, 'img', this.value)">
+                      <input type="file" onchange="updateTeamImage(${i}, this.files[0])">
                       <button onclick="deleteTeam(${i})">Delete</button>`;
     manager.appendChild(card);
   });
 }
 function updateTeam(i,key,value){teamMembers[i][key]=value; localStorage.setItem("team",JSON.stringify(teamMembers)); renderTeam();}
+function updateTeamImage(i,file){
+  const reader=new FileReader();
+  reader.onload=(e)=>{
+    teamMembers[i].img=e.target.result;
+    localStorage.setItem("team",JSON.stringify(teamMembers));
+    renderTeam();
+  }
+  reader.readAsDataURL(file);
+}
 function deleteTeam(i){teamMembers.splice(i,1); localStorage.setItem("team",JSON.stringify(teamMembers)); renderTeam();}
 renderTeam();
 </script>
