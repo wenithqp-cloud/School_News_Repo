@@ -207,13 +207,17 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;font
 <div class="admin-tab" onclick="switchTab('videoTab',this)">Broadcast Videos</div>
 <div class="admin-tab" onclick="switchTab('teamTab',this)">Team Members</div>
 <div class="admin-tab" onclick="switchTab('newsTab',this)">News Bar</div>
+<div class="admin-tab" onclick="switchTab('heroTab', this)">Hero Section</div>
+
 </div>
 
 <div id="joinTab" class="tab-content active"><h2>Join Requests</h2><div id="submissions"></div></div>
 <div id="videoTab" class="tab-content"><h2>Manage Videos</h2><button onclick="addVideo()">Add Video</button><div id="videoManager"></div></div>
 <div id="teamTab" class="tab-content"><h2>Manage Team Members</h2><button onclick="addTeamMember()">Add Member</button><div id="teamManager"></div></div>
 <div id="newsTab" class="tab-content"><h2>Manage News Bar</h2><button onclick="addNews()">Add News Item</button><div id="newsManager"></div></div>
-
+<div id="heroTab" class="tab-content"><h2>Edit Hero Section</h2><div class="admin-card"><label>Title:</label><br><input type="text" id="heroTitle"><br><label>Description:</label><br><textarea id="heroDesc" rows="3"></textarea><br><label>Button Text:</label><br><input type="text" id="heroBtnText"><br><button onclick="saveHero()">Save</button></div>
+</div>
+  
 </div>
 <script>
 // =================== SCROLL & SECTION ===================
@@ -504,6 +508,53 @@ window.addEventListener("load", ()=>{
   // ⚡ Force sections visible immediately
   document.querySelectorAll("section").forEach(section => section.classList.add("visible"));
 });
+  // ====== HERO SECTION ADMIN ======
+
+// Load hero content into admin inputs
+function loadHeroAdmin() {
+  const heroData = JSON.parse(localStorage.getItem("heroContent") || 
+    JSON.stringify({
+      title: "Welcome to the News Broadcasting Club",
+      desc: "Delivering school stories. Sharing student voices. Creating future journalists.",
+      btn: "Watch Latest Broadcast"
+    })
+  );
+  document.getElementById("heroTitle").value = heroData.title;
+  document.getElementById("heroDesc").value = heroData.desc;
+  document.getElementById("heroBtnText").value = heroData.btn;
+
+  // Apply to the page immediately
+  document.querySelector("#hero h1").textContent = heroData.title;
+  document.querySelector("#hero p").textContent = heroData.desc;
+  document.querySelector("#hero button").textContent = heroData.btn;
+}
+
+// Save hero content from admin inputs
+function saveHero() {
+  const title = document.getElementById("heroTitle").value;
+  const desc = document.getElementById("heroDesc").value;
+  const btn = document.getElementById("heroBtnText").value;
+
+  const heroData = { title, desc, btn };
+  localStorage.setItem("heroContent", JSON.stringify(heroData));
+
+  // Update the page immediately
+  document.querySelector("#hero h1").textContent = title;
+  document.querySelector("#hero p").textContent = desc;
+  document.querySelector("#hero button").textContent = btn;
+
+  alert("Hero section updated!");
+}
+
+// Load hero admin whenever the hero tab is opened
+if (!window.switchTabOriginal) {
+  const oldSwitchTab = switchTab;
+  window.switchTabOriginal = switchTab;
+  switchTab = function(tab, el) {
+    oldSwitchTab(tab, el);
+    if(tab === 'heroTab') loadHeroAdmin();
+  }
+}
 </script>
 </body>
 </html>
