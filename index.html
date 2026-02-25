@@ -74,12 +74,19 @@ section{min-height:100vh;display:flex;flex-direction:column;justify-content:cent
 section.visible{opacity:1;transform:translateY(0);}
 
 /* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 .hero{background:linear-gradient(135deg,var(--primary),var(--primary-soft));color:white;text-align:center;}
 .hero h1{font-size:2.7rem;font-weight:600;margin-bottom:18px;}
 .hero p{font-size:1.15rem;max-width:600px;margin-bottom:28px;opacity:.95;}
 .hero button{background:var(--accent);color:var(--primary);border:none;padding:14px 28px;border-radius:8px;font-weight:600;cursor:pointer;transition:.3s;}
 .hero button:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.15);}
-
+  
 /* BROADCASTS */
 .broadcasts{ background:var(--card); border-radius:18px; box-shadow:0 15px 35px rgba(0,0,0,.05); padding:40px 20px; width:90%; max-width:1000px; margin:40px auto; text-align:center; display:flex; flex-direction:column; align-items:center; }
 .broadcasts h2{margin-bottom:30px;font-size:1.8rem;font-weight:600;}
@@ -443,7 +450,12 @@ function deleteTeamMember(i){ const tM = JSON.parse(localStorage.getItem("teamMe
 function loadNewsBar(){
   const news = JSON.parse(localStorage.getItem("newsItems") || "[]");
   const newsBar = document.getElementById("newsBar");
-  newsBar.textContent = news.map(n=>n.text).join(" ⚡ ");
+  
+  if(news.length === 0){
+    newsBar.textContent = "Welcome to Eldorado News! ⚡ Check back for updates.";
+  } else {
+    newsBar.textContent = news.map(n => n.text).join(" ⚡ ");
+  }
 }
 function addNews(){
   const text = prompt("Enter news text (emojis allowed):");
@@ -483,11 +495,14 @@ function loadNewsManager(){
 
 // =================== INITIAL LOAD ===================
 window.addEventListener("load", ()=>{
-  revealOnScroll();
-  updateNavLinks();
+  revealOnScroll();  // keep scroll animation
+  updateNavLinks();  // keep nav highlight
   loadVideos();
   loadTeamMembers();
   loadNewsBar();
+
+  // ⚡ Force sections visible immediately
+  document.querySelectorAll("section").forEach(section => section.classList.add("visible"));
 });
 </script>
 </body>
