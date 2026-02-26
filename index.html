@@ -179,6 +179,14 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;font
 <div id="heroTab" class="tab-content"><h2>Edit Hero Section</h2><div class="admin-card"><label>Title:</label><br><input type="text" id="heroTitle"><br><label>Description:</label><br><textarea id="heroDesc" rows="3"></textarea><br><label>Button Text:</label><br><input type="text" id="heroBtnText"><br><button onclick="saveHero()">Save</button></div></div>
 
 <script>
+
+//lets save go from device to device
+let siteData = {};
+
+async function loadSiteData() {
+  const res = await fetch("data.json?t=" + Date.now());
+  siteData = await res.json();
+}
   
 // =================== SCROLL & SECTION ===================
 const sections = document.querySelectorAll("section");
