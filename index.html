@@ -466,6 +466,54 @@ window.addEventListener("load", ()=>{
   // ⚡ Force sections visible immediately
   document.querySelectorAll("section").forEach(section => section.classList.add("visible"));
 });
+
+  // =================== AUTO-UPDATE FOR APP ===================
+function autoUpdateApp() {
+  // Videos
+  const oldVideos = JSON.stringify(JSON.parse(localStorage.getItem("videos") || "[]"));
+  fetchVideosFromServer().then(newVideos => {
+    if (JSON.stringify(newVideos) !== oldVideos) {
+      localStorage.setItem("videos", JSON.stringify(newVideos));
+      loadVideos();
+    }
+  });
+
+  // News
+  const oldNews = JSON.stringify(JSON.parse(localStorage.getItem("newsItems") || "[]"));
+  fetchNewsFromServer().then(newNews => {
+    if (JSON.stringify(newNews) !== oldNews) {
+      localStorage.setItem("newsItems", JSON.stringify(newNews));
+      loadNewsBar();
+      loadNewsManager();
+    }
+  });
+
+  // Hero section
+  const oldHero = JSON.stringify(JSON.parse(localStorage.getItem("heroContent") || "{}"));
+  fetchHeroFromServer().then(newHero => {
+    if (JSON.stringify(newHero) !== oldHero) {
+      localStorage.setItem("heroContent", JSON.stringify(newHero));
+      loadHeroAdmin();
+    }
+  });
+}
+
+// Fetch functions (replace with actual server API URLs if needed)
+async function fetchVideosFromServer() {
+  try {
+    // Example: return await fetch('https://example.com/videos.json').then(r=>r.json());
+    return JSON.parse(localStorage.getItem("videos") || "[]"); // fallback for local demo
+  } catch(e){ return []; }
+}
+async function fetchNewsFromServer() {
+  try { return JSON.parse(localStorage.getItem("newsItems") || "[]"); } catch(e){ return []; }
+}
+async function fetchHeroFromServer() {
+  try { return JSON.parse(localStorage.getItem("heroContent") || "{}"); } catch(e){ return {}; }
+}
+
+// Start auto-update every 30 seconds
+setInterval(autoUpdateApp, 30000);
 </script>
 </body>
 </html>
