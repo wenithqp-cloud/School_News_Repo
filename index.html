@@ -180,167 +180,97 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;font
 
 <script>
 
-//lets save go from device to device
+// ================= GLOBAL DATA =================
 let siteData = {};
+const GITHUB_USERNAME = "YOUR_USERNAME";
+const GITHUB_REPO = "YOUR_REPO";
+const GITHUB_TOKEN = "YOUR_GITHUB_TOKEN"; // ⚠️ private repo token
+const DATA_PATH = "data.json";
 
+// ================= LOAD DATA =================
 async function loadSiteData() {
-  const res = await fetch("data.json?t=" + Date.now());
+  const res = await fetch(DATA_PATH + "?t=" + Date.now());
   siteData = await res.json();
 }
-  
-// =================== SCROLL & SECTION ===================
-const sections = document.querySelectorAll("section");
-const navLinks = document.querySelectorAll(".school-header nav a");
 
-function revealOnScroll() {
-  sections.forEach(section => {
-    const top = section.getBoundingClientRect().top;
-    const trigger = window.innerHeight - 100;
-    if (top < trigger) {
-      section.classList.add("visible");
-    }
+// ================= SAVE TO GITHUB =================
+async function saveToGitHub() {
+  const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${DATA_PATH}`;
+
+  const getFile = await fetch(url, {
+    headers: { Authorization: `token ${GITHUB_TOKEN}` }
   });
-}
 
-// Highlight current nav link
-function updateNavLinks() {
-  let current = "";
-  sections.forEach(section => {
-    const top = section.offsetTop - 150;
-    if (pageYOffset >= top) current = section.id;
+  const fileData = await getFile.json();
+
+  const updatedContent = btoa(
+    unescape(encodeURIComponent(JSON.stringify(siteData, null, 2)))
+  );
+
+  await fetch(url, {
+    method: "PUT",
+    headers: {
+      Authorization: `token ${GITHUB_TOKEN}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: "Admin update from site",
+      content: updatedContent,
+      sha: fileData.sha
+    })
   });
-  navLinks.forEach(link => {
-    link.classList.remove("active");
-    if (link.getAttribute("onclick")?.includes(current)) link.classList.add("active");
-  });
+
+  alert("Saved globally!");
 }
 
-window.addEventListener("scroll", () => {
-  revealOnScroll();
-  updateNavLinks();
-});
+// ================= HERO =================
+function loadHero() {
+  const hero = siteData.heroContent;
+  document.querySelector(".hero h1").textContent = hero.title;
+  document.querySelector(".hero p").textContent = hero.desc;
+  document.querySelector(".hero button").textContent = hero.btn;
 
-// Smooth scroll to section
-function scrollToSection(id) {
-  const el = document.getElementById(id);
-  if (el) el.scrollIntoView({behavior:'smooth'});
-}
-function goToNewestVideo() {
-  const v = JSON.parse(localStorage.getItem("videos") || "[]");
-
-  if (v.length === 0) {
-    scrollToSection('broadcasts');
-    return;
-  }
-
-  const newestIndex = v.length - 1;
-  const mv = document.getElementById("mainVideo");
-  const tDiv = document.getElementById("videoTranscript");
-
-  mv.src = getYouTubeEmbed(v[newestIndex].link);
-  tDiv.textContent = v[newestIndex].transcript || "No transcript available.";
-
-  scrollToSection('broadcasts');
-}
-  
-// =================== FORM ===================
-function submitForm(e) {
-  e.preventDefault();
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const submissions = JSON.parse(localStorage.getItem("submissions") || "[]");
-  submissions.push({name,email});
-  localStorage.setItem("submissions", JSON.stringify(submissions));
-  alert("Thanks for signing up!");
-  e.target.reset();
+  document.getElementById("heroTitle").value = hero.title;
+  document.getElementById("heroDesc").value = hero.desc;
+  document.getElementById("heroBtnText").value = hero.btn;
 }
 
-// =================== ADMIN LOGIN ===================
-let ADMIN_USERNAME="admin1973", ADMIN_PASSWORD_HASH=null;
-
-async function hashPassword(p) {
-  const d = new TextEncoder().encode(p);
-  const h = await crypto.subtle.digest("SHA-256", d);
-  return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,"0")).join("");
+function saveHero() {
+  siteData.heroContent = {
+    title: document.getElementById("heroTitle").value,
+    desc: document.getElementById("heroDesc").value,
+    btn: document.getElementById("heroBtnText").value
+  };
+  saveToGitHub();
+  loadHero();
 }
 
-async function checkAdmin() {
-  if (!ADMIN_PASSWORD_HASH) ADMIN_PASSWORD_HASH = await hashPassword("eldo2026");
-  const user = document.getElementById("adminUser").value;
-  const pass = document.getElementById("adminPass").value;
-  const hashedInput = await hashPassword(pass);
-  if(user===ADMIN_USERNAME && hashedInput===ADMIN_PASSWORD_HASH) {
-    document.getElementById("adminModal").style.display="none";
-    document.getElementById("adminDashboard").style.display="block";
-    switchTab('joinTab', document.querySelector(".admin-tab.active"));
-  } else alert("Incorrect username or password.");
-}
-
-function openAdmin(){document.getElementById("adminModal").style.display="flex";}
-function closeAdmin(){document.getElementById("adminModal").style.display="none";}
-
-// =================== TAB SWITCH ===================
-function switchTab(tab,el){
-  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
-  document.getElementById(tab).classList.add("active");
-  document.querySelectorAll(".admin-tab").forEach(t=>t.classList.remove("active"));
-  if(el) el.classList.add("active");
-  if(tab==='joinTab') loadSubmissions();
-  if(tab==='videoTab') loadVideos();
-  if(tab==='teamTab') loadTeamMembers();
-  if(tab==='newsTab') loadNewsManager();
-}
-
-// =================== SUBMISSIONS ===================
-function loadSubmissions(){
-  const s = JSON.parse(localStorage.getItem("submissions") || "[]");
-  const container = document.getElementById("submissions");
-  container.innerHTML = "";
-  if(s.length===0){container.innerHTML="<p>No join requests.</p>"; return;}
-  s.forEach((entry,i)=>{
-    const div = document.createElement("div");
-    div.className="admin-card";
-    div.innerHTML = `<strong>${entry.name}</strong><br>${entry.email}<br><button onclick="deleteEntry(${i})">Delete</button>`;
-    container.appendChild(div);
-  });
-}
-function deleteEntry(i){
-  const s = JSON.parse(localStorage.getItem("submissions") || "[]");
-  s.splice(i,1);
-  localStorage.setItem("submissions", JSON.stringify(s));
-  loadSubmissions();
-}
-
-// =================== VIDEOS ===================
+// ================= VIDEOS =================
 function getYouTubeEmbed(url) {
   try {
     const u = new URL(url);
-    let videoID = null;
-    if (u.hostname.includes("youtube.com")) videoID = u.searchParams.get("v");
-    if (u.hostname === "youtu.be") videoID = u.pathname.slice(1);
-    if (u.pathname.includes("/embed/")) videoID = u.pathname.split("/embed/")[1];
-    if (!videoID) return url;
-    return `https://www.youtube.com/embed/${videoID}`;
-  } catch(e){ return url; }
+    let id = u.searchParams.get("v");
+    if (u.hostname === "youtu.be") id = u.pathname.slice(1);
+    return `https://www.youtube.com/embed/${id}`;
+  } catch {
+    return url;
+  }
 }
 
-  function loadVideos() {
-  const v = JSON.parse(localStorage.getItem("videos") || "[]");
+function loadVideos() {
+  const v = siteData.videos;
   const vs = document.getElementById("videoScroll");
   const mv = document.getElementById("mainVideo");
   const tDiv = document.getElementById("videoTranscript");
+  const manager = document.getElementById("videoManager");
 
   vs.innerHTML = "";
-  const manager = document.getElementById("videoManager");
   if (manager) manager.innerHTML = "";
 
-  if (v.length > 0) {
-    const newestIndex = v.length - 1;
-    mv.src = getYouTubeEmbed(v[newestIndex].link);
-    tDiv.textContent = v[newestIndex].transcript || "No transcript available.";
-  } else {
-    mv.src = "";
-    tDiv.textContent = "No videos available.";
+  if (v.length) {
+    const newest = v[v.length - 1];
+    mv.src = getYouTubeEmbed(newest.link);
+    tDiv.textContent = newest.transcript || "No transcript available.";
   }
 
   [...v].reverse().forEach((video, reverseIndex) => {
@@ -350,18 +280,15 @@ function getYouTubeEmbed(url) {
     btn.textContent = video.title;
     btn.onclick = () => {
       mv.src = getYouTubeEmbed(video.link);
-      tDiv.textContent = video.transcript || "No transcript available.";
-      localStorage.setItem("lastVideoIndex", realIndex);
+      tDiv.textContent = video.transcript || "";
     };
     vs.appendChild(btn);
 
-    if (document.getElementById("videoTab")?.classList.contains("active")) {
+    if (manager) {
       const card = document.createElement("div");
       card.className = "admin-card";
       card.innerHTML = `
         <strong>${video.title}</strong><br>
-        Link: ${video.link}<br>
-        Transcript: ${video.transcript || ''}<br>
         <button onclick="editVideo(${realIndex})">Edit</button>
         <button onclick="deleteVideo(${realIndex})">Delete</button>
       `;
@@ -371,181 +298,133 @@ function getYouTubeEmbed(url) {
 }
 
 function addVideo() {
-  const t = prompt("Video title:"), l = prompt("YouTube link:"), tr = prompt("Transcript:");
-  if(!t||!l) return;
-  const v = JSON.parse(localStorage.getItem("videos") || "[]");
-  v.push({title:t,link:l,transcript:tr});
-  localStorage.setItem("videos", JSON.stringify(v));
-  loadVideos();
-}
-function editVideo(i){
-  const v = JSON.parse(localStorage.getItem("videos") || "[]");
-  const t = prompt("Video title:", v[i].title), l = prompt("YouTube link:", v[i].link), tr = prompt("Transcript:", v[i].transcript||"");
-  if(!t||!l) return;
-  v[i] = {title:t,link:l,transcript:tr};
-  localStorage.setItem("videos", JSON.stringify(v));
-  loadVideos();
-}
-function deleteVideo(i){
-  const v = JSON.parse(localStorage.getItem("videos") || "[]");
-  v.splice(i,1);
-  localStorage.setItem("videos", JSON.stringify(v));
+  const t = prompt("Video title:");
+  const l = prompt("YouTube link:");
+  const tr = prompt("Transcript:");
+  if (!t || !l) return;
+  siteData.videos.push({ title: t, link: l, transcript: tr });
+  saveToGitHub();
   loadVideos();
 }
 
-// =================== TEAM MEMBERS ===================
-function loadTeamMembers(){
-  const tM = JSON.parse(localStorage.getItem("teamMembers") || "[]");
+function editVideo(i) {
+  const v = siteData.videos[i];
+  const t = prompt("Title:", v.title);
+  const l = prompt("Link:", v.link);
+  const tr = prompt("Transcript:", v.transcript);
+  if (!t || !l) return;
+  siteData.videos[i] = { title: t, link: l, transcript: tr };
+  saveToGitHub();
+  loadVideos();
+}
+
+function deleteVideo(i) {
+  siteData.videos.splice(i, 1);
+  saveToGitHub();
+  loadVideos();
+}
+
+// ================= TEAM =================
+function loadTeamMembers() {
+  const tM = siteData.teamMembers;
   const grid = document.getElementById("teamGrid");
   const manager = document.getElementById("teamManager");
-  grid.innerHTML=""; manager.innerHTML="";
+  grid.innerHTML = "";
+  if (manager) manager.innerHTML = "";
 
-  tM.forEach((m,i)=>{
+  tM.forEach((m, i) => {
     const div = document.createElement("div");
-    div.className="member";
-    div.setAttribute("data-contact",`${m.email||'No email'}, ${m.phone||'No phone'}`);
-    const img = document.createElement("img"); img.src = m.img||"maroon.jpg"; div.appendChild(img);
-    const h = document.createElement("h3"); h.textContent = m.name; div.appendChild(h);
-    const p = document.createElement("p"); p.textContent = m.role; div.appendChild(p);
+    div.className = "member";
+    div.setAttribute("data-contact", `${m.email || ""}, ${m.phone || ""}`);
+    div.innerHTML = `
+      <img src="${m.img || "maroon.jpg"}">
+      <h3>${m.name}</h3>
+      <p>${m.role}</p>
+    `;
     grid.appendChild(div);
 
-    if(document.getElementById("teamTab").classList.contains("active")){
+    if (manager) {
       const card = document.createElement("div");
-      card.className="admin-card";
-      card.innerHTML = `<strong>${m.name}</strong><br>${m.role}<br>Email: ${m.email||''} <button onclick="editEmail(${i})">Edit</button><br>
-      Phone: ${m.phone||''} <button onclick="editPhone(${i})">Edit</button><br>
-      <button onclick="editTeamMember(${i})">Edit Name/Role/Image</button> 
-      <button onclick="deleteTeamMember(${i})">Delete</button>`;
+      card.className = "admin-card";
+      card.innerHTML = `
+        <strong>${m.name}</strong>
+        <button onclick="deleteTeamMember(${i})">Delete</button>
+      `;
       manager.appendChild(card);
     }
   });
 }
-function addTeamMember(){ 
-  const n=prompt("Name:"), r=prompt("Role:"), e=prompt("Email:"), p=prompt("Phone:"), img=prompt("Image URL:");
-  if(!n||!r) return;
-  const tM = JSON.parse(localStorage.getItem("teamMembers") || "[]");
-  tM.push({name:n,role:r,email:e,phone:p,img});
-  localStorage.setItem("teamMembers", JSON.stringify(tM));
-  loadTeamMembers();
-}
-function editTeamMember(i){ 
-  const tM = JSON.parse(localStorage.getItem("teamMembers") || "[]");
-  const n=prompt("Name:",tM[i].name), r=prompt("Role:",tM[i].role), img=prompt("Image URL:",tM[i].img);
-  if(!n||!r) return;
-  tM[i]={...tM[i],name:n,role:r,img};
-  localStorage.setItem("teamMembers", JSON.stringify(tM));
-  loadTeamMembers();
-}
-function editEmail(i){ const tM = JSON.parse(localStorage.getItem("teamMembers") || "[]"); const e=prompt("Email:",tM[i].email); if(e!==null){tM[i].email=e; localStorage.setItem("teamMembers", JSON.stringify(tM)); loadTeamMembers();}}
-function editPhone(i){ const tM = JSON.parse(localStorage.getItem("teamMembers") || "[]"); const p=prompt("Phone:",tM[i].phone); if(p!==null){tM[i].phone=p; localStorage.setItem("teamMembers", JSON.stringify(tM)); loadTeamMembers();}}
-function deleteTeamMember(i){ const tM = JSON.parse(localStorage.getItem("teamMembers") || "[]"); tM.splice(i,1); localStorage.setItem("teamMembers", JSON.stringify(tM)); loadTeamMembers();}
 
-// =================== NEWS BAR ===================
-function loadNewsBar(){
-  const news = JSON.parse(localStorage.getItem("newsItems") || "[]");
-  const newsBar = document.getElementById("newsBar");
-  
-  if(news.length === 0){
-    newsBar.textContent = "Welcome to Eldorado News! ⚡ Check back for updates.";
-  } else {
-    newsBar.textContent = news.map(n => n.text).join(" ⚡ ");
-  }
+function addTeamMember() {
+  const n = prompt("Name:");
+  const r = prompt("Role:");
+  const e = prompt("Email:");
+  const p = prompt("Phone:");
+  const img = prompt("Image URL:");
+  if (!n || !r) return;
+  siteData.teamMembers.push({ name: n, role: r, email: e, phone: p, img });
+  saveToGitHub();
+  loadTeamMembers();
 }
-function addNews(){
-  const text = prompt("Enter news text (emojis allowed):");
-  if(!text) return;
-  const news = JSON.parse(localStorage.getItem("newsItems") || "[]");
-  news.push({text});
-  localStorage.setItem("newsItems", JSON.stringify(news));
+
+function deleteTeamMember(i) {
+  siteData.teamMembers.splice(i, 1);
+  saveToGitHub();
+  loadTeamMembers();
+}
+
+// ================= NEWS =================
+function loadNewsBar() {
+  const newsBar = document.getElementById("newsBar");
+  const news = siteData.newsItems;
+  newsBar.textContent =
+    news.length === 0
+      ? "Welcome to Eldorado News! ⚡"
+      : news.map(n => n.text).join(" ⚡ ");
+}
+
+function addNews() {
+  const text = prompt("News text:");
+  if (!text) return;
+  siteData.newsItems.push({ text });
+  saveToGitHub();
   loadNewsBar();
   loadNewsManager();
 }
-function editNews(i){
-  const news = JSON.parse(localStorage.getItem("newsItems") || "[]");
-  const text = prompt("Edit news text:", news[i].text);
-  if(text!==null){news[i].text=text; localStorage.setItem("newsItems", JSON.stringify(news)); loadNewsBar(); loadNewsManager();}
-}
-function deleteNews(i){
-  const news = JSON.parse(localStorage.getItem("newsItems") || "[]");
-  news.splice(i,1);
-  localStorage.setItem("newsItems", JSON.stringify(news));
-  loadNewsBar(); loadNewsManager();
-}
-function loadNewsManager(){
+
+function loadNewsManager() {
   const managerDiv = document.getElementById("newsManager");
-  if(!managerDiv) return;
-  const news = JSON.parse(localStorage.getItem("newsItems") || "[]");
-  managerDiv.innerHTML="";
-  news.forEach((n,i)=>{
-    const div=document.createElement("div");
-    div.className="admin-news-card";
-    div.innerHTML=`<span>${n.text}</span><div>
-      <button onclick="editNews(${i})">Edit</button>
+  if (!managerDiv) return;
+  managerDiv.innerHTML = "";
+  siteData.newsItems.forEach((n, i) => {
+    const div = document.createElement("div");
+    div.className = "admin-news-card";
+    div.innerHTML = `
+      <span>${n.text}</span>
       <button onclick="deleteNews(${i})">Delete</button>
-    </div>`;
+    `;
     managerDiv.appendChild(div);
   });
 }
 
-// =================== INITIAL LOAD ===================
-window.addEventListener("load", ()=>{
-  revealOnScroll();  // keep scroll animation
-  updateNavLinks();  // keep nav highlight
+function deleteNews(i) {
+  siteData.newsItems.splice(i, 1);
+  saveToGitHub();
+  loadNewsBar();
+  loadNewsManager();
+}
+
+// ================= INITIAL LOAD =================
+window.addEventListener("load", async () => {
+  await loadSiteData();
+  loadHero();
   loadVideos();
   loadTeamMembers();
   loadNewsBar();
 
-  // ⚡ Force sections visible immediately
-  document.querySelectorAll("section").forEach(section => section.classList.add("visible"));
+  document.querySelectorAll("section").forEach(s => s.classList.add("visible"));
 });
 
-  // =================== AUTO-UPDATE FOR APP ===================
-function autoUpdateApp() {
-  // Videos
-  const oldVideos = JSON.stringify(JSON.parse(localStorage.getItem("videos") || "[]"));
-  fetchVideosFromServer().then(newVideos => {
-    if (JSON.stringify(newVideos) !== oldVideos) {
-      localStorage.setItem("videos", JSON.stringify(newVideos));
-      loadVideos();
-    }
-  });
-
-  // News
-  const oldNews = JSON.stringify(JSON.parse(localStorage.getItem("newsItems") || "[]"));
-  fetchNewsFromServer().then(newNews => {
-    if (JSON.stringify(newNews) !== oldNews) {
-      localStorage.setItem("newsItems", JSON.stringify(newNews));
-      loadNewsBar();
-      loadNewsManager();
-    }
-  });
-
-  // Hero section
-  const oldHero = JSON.stringify(JSON.parse(localStorage.getItem("heroContent") || "{}"));
-  fetchHeroFromServer().then(newHero => {
-    if (JSON.stringify(newHero) !== oldHero) {
-      localStorage.setItem("heroContent", JSON.stringify(newHero));
-      loadHeroAdmin();
-    }
-  });
-}
-
-// Fetch functions (replace with actual server API URLs if needed)
-async function fetchVideosFromServer() {
-  try {
-    // Example: return await fetch('https://example.com/videos.json').then(r=>r.json());
-    return JSON.parse(localStorage.getItem("videos") || "[]"); // fallback for local demo
-  } catch(e){ return []; }
-}
-async function fetchNewsFromServer() {
-  try { return JSON.parse(localStorage.getItem("newsItems") || "[]"); } catch(e){ return []; }
-}
-async function fetchHeroFromServer() {
-  try { return JSON.parse(localStorage.getItem("heroContent") || "{}"); } catch(e){ return {}; }
-}
-
-// Start auto-update every 30 seconds
-setInterval(autoUpdateApp, 30000);
 </script>
 </body>
 </html>
