@@ -48,7 +48,8 @@ section.visible{opacity:1;transform:translateY(0);}
 .hero p{font-size:1.15rem;max-width:600px;margin-bottom:28px;opacity:.95;}
 .hero button{background:var(--accent);color:var(--primary);border:none;padding:14px 28px;border-radius:8px;font-weight:600;cursor:pointer;transition:.3s;}
 .hero button:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.15);}
-
+.hero {margin-top: 123px;}
+  
 /* BROADCASTS */
 .broadcasts{ background:var(--card); border-radius:18px; box-shadow:0 15px 35px rgba(0,0,0,.05); padding:40px 20px; width:90%; max-width:1000px; margin:40px auto; text-align:center; display:flex; flex-direction:column; align-items:center; }
 .broadcasts h2{margin-bottom:30px;font-size:1.8rem;font-weight:600;}
@@ -314,7 +315,8 @@ function getYouTubeEmbed(url) {
     return `https://www.youtube.com/embed/${videoID}`;
   } catch(e){ return url; }
 }
-function loadVideos() {
+
+  function loadVideos() {
   const v = JSON.parse(localStorage.getItem("videos") || "[]");
   const vs = document.getElementById("videoScroll");
   const mv = document.getElementById("mainVideo");
@@ -322,7 +324,7 @@ function loadVideos() {
 
   vs.innerHTML = "";
   const manager = document.getElementById("videoManager");
-  if(manager) manager.innerHTML = "";
+  if (manager) manager.innerHTML = "";
 
   if (v.length > 0) {
     const newestIndex = v.length - 1;
