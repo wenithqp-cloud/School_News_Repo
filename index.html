@@ -297,19 +297,53 @@ function getYouTubeEmbed(url) {
   } catch(e){ return url; }
 }
 
+  
 function loadVideos() {
   const v = JSON.parse(localStorage.getItem("videos") || "[]");
   const vs = document.getElementById("videoScroll");
   const mv = document.getElementById("mainVideo");
   const tDiv = document.getElementById("videoTranscript");
-  const lastVideo = parseInt(localStorage.getItem("lastVideoIndex") || "0");
 
-  if(v.length>0){
-    const idx = v[lastVideo] ? lastVideo : 0;
-    mv.src = getYouTubeEmbed(v[idx].link);
-    tDiv.textContent = v[idx].transcript || "No transcript available.";
-    localStorage.setItem("lastVideoIndex", idx);
+  vs.innerHTML="";
+  const manager = document.getElementById("videoManager");
+  manager.innerHTML="";
+
+  if(v.length > 0){
+    const newestIndex = v.length - 1; // newest video first
+    mv.src = getYouTubeEmbed(v[newestIndex].link);
+    tDiv.textContent = v[newestIndex].transcript || "No transcript available.";
+  } else {
+    mv.src = "";
+    tDiv.textContent = "No videos available.";
   }
+
+  // 🔥 Show newest buttons first (without breaking admin index)
+  [...v].reverse().forEach((video, reverseIndex)=>{
+    const realIndex = v.length - 1 - reverseIndex;
+
+    // Video buttons below main player
+    const btn = document.createElement("button");
+    btn.textContent = video.title;
+    btn.onclick = () => {
+      mv.src = getYouTubeEmbed(video.link);
+      tDiv.textContent = video.transcript || "No transcript available.";
+      localStorage.setItem("lastVideoIndex", realIndex);
+    }
+    vs.appendChild(btn);
+
+    // Admin manager cards
+    if(document.getElementById("videoTab").classList.contains("active")){
+      const card = document.createElement("div");
+      card.className="admin-card";
+      card.innerHTML = `<strong>${video.title}</strong><br>
+      Link: ${video.link}<br>
+      Transcript: ${video.transcript||''}<br>
+      <button onclick="editVideo(${realIndex})">Edit</button> 
+      <button onclick="deleteVideo(${realIndex})">Delete</button>`;
+      manager.appendChild(card);
+    }
+  });
+}
 
   vs.innerHTML="";
   const manager = document.getElementById("videoManager");
