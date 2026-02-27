@@ -1,10 +1,7 @@
-async function loadSiteData() {
-  const res = await fetch('https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/siteData.json');
-  siteData = await res.json();
-  loadHero();
-  loadVideos();
-  loadTeamMembers();
-  loadNewsBar();
-  loadJoinRequests();
-  document.querySelectorAll("section").forEach(s => s.classList.add("visible"));
+{
+  "heroContent": { "title": "Welcome", "desc": "Delivering school stories", "btn": "Watch Latest Broadcast" },
+  "videos": [],
+  "teamMembers": [],
+  "newsItems": [],
+  "joinRequests": []
 }
