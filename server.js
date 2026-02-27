@@ -1,18 +1,19 @@
 // server.js
 import express from "express";
 import bodyParser from "body-parser";
-import fetch from "node-fetch"; // If using Node 18+ you can skip installing
+import fetch from "node-fetch";
 
 const app = express();
 app.use(bodyParser.json());
 
-const GITHUB_USERNAME = "wenithqp-cloud";
-const REPO = "School_News_Repo";
-const TOKEN = "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";
-
+// Use environment variables for security
+const GITHUB_USERNAME = process.env.GITHUB_USERNAME;
+const REPO = process.env.REPO;
+const TOKEN = process.env.GITHUB_TOKEN;
 const FILE_PATH = "siteData.json";
 const BRANCH = "main";
 
+// Get the current SHA of the file
 async function getSHA() {
   const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO}/contents/${FILE_PATH}?ref=${BRANCH}`, {
     headers: { Authorization: `token ${TOKEN}` }
@@ -21,6 +22,7 @@ async function getSHA() {
   return data.sha;
 }
 
+// Update siteData.json on GitHub
 app.post("/updateSiteData", async (req, res) => {
   try {
     const sha = await getSHA();
@@ -46,5 +48,5 @@ app.post("/updateSiteData", async (req, res) => {
   }
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
