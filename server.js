@@ -1,40 +1,50 @@
+// server.js
 import express from "express";
-import fetch from "node-fetch"; // npm i node-fetch
+import bodyParser from "body-parser";
+import fetch from "node-fetch"; // If using Node 18+ you can skip installing
 
 const app = express();
-app.use(express.json());
+app.use(bodyParser.json());
 
-const GITHUB_TOKEN = process.env.GH_TOKEN; // store secret in server env
-const REPO = "wenithqp-cloud/School_News_Repo";
+const GITHUB_USERNAME = "wenithqp-cloud";
+const REPO = "School_News_Repo";
+const TOKEN = "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";
+
+const FILE_PATH = "siteData.json";
+const BRANCH = "main";
+
+async function getSHA() {
+  const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO}/contents/${FILE_PATH}?ref=${BRANCH}`, {
+    headers: { Authorization: `token ${TOKEN}` }
+  });
+  const data = await res.json();
+  return data.sha;
+}
 
 app.post("/updateSiteData", async (req, res) => {
-  const siteData = req.body;
-
   try {
-    const response = await fetch(
-      `https://api.github.com/repos/${REPO}/actions/workflows/updateSiteData.yml/dispatches`,
-      {
-        method: "POST",
-        headers: {
-          "Authorization": `token ${GITHUB_TOKEN}`,
-          "Accept": "application/vnd.github+json"
-        },
-        body: JSON.stringify({
-          ref: "main", // branch to update
-          inputs: { newData: JSON.stringify(siteData) }
-        })
-      }
-    );
+    const sha = await getSHA();
+    const content = Buffer.from(JSON.stringify(req.body, null, 2)).toString("base64");
 
-    if (!response.ok) {
-      const text = await response.text();
-      return res.status(500).json({ success: false, error: text });
-    }
+    const updateRes = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO}/contents/${FILE_PATH}`, {
+      method: "PUT",
+      headers: { Authorization: `token ${TOKEN}` },
+      body: JSON.stringify({
+        message: "Update site data via admin panel",
+        content,
+        sha,
+        branch: BRANCH
+      })
+    });
 
-    res.json({ success: true });
+    const result = await updateRes.json();
+    if (updateRes.ok) res.json({ success: true, result });
+    else res.status(400).json({ success: false, error: result });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
-app.listen(3000, () => console.log("Server running on port 3000"));
+const PORT = 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
