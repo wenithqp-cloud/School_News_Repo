@@ -1,36 +1,28 @@
 import express from "express";
-import bodyParser from "body-parser";
+import cors from "cors";
 import fs from "fs";
-import path from "path";
 
 const app = express();
-app.use(bodyParser.json());
-app.use(express.static(path.join(path.resolve(), "../frontend"))); // Serve frontend files
+app.use(cors());
+app.use(express.json());
 
-const DATA_FILE = path.join(path.resolve(), "../siteData.json");
+let siteData = {
+  heroContent:{title:"Welcome",desc:"Delivering stories",btn:"Watch Latest Broadcast"},
+  videos:[],
+  teamMembers:[],
+  newsItems:[],
+  joinRequests:[]
+};
 
-// Load site data
-app.get("/getSiteData", (req, res) => {
-  if (!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, JSON.stringify({
-    heroContent:{title:"Welcome",desc:"Delivering stories",btn:"Watch Latest Broadcast"},
-    videos:[],
-    teamMembers:[],
-    newsItems:[],
-    joinRequests:[]
-  }, null, 2));
-  const data = JSON.parse(fs.readFileSync(DATA_FILE));
-  res.json(data);
-});
+// Get site data
+app.get("/getSiteData",(req,res)=>res.json(siteData));
 
-// Save site data
-app.post("/updateSiteData", (req, res) => {
-  try {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(req.body, null, 2));
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
+// Update site data
+app.post("/updateSiteData",(req,res)=>{
+  siteData = req.body;
+  fs.writeFileSync("siteData.json", JSON.stringify(siteData,null,2));
+  res.json({success:true});
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT,()=>console.log(`Server running on port ${PORT}`));
