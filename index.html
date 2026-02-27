@@ -178,253 +178,91 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;font
 <div id="newsTab" class="tab-content"><h2>Manage News Bar</h2><button onclick="addNews()">Add News Item</button><div id="newsManager"></div></div>
 <div id="heroTab" class="tab-content"><h2>Edit Hero Section</h2><div class="admin-card"><label>Title:</label><br><input type="text" id="heroTitle"><br><label>Description:</label><br><textarea id="heroDesc" rows="3"></textarea><br><label>Button Text:</label><br><input type="text" id="heroBtnText"><br><button onclick="saveHero()">Save</button></div></div>
 
-<script>
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-// ================= GLOBAL DATA =================
-let siteData = {};
-const GITHUB_USERNAME = "YOUR_USERNAME";
-const GITHUB_REPO = "YOUR_REPO";
-const GITHUB_TOKEN = "YOUR_GITHUB_TOKEN"; // ⚠️ private repo token
-const DATA_PATH = "data.json";
+// ============ YOUR FIREBASE CONFIG ===========
+const firebaseConfig = {
+  apiKey: "AIzaSyAMeer9s3UsbpCi-zxdGe5H-HV6Uj4sUfI",
+  authDomain: "eldo-broadcasting.firebaseapp.com",
+  projectId: "eldo-broadcasting",
+  storageBucket: "eldo-broadcasting.firebasestorage.app",
+  messagingSenderId: "416893527965",
+  appId: "1:416893527965:web:b0525192df6c20aa7fb174",
+  measurementId: "G-W96RSCMY6F"
+};
 
-// ================= LOAD DATA =================
-async function loadSiteData() {
-  const res = await fetch(DATA_PATH + "?t=" + Date.now());
-  siteData = await res.json();
-}
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-// ================= SAVE TO GITHUB =================
-async function saveToGitHub() {
-  const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${DATA_PATH}`;
+let siteData = {
+  heroContent:{title:"Welcome",desc:"Delivering stories",btn:"Watch Latest Broadcast"},
+  videos:[],
+  teamMembers:[],
+  newsItems:[],
+  joinRequests:[]
+};
 
-  const getFile = await fetch(url, {
-    headers: { Authorization: `token ${GITHUB_TOKEN}` }
-  });
-
-  const fileData = await getFile.json();
-
-  const updatedContent = btoa(
-    unescape(encodeURIComponent(JSON.stringify(siteData, null, 2)))
-  );
-
-  await fetch(url, {
-    method: "PUT",
-    headers: {
-      Authorization: `token ${GITHUB_TOKEN}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      message: "Admin update from site",
-      content: updatedContent,
-      sha: fileData.sha
-    })
-  });
-
-  alert("Saved globally!");
-}
-
-// ================= HERO =================
-function loadHero() {
-  const hero = siteData.heroContent;
-  document.querySelector(".hero h1").textContent = hero.title;
-  document.querySelector(".hero p").textContent = hero.desc;
-  document.querySelector(".hero button").textContent = hero.btn;
-
-  document.getElementById("heroTitle").value = hero.title;
-  document.getElementById("heroDesc").value = hero.desc;
-  document.getElementById("heroBtnText").value = hero.btn;
-}
-
-function saveHero() {
-  siteData.heroContent = {
-    title: document.getElementById("heroTitle").value,
-    desc: document.getElementById("heroDesc").value,
-    btn: document.getElementById("heroBtnText").value
-  };
-  saveToGitHub();
+// ================ FIREBASE FUNCTIONS ================
+async function loadSiteData(){
+  const docRef = doc(db,"siteData","main");
+  const docSnap = await getDoc(docRef);
+  if(docSnap.exists()) siteData = docSnap.data();
   loadHero();
-}
-
-// ================= VIDEOS =================
-function getYouTubeEmbed(url) {
-  try {
-    const u = new URL(url);
-    let id = u.searchParams.get("v");
-    if (u.hostname === "youtu.be") id = u.pathname.slice(1);
-    return `https://www.youtube.com/embed/${id}`;
-  } catch {
-    return url;
-  }
-}
-
-function loadVideos() {
-  const v = siteData.videos;
-  const vs = document.getElementById("videoScroll");
-  const mv = document.getElementById("mainVideo");
-  const tDiv = document.getElementById("videoTranscript");
-  const manager = document.getElementById("videoManager");
-
-  vs.innerHTML = "";
-  if (manager) manager.innerHTML = "";
-
-  if (v.length) {
-    const newest = v[v.length - 1];
-    mv.src = getYouTubeEmbed(newest.link);
-    tDiv.textContent = newest.transcript || "No transcript available.";
-  }
-
-  [...v].reverse().forEach((video, reverseIndex) => {
-    const realIndex = v.length - 1 - reverseIndex;
-
-    const btn = document.createElement("button");
-    btn.textContent = video.title;
-    btn.onclick = () => {
-      mv.src = getYouTubeEmbed(video.link);
-      tDiv.textContent = video.transcript || "";
-    };
-    vs.appendChild(btn);
-
-    if (manager) {
-      const card = document.createElement("div");
-      card.className = "admin-card";
-      card.innerHTML = `
-        <strong>${video.title}</strong><br>
-        <button onclick="editVideo(${realIndex})">Edit</button>
-        <button onclick="deleteVideo(${realIndex})">Delete</button>
-      `;
-      manager.appendChild(card);
-    }
-  });
-}
-
-function addVideo() {
-  const t = prompt("Video title:");
-  const l = prompt("YouTube link:");
-  const tr = prompt("Transcript:");
-  if (!t || !l) return;
-  siteData.videos.push({ title: t, link: l, transcript: tr });
-  saveToGitHub();
   loadVideos();
-}
-
-function editVideo(i) {
-  const v = siteData.videos[i];
-  const t = prompt("Title:", v.title);
-  const l = prompt("Link:", v.link);
-  const tr = prompt("Transcript:", v.transcript);
-  if (!t || !l) return;
-  siteData.videos[i] = { title: t, link: l, transcript: tr };
-  saveToGitHub();
-  loadVideos();
-}
-
-function deleteVideo(i) {
-  siteData.videos.splice(i, 1);
-  saveToGitHub();
-  loadVideos();
-}
-
-// ================= TEAM =================
-function loadTeamMembers() {
-  const tM = siteData.teamMembers;
-  const grid = document.getElementById("teamGrid");
-  const manager = document.getElementById("teamManager");
-  grid.innerHTML = "";
-  if (manager) manager.innerHTML = "";
-
-  tM.forEach((m, i) => {
-    const div = document.createElement("div");
-    div.className = "member";
-    div.setAttribute("data-contact", `${m.email || ""}, ${m.phone || ""}`);
-    div.innerHTML = `
-      <img src="${m.img || "maroon.jpg"}">
-      <h3>${m.name}</h3>
-      <p>${m.role}</p>
-    `;
-    grid.appendChild(div);
-
-    if (manager) {
-      const card = document.createElement("div");
-      card.className = "admin-card";
-      card.innerHTML = `
-        <strong>${m.name}</strong>
-        <button onclick="deleteTeamMember(${i})">Delete</button>
-      `;
-      manager.appendChild(card);
-    }
-  });
-}
-
-function addTeamMember() {
-  const n = prompt("Name:");
-  const r = prompt("Role:");
-  const e = prompt("Email:");
-  const p = prompt("Phone:");
-  const img = prompt("Image URL:");
-  if (!n || !r) return;
-  siteData.teamMembers.push({ name: n, role: r, email: e, phone: p, img });
-  saveToGitHub();
   loadTeamMembers();
-}
-
-function deleteTeamMember(i) {
-  siteData.teamMembers.splice(i, 1);
-  saveToGitHub();
-  loadTeamMembers();
-}
-
-// ================= NEWS =================
-function loadNewsBar() {
-  const newsBar = document.getElementById("newsBar");
-  const news = siteData.newsItems;
-  newsBar.textContent =
-    news.length === 0
-      ? "Welcome to Eldorado News! ⚡"
-      : news.map(n => n.text).join(" ⚡ ");
-}
-
-function addNews() {
-  const text = prompt("News text:");
-  if (!text) return;
-  siteData.newsItems.push({ text });
-  saveToGitHub();
   loadNewsBar();
-  loadNewsManager();
+  loadJoinRequests();
+  document.querySelectorAll("section").forEach(s=>s.classList.add("visible"));
 }
 
-function loadNewsManager() {
-  const managerDiv = document.getElementById("newsManager");
-  if (!managerDiv) return;
-  managerDiv.innerHTML = "";
-  siteData.newsItems.forEach((n, i) => {
-    const div = document.createElement("div");
-    div.className = "admin-news-card";
-    div.innerHTML = `
-      <span>${n.text}</span>
-      <button onclick="deleteNews(${i})">Delete</button>
-    `;
-    managerDiv.appendChild(div);
-  });
+async function saveSiteData(){
+  const docRef = doc(db,"siteData","main");
+  await setDoc(docRef,siteData);
+  alert("Saved successfully!");
 }
 
-function deleteNews(i) {
-  siteData.newsItems.splice(i, 1);
-  saveToGitHub();
-  loadNewsBar();
-  loadNewsManager();
-}
+// ================ HERO =================
+function loadHero(){const hero=siteData.heroContent;document.querySelector(".hero h1").textContent=hero.title;document.querySelector(".hero p").textContent=hero.desc;document.querySelector(".hero button").textContent=hero.btn;document.getElementById("heroTitle").value=hero.title;document.getElementById("heroDesc").value=hero.desc;document.getElementById("heroBtnText").value=hero.btn;}
+function saveHero(){siteData.heroContent={title:document.getElementById("heroTitle").value,desc:document.getElementById("heroDesc").value,btn:document.getElementById("heroBtnText").value};saveSiteData();loadHero();}
+
+// ================ VIDEOS =================
+function getYouTubeEmbed(url){try{const u=new URL(url);let id=u.searchParams.get("v");if(u.hostname==="youtu.be")id=u.pathname.slice(1);return `https://www.youtube.com/embed/${id}`;}catch{return url;}}
+function loadVideos(){const v=siteData.videos;const vs=document.getElementById("videoScroll");const mv=document.getElementById("mainVideo");const tDiv=document.getElementById("videoTranscript");const manager=document.getElementById("videoManager");vs.innerHTML="";if(manager) manager.innerHTML="";if(v.length){const newest=v[v.length-1];mv.src=getYouTubeEmbed(newest.link);tDiv.textContent=newest.transcript||"No transcript available.";}[...v].reverse().forEach((video,reverseIndex)=>{const realIndex=v.length-1-reverseIndex;const btn=document.createElement("button");btn.textContent=video.title;btn.onclick=()=>{mv.src=getYouTubeEmbed(video.link);tDiv.textContent=video.transcript||"";};vs.appendChild(btn);if(manager){const card=document.createElement("div");card.className="admin-card";card.innerHTML=`<strong>${video.title}</strong><br><button onclick="editVideo(${realIndex})">Edit</button><button onclick="deleteVideo(${realIndex})">Delete</button>`;manager.appendChild(card);}});}
+function addVideo(){const t=prompt("Video title:");const l=prompt("YouTube link:");const tr=prompt("Transcript:");if(!t||!l)return;siteData.videos.push({title:t,link:l,transcript:tr});saveSiteData();loadVideos();}
+function editVideo(i){const v=siteData.videos[i];const t=prompt("Title:",v.title);const l=prompt("Link:",v.link);const tr=prompt("Transcript:",v.transcript);if(!t||!l)return;siteData.videos[i]={title:t,link:l,transcript:tr};saveSiteData();loadVideos();}
+function deleteVideo(i){siteData.videos.splice(i,1);saveSiteData();loadVideos();}
+
+// ================ TEAM =================
+function loadTeamMembers(){const tM=siteData.teamMembers;const grid=document.getElementById("teamGrid");const manager=document.getElementById("teamManager");grid.innerHTML="";if(manager) manager.innerHTML="";tM.forEach((m,i)=>{const div=document.createElement("div");div.className="member";div.setAttribute("data-contact",`${m.email||""}, ${m.phone||""}`);div.innerHTML=`<img src="${m.img||"maroon.jpg"}"><h3>${m.name}</h3><p>${m.role}</p>`;grid.appendChild(div);if(manager){const card=document.createElement("div");card.className="admin-card";card.innerHTML=`<strong>${m.name}</strong><button onclick="deleteTeamMember(${i})">Delete</button>`;manager.appendChild(card);}});}
+function addTeamMember(){const n=prompt("Name:"),r=prompt("Role:"),e=prompt("Email:"),p=prompt("Phone:"),img=prompt("Image URL:");if(!n||!r)return;siteData.teamMembers.push({name:n,role:r,email:e,phone:p,img});saveSiteData();loadTeamMembers();}
+function deleteTeamMember(i){siteData.teamMembers.splice(i,1);saveSiteData();loadTeamMembers();}
+
+// ================ NEWS =================
+function loadNewsBar(){const newsBar=document.getElementById("newsBar");const news=siteData.newsItems;newsBar.textContent=news.length===0?"Welcome to Eldorado News! ⚡":news.map(n=>n.text).join(" ⚡ ");}
+function addNews(){const text=prompt("News text:");if(!text)return;siteData.newsItems.push({text});saveSiteData();loadNewsBar();loadNewsManager();}
+function loadNewsManager(){const managerDiv=document.getElementById("newsManager");if(!managerDiv)return;managerDiv.innerHTML="";siteData.newsItems.forEach((n,i)=>{const div=document.createElement("div");div.className="admin-news-card";div.innerHTML=`<span>${n.text}</span><button onclick="deleteNews(${i})">Delete</button>`;managerDiv.appendChild(div);});}
+function deleteNews(i){siteData.newsItems.splice(i,1);saveSiteData();loadNewsBar();loadNewsManager();}
+
+// ================ JOIN REQUESTS =================
+function submitForm(e){e.preventDefault();const name=document.getElementById("name").value;const email=document.getElementById("email").value;siteData.joinRequests.push({name,email});saveSiteData();e.target.reset();alert("Request submitted!");}
+function loadJoinRequests(){const container=document.getElementById("submissions");if(!container)return;container.innerHTML="";siteData.joinRequests.forEach((r,i)=>{const div=document.createElement("div");div.className="admin-card";div.innerHTML=`<strong>${r.name}</strong> (${r.email}) <button onclick="deleteJoin(${i})">Delete</button>`;container.appendChild(div);});}
+function deleteJoin(i){siteData.joinRequests.splice(i,1);saveSiteData();loadJoinRequests();}
+
+// ================= ADMIN =================
+function openAdmin(){document.getElementById("adminModal").style.display="flex";}
+function closeAdmin(){document.getElementById("adminModal").style.display="none";}
+function checkAdmin(){const u=document.getElementById("adminUser").value,p=document.getElementById("adminPass").value;if(u==="admin"&&p==="password"){closeAdmin();document.getElementById("adminDashboard").style.display="block";}else{alert("Wrong credentials");}}
+function switchTab(id,el){document.querySelectorAll(".admin-tab").forEach(t=>t.classList.remove("active"));el.classList.add("active");document.querySelectorAll(".tab-content").forEach(tc=>tc.classList.remove("active"));document.getElementById(id).classList.add("active");}
+
+// ================= UTILS =================
+function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:"smooth"});}
+function goToNewestVideo(){if(siteData.videos.length){document.getElementById("mainVideo").src=getYouTubeEmbed(siteData.videos[siteData.videos.length-1].link);document.getElementById("videoTranscript").textContent=siteData.videos[siteData.videos.length-1].transcript||"";}}
 
 // ================= INITIAL LOAD =================
-window.addEventListener("load", async () => {
-  await loadSiteData();
-  loadHero();
-  loadVideos();
-  loadTeamMembers();
-  loadNewsBar();
-
-  document.querySelectorAll("section").forEach(s => s.classList.add("visible"));
-});
-
+window.addEventListener("load", loadSiteData);
 </script>
 </body>
 </html>
