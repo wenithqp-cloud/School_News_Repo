@@ -4,228 +4,49 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Eldorado High School - News Broadcasting Club</title>
-
 <style>
 :root{
-  --primary:#6b0f1a;
-  --primary-soft:#8f2333;
-  --accent:#f2c94c;
-  --bg:#f4f1ec;
-  --card:#ffffff;
-  --text:#2f2f2f;
-  --muted:#666;
+  --primary:#6b0f1a; --primary-soft:#8f2333; --accent:#f2c94c;
+  --bg:#f4f1ec; --card:#ffffff; --text:#2f2f2f; --muted:#666;
 }
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-}
-
-html,body{
-  height:100%;
-  scroll-behavior:smooth;
-  overflow-x:hidden;
-}
-
-body{
-  background:var(--bg);
-  color:var(--text);
-  line-height:1.7;
-}
-
-/* HEADER */
-.school-header{
-  position:fixed;
-  top:0;
-  width:100%;
-  background:#660032;
-  color:white;
-  padding:14px 6%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom:2px solid var(--accent);
-  z-index:1000;
-}
-
-.header-left{
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
-
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+html,body{height:100%;scroll-behavior:smooth;overflow-x:hidden;}
+body{background:var(--bg);color:var(--text);line-height:1.7;}
+.school-header{position:fixed;top:0;width:100%;background:#660032;color:white;padding:14px 6%;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--accent);z-index:1000;}
+.header-left{display:flex;align-items:center;gap:14px;}
 .header-left img{height:50px;}
-
-.header-text span{
-  font-size:.8rem;
-  color:var(--accent);
-}
-
-.school-header nav a{
-  color:white;
-  text-decoration:none;
-  margin-left:20px;
-  cursor:pointer;
-}
-
-.school-header nav a:hover{
-  color:var(--accent);
-}
-
-/* NEWS BAR */
-#newsBarContainer{
-  position:fixed;
-  top:73px;
-  width:100%;
-  background:linear-gradient(90deg,#6b0f1a,#8f2333);
-  height:50px;
-  display:flex;
-  align-items:center;
-  border-bottom:2px solid var(--accent);
-  z-index:999;
-}
-
-#newsBar{
-  white-space:nowrap;
-  color:var(--accent);
-  font-weight:600;
-  padding-left:100%;
-  animation:scrollNews 20s linear infinite;
-}
-
-@keyframes scrollNews{
-  0%{transform:translateX(100%);}
-  100%{transform:translateX(-100%);}
-}
-
-/* OFFSET FIX */
+.header-text span{font-size:.8rem;color:var(--accent);}
+.school-header nav a{color:white;text-decoration:none;margin-left:20px;cursor:pointer;}
+.school-header nav a:hover{color:var(--accent);}
+#newsBarContainer{position:fixed;top:73px;width:100%;background:linear-gradient(90deg,#6b0f1a,#8f2333);height:50px;display:flex;align-items:center;border-bottom:2px solid var(--accent);z-index:999;}
+#newsBar{white-space:nowrap;color:var(--accent);font-weight:600;padding-left:100%;animation:scrollNews 20s linear infinite;}
+@keyframes scrollNews{0%{transform:translateX(100%);}100%{transform:translateX(-100%);}}
 main{padding-top:123px;}
-
-/* SECTIONS */
-section{
-  min-height:100vh;
-  padding:8% 6%;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-}
-
-/* HERO */
-.hero{
-  background:linear-gradient(135deg,var(--primary),var(--primary-soft));
-  color:white;
-  text-align:center;
-}
-
-.hero button{
-  background:var(--accent);
-  color:var(--primary);
-  border:none;
-  padding:14px 28px;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-/* BROADCASTS */
-.broadcasts{
-  background:var(--card);
-  border-radius:18px;
-  box-shadow:0 10px 30px rgba(0,0,0,.05);
-  width:90%;
-  max-width:1000px;
-  margin:40px auto;
-  text-align:center;
-}
-
-.video-player{
-  width:100%;
-  height:50vh;
-  border-radius:14px;
-  border:none;
-}
-
-/* TEAM */
-.team-grid{
-  width:90%;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:40px;
-}
-
-.member{
-  background:white;
-  padding:20px;
-  border-radius:18px;
-  text-align:center;
-}
-
-/* JOIN */
-.join{
-  background:#ebe7e2;
-  border-radius:18px;
-  text-align:center;
-}
-
-.join input{
-  padding:12px;
-  margin:8px;
-  width:260px;
-  border-radius:8px;
-  border:1px solid #ddd;
-}
-
-.join button{
-  background:var(--primary);
-  color:white;
-  border:none;
-  padding:12px 24px;
-  border-radius:8px;
-}
-
-/* FOOTER */
-footer{
-  background:var(--primary);
-  color:white;
-  text-align:center;
-  padding:18px;
-}
-
-/* ADMIN PANEL */
-.admin-panel{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  justify-content:center;
-  align-items:center;
-  z-index:2000;
-}
-
-.admin-box{
-  background:white;
-  padding:30px;
-  border-radius:12px;
-  width:300px;
-  text-align:center;
-}
-
-.admin-box input{
-  width:100%;
-  padding:10px;
-  margin:8px 0;
-}
+section{min-height:100vh;padding:8% 6%;display:flex;flex-direction:column;justify-content:center;align-items:center;}
+.hero{background:linear-gradient(135deg,var(--primary),var(--primary-soft));color:white;text-align:center;}
+.hero button{background:var(--accent);color:var(--primary);border:none;padding:14px 28px;border-radius:8px;cursor:pointer;}
+.broadcasts{background:var(--card);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.05);width:90%;max-width:1000px;margin:40px auto;text-align:center;}
+.video-player{width:100%;height:50vh;border-radius:14px;border:none;}
+.team-grid{width:90%;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:40px;}
+.member{background:white;padding:20px;border-radius:18px;text-align:center;position:relative;}
+.member button{position:absolute;top:8px;right:8px;background:#f44336;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;}
+.join{background:#ebe7e2;border-radius:18px;text-align:center;}
+.join input{padding:12px;margin:8px;width:260px;border-radius:8px;border:1px solid #ddd;}
+.join button{background:var(--primary);color:white;border:none;padding:12px 24px;border-radius:8px;}
+footer{background:var(--primary);color:white;text-align:center;padding:18px;}
+.admin-panel{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);justify-content:center;align-items:center;z-index:2000;}
+.admin-box{background:white;padding:30px;border-radius:12px;width:350px;text-align:center;max-height:80vh;overflow-y:auto;}
+.admin-box input{width:100%;padding:10px;margin:6px 0;}
+.admin-box button{margin:6px;}
+#exportBox{width:100%;height:200px;background:#222;color:#fff;padding:10px;border-radius:8px;border:none;font-family:monospace;margin-top:10px;resize:vertical;}
 </style>
 </head>
-
 <body>
 
 <header class="school-header">
 <div class="header-left">
-<img src="maroon.webp">
-<div>
+<img src="maroon.webp" alt="School Logo">
+<div class="header-text">
 <h1>Eldorado High School</h1>
 <span>News Broadcasting Club</span>
 </div>
@@ -236,6 +57,7 @@ footer{
 <a onclick="scrollToSection('team')">Team</a>
 <a onclick="scrollToSection('join')">Join</a>
 <a onclick="openAdmin()">Admin</a>
+<a onclick="exportSiteCode()">Export</a>
 </nav>
 </header>
 
@@ -244,18 +66,15 @@ footer{
 </div>
 
 <main>
-
 <section id="hero" class="hero">
-<h1 id="heroTitle">Welcome to the News Broadcasting Club</h1>
-<p id="heroDesc">Delivering school stories. Sharing student voices.</p>
+<h1 id="heroTitle"></h1>
+<p id="heroDesc"></p>
 <button onclick="scrollToSection('broadcasts')">Watch Broadcast</button>
 </section>
 
 <section id="broadcasts" class="broadcasts">
 <h2>Latest Broadcast</h2>
-<iframe class="video-player" id="mainVideo"
-src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-allowfullscreen></iframe>
+<iframe class="video-player" id="mainVideo" allowfullscreen></iframe>
 </section>
 
 <section id="team">
@@ -271,12 +90,11 @@ allowfullscreen></iframe>
 <button type="submit">Submit</button>
 </form>
 </section>
-
 </main>
 
 <footer>© 2026 Eldorado High School Broadcasting Club</footer>
 
-<!-- ADMIN LOGIN -->
+<!-- ADMIN PANEL -->
 <div class="admin-panel" id="adminPanel">
 <div class="admin-box">
 <h3>Admin Login</h3>
@@ -284,8 +102,22 @@ allowfullscreen></iframe>
 <input type="password" id="adminPass" placeholder="Password">
 <button onclick="checkAdmin()">Login</button>
 <button onclick="closeAdmin()">Cancel</button>
+
+<div id="adminControls" style="display:none;margin-top:10px;">
+<h4>Edit Site Content</h4>
+<button onclick="editHero()">Edit Hero</button>
+<button onclick="editVideo()">Edit Broadcast Video</button>
+<h4>Team Members</h4>
+<div id="teamControls"></div>
+<input type="text" id="newMemberName" placeholder="Name">
+<input type="text" id="newMemberRole" placeholder="Role">
+<button onclick="addTeamMember()">Add Member</button>
 </div>
 </div>
+</div>
+
+<!-- EXPORT TEXTAREA -->
+<textarea id="exportBox" readonly placeholder="Updated site code will appear here..."></textarea>
 
 <script>
 let siteData = JSON.parse(localStorage.getItem("siteData")) || {
@@ -296,19 +128,39 @@ let siteData = JSON.parse(localStorage.getItem("siteData")) || {
   joins:[]
 };
 
-function saveData(){
-  localStorage.setItem("siteData",JSON.stringify(siteData));
-}
-
+function saveData(){ localStorage.setItem("siteData",JSON.stringify(siteData)); }
 function loadData(){
   document.getElementById("heroTitle").textContent = siteData.heroTitle;
   document.getElementById("heroDesc").textContent = siteData.heroDesc;
   document.getElementById("mainVideo").src = siteData.video;
+  renderTeam();
+}
 
-  const grid = document.getElementById("teamGrid");
-  grid.innerHTML="";
-  siteData.team.forEach(m=>{
-    grid.innerHTML+=`<div class="member"><h3>${m.name}</h3><p>${m.role}</p></div>`;
+function renderTeam(){
+  const grid = document.getElementById("teamGrid"); grid.innerHTML="";
+  siteData.team.forEach((m,i)=>{
+    const div = document.createElement("div"); div.className="member";
+    div.innerHTML = `<h3>${m.name}</h3><p>${m.role}</p>`;
+    if(document.getElementById("adminControls").style.display==="block"){
+      const btn = document.createElement("button"); btn.textContent="✖";
+      btn.onclick=()=>{siteData.team.splice(i,1); saveData(); loadData(); renderAdminTeam();};
+      div.appendChild(btn);
+    }
+    grid.appendChild(div);
+  });
+}
+
+function renderAdminTeam(){
+  const container=document.getElementById("teamControls"); container.innerHTML="";
+  siteData.team.forEach((m,i)=>{
+    const div=document.createElement("div");
+    div.textContent=`${m.name} - ${m.role}`;
+    const editBtn=document.createElement("button"); editBtn.textContent="Edit";
+    editBtn.onclick=()=>{let n=prompt("Name:",m.name);let r=prompt("Role:",m.role); if(n) m.name=n; if(r) m.role=r; saveData(); loadData(); renderAdminTeam();};
+    const delBtn=document.createElement("button"); delBtn.textContent="Delete";
+    delBtn.onclick=()=>{siteData.team.splice(i,1); saveData(); loadData(); renderAdminTeam();};
+    div.appendChild(editBtn); div.appendChild(delBtn);
+    container.appendChild(div);
   });
 }
 
@@ -323,32 +175,78 @@ function submitForm(e){
   e.target.reset();
 }
 
-function scrollToSection(id){
-  document.getElementById(id).scrollIntoView({behavior:"smooth"});
-}
-
-function openAdmin(){
-  document.getElementById("adminPanel").style.display="flex";
-}
-
-function closeAdmin(){
-  document.getElementById("adminPanel").style.display="none";
-}
+function scrollToSection(id){ document.getElementById(id).scrollIntoView({behavior:"smooth"}); }
+function openAdmin(){ document.getElementById("adminPanel").style.display="flex"; }
+function closeAdmin(){ document.getElementById("adminPanel").style.display="none"; }
 
 function checkAdmin(){
-  if(adminUser.value==="admin" && adminPass.value==="password"){
-    closeAdmin();
-    const newTitle = prompt("New Hero Title:",siteData.heroTitle);
-    if(newTitle) siteData.heroTitle=newTitle;
-    saveData();
-    loadData();
-  } else {
-    alert("Wrong login");
-  }
+  if(adminUser.value==="admin1973" && adminPass.value==="eldo2026"){
+    document.getElementById("adminControls").style.display="block";
+    renderAdminTeam();
+  } else { alert("Wrong login"); }
+}
+
+function editHero(){
+  const newTitle=prompt("New Hero Title:",siteData.heroTitle);
+  if(newTitle) siteData.heroTitle=newTitle;
+  const newDesc=prompt("New Hero Description:",siteData.heroDesc);
+  if(newDesc) siteData.heroDesc=newDesc;
+  saveData(); loadData();
+}
+function editVideo(){ const newVideo=prompt("New Video URL:",siteData.video); if(newVideo) siteData.video=newVideo; saveData(); loadData(); }
+
+function addTeamMember(){
+  const n=document.getElementById("newMemberName").value.trim();
+  const r=document.getElementById("newMemberRole").value.trim();
+  if(n&&r){siteData.team.push({name:n,role:r}); saveData(); loadData(); renderAdminTeam();}
+  document.getElementById("newMemberName").value=""; document.getElementById("newMemberRole").value="";
+}
+
+function exportSiteCode(){
+  let html=`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eldorado High School - News Broadcasting Club</title>
+<style>
+:root{--primary:#6b0f1a;--primary-soft:#8f2333;--accent:#f2c94c;--bg:#f4f1ec;--card:#ffffff;--text:#2f2f2f;--muted:#666;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+html,body{height:100%;scroll-behavior:smooth;overflow-x:hidden;} body{background:var(--bg);color:var(--text);line-height:1.7;}
+.school-header{position:fixed;top:0;width:100%;background:#660032;color:white;padding:14px 6%;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--accent);z-index:1000;}
+.header-left{display:flex;align-items:center;gap:14px;} .header-left img{height:50px;}
+.header-text span{font-size:.8rem;color:var(--accent);}
+.school-header nav a{color:white;text-decoration:none;margin-left:20px;cursor:pointer;}
+.school-header nav a:hover{color:var(--accent);}
+#newsBarContainer{position:fixed;top:73px;width:100%;background:linear-gradient(90deg,#6b0f1a,#8f2333);height:50px;display:flex;align-items:center;border-bottom:2px solid var(--accent);z-index:999;}
+#newsBar{white-space:nowrap;color:var(--accent);font-weight:600;padding-left:100%;animation:scrollNews 20s linear infinite;}
+@keyframes scrollNews{0%{transform:translateX(100%);}100%{transform:translateX(-100%);}}
+main{padding-top:123px;} section{min-height:100vh;padding:8% 6%;display:flex;flex-direction:column;justify-content:center;align-items:center;}
+.hero{background:linear-gradient(135deg,var(--primary),var(--primary-soft));color:white;text-align:center;}
+.hero button{background:var(--accent);color:var(--primary);border:none;padding:14px 28px;border-radius:8px;cursor:pointer;}
+.broadcasts{background:var(--card);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.05);width:90%;max-width:1000px;margin:40px auto;text-align:center;}
+.video-player{width:100%;height:50vh;border-radius:14px;border:none;}
+.team-grid{width:90%;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:40px;}
+.member{background:white;padding:20px;border-radius:18px;text-align:center;}
+.join{background:#ebe7e2;border-radius:18px;text-align:center;}
+.join input{padding:12px;margin:8px;width:260px;border-radius:8px;border:1px solid #ddd;}
+.join button{background:var(--primary);color:white;border:none;padding:12px 24px;border-radius:8px;}
+footer{background:var(--primary);color:white;text-align:center;padding:18px;}
+</style>
+</head>
+<body>
+<header class="school-header"><div class="header-left"><img src="maroon.webp"><div class="header-text"><h1>Eldorado High School</h1><span>News Broadcasting Club</span></div></div><nav><a onclick="scrollToSection('hero')">Home</a><a onclick="scrollToSection('broadcasts')">Broadcasts</a><a onclick="scrollToSection('team')">Team</a><a onclick="scrollToSection('join')">Join</a></nav></header>
+<div id="newsBarContainer"><div id="newsBar">Welcome to Eldorado News ⚡ Student Stories ⚡ Stay Tuned</div></div>
+<main>
+<section id="hero" class="hero"><h1 id="heroTitle">${siteData.heroTitle}</h1><p id="heroDesc">${siteData.heroDesc}</p><button onclick="scrollToSection('broadcasts')">Watch Broadcast</button></section>
+<section id="broadcasts" class="broadcasts"><h2>Latest Broadcast</h2><iframe class="video-player" id="mainVideo" src="${siteData.video}" allowfullscreen></iframe></section>
+<section id="team"><h2>Meet the Team</h2><div class="team-grid" id="teamGrid">`;
+siteData.team.forEach(m=>{html+=`<div class="member"><h3>${m.name}</h3><p>${m.role}</p></div>`;});
+html+=`</div></section></main><footer>© 2026 Eldorado High School Broadcasting Club</footer></body></html>`;
+document.getElementById("exportBox").value = html;
 }
 
 loadData();
 </script>
-
 </body>
 </html>
