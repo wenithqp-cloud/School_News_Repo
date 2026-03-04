@@ -24,22 +24,24 @@ body{background:var(--bg);color:var(--text);line-height:1.7;}
 main{padding-top:123px;}
 section{min-height:100vh;padding:8% 6%;display:flex;flex-direction:column;justify-content:center;align-items:center;}
 .hero{background:linear-gradient(135deg,var(--primary),var(--primary-soft));color:white;text-align:center;}
-.hero button{background:var(--accent);color:var(--primary);border:none;padding:14px 28px;border-radius:8px;cursor:pointer;margin-top:10px;}
+.hero button{background:var(--accent);color:var(--primary);border:none;padding:14px 28px;border-radius:8px;margin-top:10px;cursor:pointer;}
 .broadcasts{background:var(--card);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.05);width:90%;max-width:1000px;margin:40px auto;text-align:center;}
-.video-player{width:100%;height:50vh;border-radius:14px;border:none;margin-top:10px;}
+.video-card{background:#f0f0f0;border-radius:12px;padding:12px;margin:12px 0;}
+.video-card iframe{width:100%;height:50vh;border-radius:10px;border:none;}
+.video-card h3{margin:6px 0;}
+.video-card p{margin:4px 0;color:#333;}
 .team-grid{width:90%;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:40px;}
 .member{background:white;padding:20px;border-radius:18px;text-align:center;position:relative;}
-.member button{position:absolute;top:8px;right:8px;background:#f44336;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;}
 .join{background:#ebe7e2;border-radius:18px;text-align:center;}
 .join input{padding:12px;margin:8px;width:260px;border-radius:8px;border:1px solid #ddd;}
-.join button{background:var(--primary);color:white;border:none;padding:12px 24px;border-radius:8px;margin-top:10px;}
+.join button{background:var(--primary);color:white;border:none;padding:12px 24px;border-radius:8px;margin-top:10px;cursor:pointer;}
 footer{background:var(--primary);color:white;text-align:center;padding:18px;margin-top:20px;}
-.admin-panel{display:none;background:#fff;padding:20px;border-radius:12px;margin-top:20px;width:90%;max-width:1000px;}
+.admin-panel{background:#fff;padding:20px;border-radius:12px;margin-top:20px;width:90%;max-width:1000px;}
 .admin-panel h3{margin-bottom:12px;}
-.admin-panel input, .admin-panel button{margin:4px; padding:6px 10px; border-radius:6px; border:1px solid #ccc;}
+.admin-panel input, .admin-panel button, .admin-panel textarea{margin:4px; padding:6px 10px; border-radius:6px; border:1px solid #ccc;}
 #exportBox{width:100%;height:200px;background:#222;color:#fff;padding:10px;border-radius:8px;border:none;font-family:monospace;margin-top:10px;resize:vertical;}
-.video-item{display:flex;align-items:center;justify-content:space-between;padding:6px;margin:4px 0;background:#f0f0f0;border-radius:6px;}
-.video-item button{margin-left:4px;}
+.video-item, .team-item, .join-item{display:flex;align-items:center;justify-content:space-between;padding:6px;margin:4px 0;background:#f0f0f0;border-radius:6px;}
+.video-item button, .team-item button, .join-item button{margin-left:4px;}
 </style>
 </head>
 <body>
@@ -57,7 +59,7 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;marg
 <a onclick="scrollToSection('broadcasts')">Broadcasts</a>
 <a onclick="scrollToSection('team')">Team</a>
 <a onclick="scrollToSection('join')">Join</a>
-<a onclick="openAdmin()">Admin</a>
+<a onclick="toggleAdmin()">Admin</a>
 </nav>
 </header>
 
@@ -94,8 +96,7 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;marg
 
 <footer>© 2026 Eldorado High School Broadcasting Club</footer>
 
-<!-- Admin Panel Below Footer -->
-<div class="admin-panel" id="adminPanel">
+<div class="admin-panel" id="adminPanel" style="display:none;">
 <h3>Admin Login</h3>
 <input type="text" id="adminUser" placeholder="Username">
 <input type="password" id="adminPass" placeholder="Password">
@@ -109,6 +110,8 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;marg
 <h4>Broadcast Videos</h4>
 <div id="videoControls"></div>
 <input type="text" id="newVideoURL" placeholder="Video URL">
+<input type="text" id="newVideoTitle" placeholder="Video Title">
+<textarea id="newVideoTranscript" placeholder="Video Transcript"></textarea>
 <button onclick="addVideo()">Add Video</button>
 
 <h4>Team Members</h4>
@@ -117,6 +120,9 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;marg
 <input type="text" id="newMemberRole" placeholder="Role">
 <button onclick="addTeamMember()">Add Member</button>
 
+<h4>Join Submissions</h4>
+<div id="joinControls"></div>
+
 <h4>Export Updated Site</h4>
 <button onclick="exportSiteCode()">Generate Export Code</button>
 <textarea id="exportBox" readonly placeholder="Updated site code will appear here..."></textarea>
@@ -124,8 +130,7 @@ footer{background:var(--primary);color:white;text-align:center;padding:18px;marg
 </div>
 
 <script>
-// SITE DATA
-let siteData = JSON.parse(localStorage.getItem("siteData")) || {
+let siteData = {
   heroTitle:"Welcome to the News Broadcasting Club",
   heroDesc:"Delivering school stories. Sharing student voices.",
   newsBar:"Welcome to Eldorado News ⚡ Student Stories ⚡ Stay Tuned",
@@ -134,96 +139,51 @@ let siteData = JSON.parse(localStorage.getItem("siteData")) || {
   joins:[]
 };
 
+if(localStorage.getItem("siteData")){
+  siteData=JSON.parse(localStorage.getItem("siteData"));
+}
+
 function saveData(){ localStorage.setItem("siteData",JSON.stringify(siteData)); }
 function loadData(){
   document.getElementById("heroTitle").textContent = siteData.heroTitle;
   document.getElementById("heroDesc").textContent = siteData.heroDesc;
   document.getElementById("newsBar").textContent = siteData.newsBar;
-  renderTeam();
-  renderVideos();
+  renderTeam(); renderVideos(); renderJoin();
 }
 
+function toggleAdmin(){ let panel=document.getElementById("adminPanel"); panel.style.display=panel.style.display==="block"?"none":"block"; }
 function scrollToSection(id){ document.getElementById(id).scrollIntoView({behavior:"smooth"}); }
-function submitForm(e){ e.preventDefault(); siteData.joins.push({name:document.getElementById("name").value,email:document.getElementById("email").value}); saveData(); alert("Submitted!"); e.target.reset(); }
+function submitForm(e){ e.preventDefault(); siteData.joins.push({name:document.getElementById("name").value,email:document.getElementById("email").value}); saveData(); alert("Submitted!"); e.target.reset(); renderJoin(); }
 
-// ADMIN FUNCTIONS
-function openAdmin(){ document.getElementById("adminPanel").style.display="block"; }
 function checkAdmin(){
   if(adminUser.value==="admin1973" && adminPass.value==="eldo2026"){
     document.getElementById("adminControls").style.display="block";
-    renderAdminTeam();
-    renderAdminVideos();
+    renderAdminTeam(); renderAdminVideos(); renderAdminJoin();
   } else { alert("Wrong login"); }
 }
 
-function editHero(){
-  const t=prompt("Hero Title:",siteData.heroTitle); if(t) siteData.heroTitle=t;
-  const d=prompt("Hero Description:",siteData.heroDesc); if(d) siteData.heroDesc=d;
-  saveData(); loadData();
-}
+// HERO & NEWS
+function editHero(){ const t=prompt("Hero Title:",siteData.heroTitle); if(t) siteData.heroTitle=t; const d=prompt("Hero Description:",siteData.heroDesc); if(d) siteData.heroDesc=d; saveData(); loadData(); }
 function editNewsBar(){ const t=prompt("News Bar Text:",siteData.newsBar); if(t) siteData.newsBar=t; saveData(); loadData(); }
 
 // TEAM
-function renderTeam(){
-  const grid=document.getElementById("teamGrid"); grid.innerHTML="";
-  siteData.team.forEach((m,i)=>{
-    const div=document.createElement("div"); div.className="member"; div.innerHTML=`<h3>${m.name}</h3><p>${m.role}</p>`;
-    grid.appendChild(div);
-  });
-}
-
-function renderAdminTeam(){
-  const container=document.getElementById("teamControls"); container.innerHTML="";
-  siteData.team.forEach((m,i)=>{
-    const div=document.createElement("div"); div.textContent=`${m.name} - ${m.role}`;
-    const editBtn=document.createElement("button"); editBtn.textContent="Edit"; editBtn.onclick=()=>{
-      let n=prompt("Name:",m.name); let r=prompt("Role:",m.role);
-      if(n) m.name=n; if(r) m.role=r; saveData(); loadData(); renderAdminTeam();
-    };
-    const delBtn=document.createElement("button"); delBtn.textContent="Delete"; delBtn.onclick=()=>{siteData.team.splice(i,1); saveData(); loadData(); renderAdminTeam();};
-    div.appendChild(editBtn); div.appendChild(delBtn); container.appendChild(div);
-  });
-}
-function addTeamMember(){ const n=document.getElementById("newMemberName").value.trim(); const r=document.getElementById("newMemberRole").value.trim(); if(n&&r){siteData.team.push({name:n,role:r}); saveData(); loadData(); renderAdminTeam();} document.getElementById("newMemberName").value=""; document.getElementById("newMemberRole").value=""; }
+function renderTeam(){ const grid=document.getElementById("teamGrid"); grid.innerHTML=""; siteData.team.forEach(m=>{const div=document.createElement("div"); div.className="member"; div.innerHTML=`<h3>${m.name}</h3><p>${m.role}</p>`; grid.appendChild(div); }); }
+function renderAdminTeam(){ const container=document.getElementById("teamControls"); container.innerHTML=""; siteData.team.forEach((m,i)=>{ const div=document.createElement("div"); div.className="team-item"; div.textContent=`${m.name} - ${m.role}`; const editBtn=document.createElement("button"); editBtn.textContent="Edit"; editBtn.onclick=()=>{let n=prompt("Name:",m.name); let r=prompt("Role:",m.role); if(n)m.name=n;if(r)m.role=r; saveData(); loadData(); renderAdminTeam();}; const delBtn=document.createElement("button"); delBtn.textContent="Delete"; delBtn.onclick=()=>{siteData.team.splice(i,1); saveData(); loadData(); renderAdminTeam();}; div.appendChild(editBtn); div.appendChild(delBtn); container.appendChild(div); }); }
+function addTeamMember(){ const n=document.getElementById("newMemberName").value.trim(); const r=document.getElementById("newMemberRole").value.trim(); if(n&&r){ siteData.team.push({name:n,role:r}); saveData(); loadData(); renderAdminTeam(); } document.getElementById("newMemberName").value=""; document.getElementById("newMemberRole").value=""; }
 
 // VIDEOS
-function renderVideos(){
-  const container=document.getElementById("videosContainer"); container.innerHTML="";
-  siteData.videos.forEach((v,i)=>{
-    const iframe=document.createElement("iframe"); iframe.src=v; iframe.className="video-player"; iframe.allowFullscreen=true;
-    container.appendChild(iframe);
-  });
-}
+function renderVideos(){ const container=document.getElementById("videosContainer"); container.innerHTML=""; siteData.videos.forEach(v=>{ const card=document.createElement("div"); card.className="video-card"; card.innerHTML=`<h3>${v.title}</h3><iframe src="${v.url}" allowfullscreen></iframe><p>${v.transcript}</p>`; container.appendChild(card); }); }
+function renderAdminVideos(){ const container=document.getElementById("videoControls"); container.innerHTML=""; siteData.videos.forEach((v,i)=>{ const div=document.createElement("div"); div.className="video-item"; div.textContent=v.title; const up=document.createElement("button"); up.textContent="↑"; up.onclick=()=>{if(i>0){[siteData.videos[i-1],siteData.videos[i]]=[siteData.videos[i],siteData.videos[i-1]]; saveData(); renderVideos(); renderAdminVideos();}}; const down=document.createElement("button"); down.textContent="↓"; down.onclick=()=>{if(i<siteData.videos.length-1){[siteData.videos[i+1],siteData.videos[i]]=[siteData.videos[i],siteData.videos[i+1]]; saveData(); renderVideos(); renderAdminVideos();}}; const edit=document.createElement("button"); edit.textContent="Edit"; edit.onclick=()=>{ let newTitle=prompt("Video Title:",v.title); let newURL=prompt("Video URL:",v.url); let newTranscript=prompt("Transcript:",v.transcript); if(newTitle)v.title=newTitle;if(newURL)v.url=newURL;if(newTranscript)v.transcript=newTranscript; saveData(); renderVideos(); renderAdminVideos();}; const del=document.createElement("button"); del.textContent="Delete"; del.onclick=()=>{siteData.videos.splice(i,1); saveData(); renderVideos(); renderAdminVideos();}; div.appendChild(up); div.appendChild(down); div.appendChild(edit); div.appendChild(del); container.appendChild(div); }); }
+function addVideo(){ const url=document.getElementById("newVideoURL").value.trim(); const title=document.getElementById("newVideoTitle").value.trim(); const transcript=document.getElementById("newVideoTranscript").value.trim(); if(url && title){ siteData.videos.push({url,title,transcript}); saveData(); renderVideos(); renderAdminVideos(); } document.getElementById("newVideoURL").value=""; document.getElementById("newVideoTitle").value=""; document.getElementById("newVideoTranscript").value=""; }
 
-function renderAdminVideos(){
-  const container=document.getElementById("videoControls"); container.innerHTML="";
-  siteData.videos.forEach((v,i)=>{
-    const div=document.createElement("div"); div.className="video-item"; div.textContent=v;
-    const up=document.createElement("button"); up.textContent="↑"; up.onclick=()=>{if(i>0){[siteData.videos[i-1],siteData.videos[i]]=[siteData.videos[i],siteData.videos[i-1]]; saveData(); renderVideos(); renderAdminVideos();}};
-    const down=document.createElement("button"); down.textContent="↓"; down.onclick=()=>{if(i<siteData.videos.length-1){[siteData.videos[i+1],siteData.videos[i]]=[siteData.videos[i],siteData.videos[i+1]]; saveData(); renderVideos(); renderAdminVideos();}};
-    const edit=document.createElement("button"); edit.textContent="Edit"; edit.onclick=()=>{let n=prompt("Video URL:",v); if(n){siteData.videos[i]=n; saveData(); renderVideos(); renderAdminVideos();}};
-    const del=document.createElement("button"); del.textContent="Delete"; del.onclick=()=>{siteData.videos.splice(i,1); saveData(); renderVideos(); renderAdminVideos();};
-    div.appendChild(up); div.appendChild(down); div.appendChild(edit); div.appendChild(del); container.appendChild(div);
-  });
-}
-function addVideo(){ const url=document.getElementById("newVideoURL").value.trim(); if(url){siteData.videos.push(url); saveData(); renderVideos(); renderAdminVideos();} document.getElementById("newVideoURL").value=""; }
+// JOIN
+function renderJoin(){ const container=document.getElementById("joinControls"); container.innerHTML=""; siteData.joins.forEach((j,i)=>{ const div=document.createElement("div"); div.className="join-item"; div.textContent=`${j.name} - ${j.email}`; container.appendChild(div); }); }
+function renderAdminJoin(){ const container=document.getElementById("joinControls"); container.innerHTML=""; siteData.joins.forEach((j,i)=>{ const div=document.createElement("div"); div.className="join-item"; div.textContent=`${j.name} - ${j.email}`; const edit=document.createElement("button"); edit.textContent="Edit"; edit.onclick=()=>{ let n=prompt("Name:",j.name); let e=prompt("Email:",j.email); if(n) j.name=n; if(e) j.email=e; saveData(); renderJoin(); renderAdminJoin(); }; const del=document.createElement("button"); del.textContent="Delete"; del.onclick=()=>{siteData.joins.splice(i,1); saveData(); renderJoin(); renderAdminJoin();}; div.appendChild(edit); div.appendChild(del); container.appendChild(div); }); }
 
-// EXPORT SITE CODE
-function exportSiteCode(){
-  let html=`<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Eldorado High School - News Broadcasting Club</title>
-<style>/* Add your site CSS here */</style></head><body>
-<header class="school-header"><div class="header-left"><img src="maroon.webp"><div class="header-text"><h1>Eldorado High School</h1><span>News Broadcasting Club</span></div></div></header>
-<div id="newsBarContainer"><div id="newsBar">${siteData.newsBar}</div></div>
-<main><section id="hero" class="hero"><h1>${siteData.heroTitle}</h1><p>${siteData.heroDesc}</p></section>
-<section id="broadcasts" class="broadcasts">`;
-siteData.videos.forEach(v=>{ html+=`<iframe class="video-player" src="${v}" allowfullscreen></iframe>`; });
-html+=`</section><section id="team" class="team-grid">`;
-siteData.team.forEach(m=>{ html+=`<div class="member"><h3>${m.name}</h3><p>${m.role}</p></div>`; });
-html+=`</section></main><footer>© 2026 Eldorado High School Broadcasting Club</footer></body></html>`;
-document.getElementById("exportBox").value=html;
+// EXPORT
+function exportSiteCode(){ 
+    const newHTML = document.documentElement.outerHTML;
+    document.getElementById("exportBox").value = newHTML;
 }
 
 loadData();
