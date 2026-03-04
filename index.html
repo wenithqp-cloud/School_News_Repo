@@ -139,9 +139,7 @@ let siteData = {
   joins:[]
 };
 
-if(localStorage.getItem("siteData")){
-  siteData=JSON.parse(localStorage.getItem("siteData"));
-}
+if(localStorage.getItem("siteData")) siteData = JSON.parse(localStorage.getItem("siteData"));
 
 function saveData(){ localStorage.setItem("siteData",JSON.stringify(siteData)); }
 function loadData(){
@@ -151,14 +149,19 @@ function loadData(){
   renderTeam(); renderVideos(); renderJoin();
 }
 
+// Navigation
 function toggleAdmin(){ let panel=document.getElementById("adminPanel"); panel.style.display=panel.style.display==="block"?"none":"block"; }
 function scrollToSection(id){ document.getElementById(id).scrollIntoView({behavior:"smooth"}); }
-function submitForm(e){ e.preventDefault(); siteData.joins.push({name:document.getElementById("name").value,email:document.getElementById("email").value}); saveData(); alert("Submitted!"); e.target.reset(); renderJoin(); }
+function submitForm(e){
+  e.preventDefault(); 
+  siteData.joins.push({name:document.getElementById("name").value,email:document.getElementById("email").value});
+  saveData(); alert("Submitted!"); e.target.reset(); renderJoin(); renderAdmin('joins');
+}
 
 function checkAdmin(){
   if(adminUser.value==="admin1973" && adminPass.value==="eldo2026"){
     document.getElementById("adminControls").style.display="block";
-    renderAdminTeam(); renderAdminVideos(); renderAdminJoin();
+    renderAdmin('team'); renderAdmin('videos'); renderAdmin('joins');
   } else { alert("Wrong login"); }
 }
 
@@ -168,23 +171,66 @@ function editNewsBar(){ const t=prompt("News Bar Text:",siteData.newsBar); if(t)
 
 // TEAM
 function renderTeam(){ const grid=document.getElementById("teamGrid"); grid.innerHTML=""; siteData.team.forEach(m=>{const div=document.createElement("div"); div.className="member"; div.innerHTML=`<h3>${m.name}</h3><p>${m.role}</p>`; grid.appendChild(div); }); }
-function renderAdminTeam(){ const container=document.getElementById("teamControls"); container.innerHTML=""; siteData.team.forEach((m,i)=>{ const div=document.createElement("div"); div.className="team-item"; div.textContent=`${m.name} - ${m.role}`; const editBtn=document.createElement("button"); editBtn.textContent="Edit"; editBtn.onclick=()=>{let n=prompt("Name:",m.name); let r=prompt("Role:",m.role); if(n)m.name=n;if(r)m.role=r; saveData(); loadData(); renderAdminTeam();}; const delBtn=document.createElement("button"); delBtn.textContent="Delete"; delBtn.onclick=()=>{siteData.team.splice(i,1); saveData(); loadData(); renderAdminTeam();}; div.appendChild(editBtn); div.appendChild(delBtn); container.appendChild(div); }); }
-function addTeamMember(){ const n=document.getElementById("newMemberName").value.trim(); const r=document.getElementById("newMemberRole").value.trim(); if(n&&r){ siteData.team.push({name:n,role:r}); saveData(); loadData(); renderAdminTeam(); } document.getElementById("newMemberName").value=""; document.getElementById("newMemberRole").value=""; }
+function addTeamMember(){ 
+  const n=document.getElementById("newMemberName").value.trim(); 
+  const r=document.getElementById("newMemberRole").value.trim(); 
+  if(n&&r){ siteData.team.push({name:n,role:r}); saveData(); loadData(); renderAdmin('team'); } 
+  document.getElementById("newMemberName").value=""; 
+  document.getElementById("newMemberRole").value="";
+}
 
 // VIDEOS
 function renderVideos(){ const container=document.getElementById("videosContainer"); container.innerHTML=""; siteData.videos.forEach(v=>{ const card=document.createElement("div"); card.className="video-card"; card.innerHTML=`<h3>${v.title}</h3><iframe src="${v.url}" allowfullscreen></iframe><p>${v.transcript}</p>`; container.appendChild(card); }); }
-function renderAdminVideos(){ const container=document.getElementById("videoControls"); container.innerHTML=""; siteData.videos.forEach((v,i)=>{ const div=document.createElement("div"); div.className="video-item"; div.textContent=v.title; const up=document.createElement("button"); up.textContent="↑"; up.onclick=()=>{if(i>0){[siteData.videos[i-1],siteData.videos[i]]=[siteData.videos[i],siteData.videos[i-1]]; saveData(); renderVideos(); renderAdminVideos();}}; const down=document.createElement("button"); down.textContent="↓"; down.onclick=()=>{if(i<siteData.videos.length-1){[siteData.videos[i+1],siteData.videos[i]]=[siteData.videos[i],siteData.videos[i+1]]; saveData(); renderVideos(); renderAdminVideos();}}; const edit=document.createElement("button"); edit.textContent="Edit"; edit.onclick=()=>{ let newTitle=prompt("Video Title:",v.title); let newURL=prompt("Video URL:",v.url); let newTranscript=prompt("Transcript:",v.transcript); if(newTitle)v.title=newTitle;if(newURL)v.url=newURL;if(newTranscript)v.transcript=newTranscript; saveData(); renderVideos(); renderAdminVideos();}; const del=document.createElement("button"); del.textContent="Delete"; del.onclick=()=>{siteData.videos.splice(i,1); saveData(); renderVideos(); renderAdminVideos();}; div.appendChild(up); div.appendChild(down); div.appendChild(edit); div.appendChild(del); container.appendChild(div); }); }
-function addVideo(){ const url=document.getElementById("newVideoURL").value.trim(); const title=document.getElementById("newVideoTitle").value.trim(); const transcript=document.getElementById("newVideoTranscript").value.trim(); if(url && title){ siteData.videos.push({url,title,transcript}); saveData(); renderVideos(); renderAdminVideos(); } document.getElementById("newVideoURL").value=""; document.getElementById("newVideoTitle").value=""; document.getElementById("newVideoTranscript").value=""; }
+function addVideo(){ 
+  const url=document.getElementById("newVideoURL").value.trim(); 
+  const title=document.getElementById("newVideoTitle").value.trim(); 
+  const transcript=document.getElementById("newVideoTranscript").value.trim(); 
+  if(url && title){ siteData.videos.push({url,title,transcript}); saveData(); renderVideos(); renderAdmin('videos'); } 
+  document.getElementById("newVideoURL").value=""; 
+  document.getElementById("newVideoTitle").value=""; 
+  document.getElementById("newVideoTranscript").value="";
+}
 
 // JOIN
 function renderJoin(){ const container=document.getElementById("joinControls"); container.innerHTML=""; siteData.joins.forEach((j,i)=>{ const div=document.createElement("div"); div.className="join-item"; div.textContent=`${j.name} - ${j.email}`; container.appendChild(div); }); }
-function renderAdminJoin(){ const container=document.getElementById("joinControls"); container.innerHTML=""; siteData.joins.forEach((j,i)=>{ const div=document.createElement("div"); div.className="join-item"; div.textContent=`${j.name} - ${j.email}`; const edit=document.createElement("button"); edit.textContent="Edit"; edit.onclick=()=>{ let n=prompt("Name:",j.name); let e=prompt("Email:",j.email); if(n) j.name=n; if(e) j.email=e; saveData(); renderJoin(); renderAdminJoin(); }; const del=document.createElement("button"); del.textContent="Delete"; del.onclick=()=>{siteData.joins.splice(i,1); saveData(); renderJoin(); renderAdminJoin();}; div.appendChild(edit); div.appendChild(del); container.appendChild(div); }); }
+
+// ADMIN RENDER
+function renderAdmin(section){
+  if(section==='team'){
+    const container=document.getElementById("teamControls"); container.innerHTML="";
+    siteData.team.forEach((m,i)=>{
+      const div=document.createElement("div"); div.className="team-item"; div.textContent=`${m.name} - ${m.role}`;
+      const editBtn=document.createElement("button"); editBtn.textContent="Edit";
+      editBtn.onclick=()=>{ let n=prompt("Name:",m.name); let r=prompt("Role:",m.role); if(n)m.name=n;if(r)m.role=r; saveData(); loadData(); renderAdmin('team'); };
+      const delBtn=document.createElement("button"); delBtn.textContent="Delete";
+      delBtn.onclick=()=>{ siteData.team.splice(i,1); saveData(); loadData(); renderAdmin('team'); };
+      div.appendChild(editBtn); div.appendChild(delBtn); container.appendChild(div);
+    });
+  }
+  if(section==='videos'){
+    const container=document.getElementById("videoControls"); container.innerHTML="";
+    siteData.videos.forEach((v,i)=>{
+      const div=document.createElement("div"); div.className="video-item"; div.textContent=v.title;
+      const up=document.createElement("button"); up.textContent="↑"; up.onclick=()=>{if(i>0){ [siteData.videos[i-1],siteData.videos[i]]=[siteData.videos[i],siteData.videos[i-1]]; saveData(); renderVideos(); renderAdmin('videos'); }};
+      const down=document.createElement("button"); down.textContent="↓"; down.onclick=()=>{if(i<siteData.videos.length-1){ [siteData.videos[i+1],siteData.videos[i]]=[siteData.videos[i],siteData.videos[i+1]]; saveData(); renderVideos(); renderAdmin('videos'); }};
+      const edit=document.createElement("button"); edit.textContent="Edit"; edit.onclick=()=>{ let newTitle=prompt("Video Title:",v.title); let newURL=prompt("Video URL:",v.url); let newTranscript=prompt("Transcript:",v.transcript); if(newTitle)v.title=newTitle;if(newURL)v.url=newURL;if(newTranscript)v.transcript=newTranscript; saveData(); renderVideos(); renderAdmin('videos'); };
+      const del=document.createElement("button"); del.textContent="Delete"; del.onclick=()=>{ siteData.videos.splice(i,1); saveData(); renderVideos(); renderAdmin('videos'); };
+      div.appendChild(up); div.appendChild(down); div.appendChild(edit); div.appendChild(del); container.appendChild(div);
+    });
+  }
+  if(section==='joins'){
+    const container=document.getElementById("joinControls"); container.innerHTML="";
+    siteData.joins.forEach((j,i)=>{
+      const div=document.createElement("div"); div.className="join-item"; div.textContent=`${j.name} - ${j.email}`;
+      const edit=document.createElement("button"); edit.textContent="Edit"; edit.onclick=()=>{ let n=prompt("Name:",j.name); let e=prompt("Email:",j.email); if(n) j.name=n; if(e) j.email=e; saveData(); renderJoin(); renderAdmin('joins'); };
+      const del=document.createElement("button"); del.textContent="Delete"; del.onclick=()=>{ siteData.joins.splice(i,1); saveData(); renderJoin(); renderAdmin('joins'); };
+      div.appendChild(edit); div.appendChild(del); container.appendChild(div);
+    });
+  }
+}
 
 // EXPORT
-function exportSiteCode(){ 
-    const newHTML = document.documentElement.outerHTML;
-    document.getElementById("exportBox").value = newHTML;
-}
+function exportSiteCode(){ document.getElementById("exportBox").value = document.documentElement.outerHTML; }
 
 loadData();
 </script>
